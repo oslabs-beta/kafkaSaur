@@ -3,6 +3,8 @@ import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/
 
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
+import request from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/request.js';
+
 import {
   ProducerBatch,
   Message,
@@ -80,7 +82,11 @@ async function func() {
     },
   ];
 
-  const message = producedMessage({ acks: 0, timeout: 1000, topicData: td });
+  const message = await producedMessage({
+    acks: 0,
+    timeout: 1000,
+    topicData: td,
+  });
 
   const encodeTopic = ({ topic, partitions }: any) => {
     return new Encoder()
@@ -100,6 +106,12 @@ async function func() {
       .writeEncoder(messageSet);
   };
 
+  const pleaseWork = await request({
+    correlationId: 1,
+    clientId: 'my-app',
+    request: message,
+  });
+
   const apiKey = new Uint16Array(1);
   const apiVersion = new Uint16Array(1);
   const correlationId = new Uint32Array(1);
@@ -111,11 +123,11 @@ async function func() {
   // const messageArr = new Uint8Array(1);
   // messageArr[0] = await message.encode();
   // console.log(buf);
-  const test = await message.encode();
-  const arr = new Uint8Array(1);
+  //const test = await message.encode();
+  //const arr = new Uint8Array(1);
   // arr[0] = test;
-  console.log('GOT TO HERE SAM');
-  const hello = await conn.write(arr);
+  console.log('GOT TO HERE SAM ', pleaseWork.buf);
+  const hello = await conn.write(pleaseWork.buf);
 
   // console.log('Is this real life? ', hello);
   // console.log('con.read.buf', await conn.read(buf));

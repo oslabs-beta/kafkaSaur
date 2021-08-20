@@ -1,6 +1,6 @@
 /** @format */
 
-import Encoder from './encoder.js';
+import { Encoder } from './encoder.js';
 
 export default async ({
   correlationId,

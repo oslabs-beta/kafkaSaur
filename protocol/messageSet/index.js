@@ -20,7 +20,7 @@ import { MessageProtocol } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/p
 export default ({ messageVersion = 0, compression, entries }) => {
   //const isCompressed = compression !== Types.None;
   const Message = MessageProtocol({ version: messageVersion });
-  //const Message = ({ version: 0})
+
   const encoder = new Encoder();
 
   // Messages in a message set are __not__ encoded as an array.
