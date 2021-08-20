@@ -8,5 +8,5 @@ const versions = {
 };
 
 export function MessageProtocol({ version = 0 }) {
-  versions[version];
+  return versions[version];
 }

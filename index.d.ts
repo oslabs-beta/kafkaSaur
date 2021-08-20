@@ -656,7 +656,7 @@ export type Broker = {
     producerEpoch?: number;
     acks?: number;
     timeout?: number;
-    compression?: CompressionTypes;
+    //compression?: CompressionTypes;
   }): Promise<any>;
 };
 
@@ -675,7 +675,7 @@ export interface ProducerRecord {
   messages: Message[];
   acks?: number;
   timeout?: number;
-  compression?: CompressionTypes;
+  //compression?: CompressionTypes;
 }
 
 export type RecordMetadata = {
@@ -697,7 +697,7 @@ export interface TopicMessages {
 export interface ProducerBatch {
   acks?: number;
   timeout?: number;
-  compression?: CompressionTypes;
+  //compression?: CompressionTypes;
   topicMessages?: TopicMessages[];
   topicData: Array<{
     topic: string;
