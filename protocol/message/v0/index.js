@@ -1,6 +1,12 @@
-const Encoder = require('../../encoder')
-const crc32 = require('../../crc32')
-const { Types: Compression, COMPRESSION_CODEC_MASK } = require('../compression')
+/** @format */
+
+import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/encoder.js';
+
+import { crc32 } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/crc32.js';
+
+import Compression from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/message/compression/index.js';
+
+const COMPRESSION_CODEC_MASK = 0x07;
 
 /**
  * v0
@@ -12,13 +18,13 @@ const { Types: Compression, COMPRESSION_CODEC_MASK } = require('../compression')
  *   Value => bytes
  */
 
-module.exports = ({ compression = Compression.None, key, value }) => {
+export function Version0({ compression = Compression.None, key, value }) {
   const content = new Encoder()
     .writeInt8(0) // magicByte
     .writeInt8(compression & COMPRESSION_CODEC_MASK)
     .writeBytes(key)
-    .writeBytes(value)
+    .writeBytes(value);
 
-  const crc = crc32(content)
-  return new Encoder().writeInt32(crc).writeEncoder(content)
+  const crc = crc32(content);
+  return new Encoder().writeInt32(crc).writeEncoder(content);
 }

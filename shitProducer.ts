@@ -1,11 +1,23 @@
 /** @format */
-import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/encoder';
+import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/encoder.js';
+
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+
+import {
+  ProducerBatch,
+  Message,
+  IHeaders,
+  TopicMessages,
+  Broker,
+  TopicOffsets,
+  PartitionOffset,
+} from './index.d.ts';
 
 // import { Produce: apiKey } from '../../apiKeys'
 
 // import { Produce: apiKey } from './protocol/requests/apiKeys'
 
-// import MessageSet from ''
+import MessageSet from './protocol/messageSet/index.js';
 
 import {
   Client,
@@ -21,7 +33,19 @@ async function func() {
   });
   console.log('Connected', conn);
 
-  const producedMessage = ({ acks, timeout, topicData }) => ({
+  interface topicDataType {
+    topicData: Array<{
+      topic: string;
+      partitions: Array<{
+        partition: number;
+        firstSequence?: number;
+        messages: Message[];
+      }>;
+    }>;
+  }
+
+  //producedMessage = ({acks, timeout, topicData}: ProducerBatch) =>
+  const producedMessage = ({ acks, timeout, topicData }: ProducerBatch) => ({
     apiKey: 0, //0
     apiVersion: 0,
     apiName: 'Produce',
@@ -55,15 +79,16 @@ async function func() {
       ],
     },
   ];
+
   const message = producedMessage({ acks: 0, timeout: 1000, topicData: td });
 
-  const encodeTopic = ({ topic, partitions }) => {
+  const encodeTopic = ({ topic, partitions }: any) => {
     return new Encoder()
       .writeString(topic)
       .writeArray(partitions.map(encodePartitions));
   };
 
-  const encodePartitions = ({ partition, messages }) => {
+  const encodePartitions = ({ partition, messages }: any) => {
     const messageSet = MessageSet({ messageVersion: 0, entries: messages });
     return new Encoder()
       .writeInt32(partition)
@@ -96,8 +121,8 @@ async function func() {
   //   51,
   // ];
 
-  const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
+  //const decoder = new TextDecoder();
+  // const encoder = new TextEncoder();
 
   const apiKey = new Uint16Array(1);
   const apiVersion = new Uint16Array(1);
@@ -107,17 +132,19 @@ async function func() {
   // array.map((el, i) => (buf[i] = el));
 
   // console.log(buf); // 42
-
+  // const messageArr = new Uint8Array(1);
+  // messageArr[0] = await message.encode();
   // console.log(buf);
-  const hello = await conn.write(message);
+  console.log('GOT TO HERE SAM');
+  // const hello = await conn.write(message.encode());
 
-  console.log('Is this real life? ', hello);
+  // console.log('Is this real life? ', hello);
   // console.log('con.read.buf', await conn.read(buf));
   // await conn.read(buf);
-  console.log('Client-Response:', decoder.decode(buf));
+  // console.log('Client-Response:', decoder.decode(buf));
 
-  const decoded = decoder.decode(buf);
-  console.log('Encoded shit: ', encoder.encode(decoded));
+  // const decoded = decoder.decode(buf);
+  // console.log('Encoded shit: ', encoder.encode(decoded));
   conn.close();
 }
 
