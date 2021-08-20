@@ -70,11 +70,12 @@ async function func() {
           firstSequence: undefined,
           messages: [
             {
-              key: 'hello',
-              value: 'there',
+              //magicByte: 0,
+              key: 'not null',
+              value: '312341',
               partition: 0,
               headers: undefined,
-              timestamp: '999',
+              timestamp: 1629427186992,
             },
           ],
         },

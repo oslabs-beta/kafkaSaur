@@ -88,7 +88,7 @@ export interface Message {
   value: Buffer | string | null;
   partition?: number;
   headers?: IHeaders;
-  timestamp?: string;
+  timestamp?: number;
 }
 
 export interface PartitionerArgs {
