@@ -17,7 +17,7 @@ const COMPRESSION_CODEC_MASK = 0x07;
  *   Key => bytes
  *   Value => bytes
  */
-
+//Compression.none
 export function Version0({ compression = Compression.None, key, value }) {
   const content = new Encoder()
     .writeInt8(0) // magicByte

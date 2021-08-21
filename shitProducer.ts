@@ -70,12 +70,11 @@ async function func() {
           firstSequence: undefined,
           messages: [
             {
-              //magicByte: 0,
-              key: 'not null',
-              value: '312341',
+              key: 'new-key6',
+              value: Date.now().toString(),
               partition: 0,
               headers: undefined,
-              timestamp: 1629427186992,
+              timestamp: Date.now(),
             },
           ],
         },
@@ -83,9 +82,9 @@ async function func() {
     },
   ];
 
-  const message = await producedMessage({
+  const message = producedMessage({
     acks: 0,
-    timeout: 1000,
+    timeout: 10000,
     topicData: td,
   });
 
@@ -98,7 +97,7 @@ async function func() {
   const encodePartitions = ({ partition, messages }: any) => {
     const messageSet = MessageSet({
       messageVersion: 0,
-      compression: null,
+      compression: 0,
       entries: messages,
     });
     return new Encoder()
@@ -107,28 +106,30 @@ async function func() {
       .writeEncoder(messageSet);
   };
 
-  const pleaseWork = await request({
-    correlationId: 1,
-    clientId: 'my-app',
-    request: message,
-  });
-
-  const apiKey = new Uint16Array(1);
-  const apiVersion = new Uint16Array(1);
-  const correlationId = new Uint32Array(1);
+  // const apiKey = new Uint16Array(1);
+  // const apiVersion = new Uint16Array(1);
+  // const correlationId = new Uint32Array(1);
 
   //var buf = new Uint8Array(316);
-  // array.map((el, i) => (buf[i] = el));
+  // array.p((el, i) => (buf[i] = el));
 
   // console.log(buf); // 42
   // const messageArr = new Uint8Array(1);
   // messageArr[0] = await message.encode();
   // console.log(buf);
-  //const test = await message.encode();
+  //const test = await pleaseWork.encode();
+  const pleaseWork = await request({
+    correlationId: 1,
+    clientId: 'my-app',
+    request: message,
+  });
   //const arr = new Uint8Array(1);
   // arr[0] = test;
-  console.log('GOT TO HERE SAM ', pleaseWork.buf);
+  console.log('GOT TO HERE SAM', pleaseWork);
+
   const hello = await conn.write(pleaseWork.buf);
+
+  console.log('Hello is ', hello);
 
   // console.log('Is this real life? ', hello);
   // console.log('con.read.buf', await conn.read(buf));

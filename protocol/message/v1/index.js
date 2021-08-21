@@ -24,7 +24,7 @@ export function Version1({
   value,
 }) {
   const content = new Encoder()
-    .writeInt8(1) // magicByte
+    .writeInt8(0) // magicByte
     .writeInt8(compression & COMPRESSION_CODEC_MASK)
     .writeInt64(timestamp)
     .writeBytes(key)
