@@ -35,7 +35,10 @@ export default ({ messageVersion = 0, compression, entries }) => {
     // When the producer is sending compressed messages, to avoid server side recompression, each compressed message
     // should have offset starting from 0 and increasing by one for each inner message in the compressed message
     //encoder.writeInt64(isCompressed ? i : -1);
+
+    //WE WROTE THIS LINE:
     encoder.writeInt64(-1);
+
     encoder.writeInt32(message.size());
 
     encoder.writeEncoder(message);

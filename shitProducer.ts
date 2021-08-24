@@ -3,6 +3,8 @@ import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/
 
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
+import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
+
 import request from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/request.js';
 
 import {
@@ -27,7 +29,10 @@ import {
   Event,
 } from 'https://deno.land/x/tcp_socket@0.0.1/mods.ts';
 
-async function func() {
+let date = await new Date(Date.now()).toUTCString();
+
+export default async function func(string: string = date) {
+  console.log(typeof string);
   const conn = await Deno.connect({
     hostname: 'localhost',
     port: 9093,
@@ -71,7 +76,7 @@ async function func() {
           messages: [
             {
               key: 'new-key6',
-              value: Date.now().toString(),
+              value: string,
               partition: 0,
               headers: undefined,
               timestamp: Date.now(),
@@ -84,7 +89,7 @@ async function func() {
 
   const message = producedMessage({
     acks: 0,
-    timeout: 10000,
+    timeout: 1000,
     topicData: td,
   });
 
@@ -127,9 +132,17 @@ async function func() {
   // arr[0] = test;
   console.log('GOT TO HERE SAM', pleaseWork);
 
-  const hello = await conn.write(pleaseWork.buf);
+  // const hello = await conn
+  //   .write(pleaseWork.buf)
+  //   .then((res) => console.log('something else', res));
 
-  console.log('Hello is ', hello);
+  const writingShit = await writeAll(conn, pleaseWork.buf).then((res) => res);
+
+  // console.log('Hello is ', writingShit);
+
+  const bufferContent = await readAll(conn);
+
+  console.log('buffer content', bufferContent);
 
   // console.log('Is this real life? ', hello);
   // console.log('con.read.buf', await conn.read(buf));
@@ -141,7 +154,7 @@ async function func() {
   conn.close();
 }
 
-func();
+// func();
 
 // const kafkaJsEncoder = {
 //   type: 'Buffer',

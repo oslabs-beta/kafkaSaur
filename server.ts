@@ -1,47 +1,35 @@
 /** @format */
 
-import {
-  Server,
-  Client,
-  Event,
-  Packet,
-} from 'https://deno.land/x/tcp_socket@0.0.1/mods.ts';
+import { Application, Router, send } from 'https://deno.land/x/oak/mod.ts';
 
-const server = new Server({ port: 8080 });
+import producer from './shitProducer.ts';
 
-// Server listen
-server.on(Event.listen, (server: Deno.Listener) => {
-  let addr = server.addr as Deno.NetAddr;
-  console.log(`Server listen ${addr.hostname}:${addr.port}`);
+const router = new Router();
+
+router
+  .get('/test', (ctx) => {
+    ctx.response.body = 'Hello World!';
+    producer();
+  })
+  .post('/test', (ctx) => {
+    ctx.response.body = "You've posted!";
+  })
+  .delete('/test', (ctx) => {
+    console.log('Request body ', ctx.request.body);
+    ctx.response.body = 'You deleted!';
+  });
+
+const app = new Application();
+
+app.use(router.routes());
+
+app.use(router.allowedMethods());
+
+app.use(async (ctx) => {
+  await send(ctx, ctx.request.url.pathname, {
+    root: `${Deno.cwd()}`,
+    index: 'index.html',
+  });
 });
 
-// Client connect
-server.on(Event.connect, (client: Client) => {
-  console.log('New Client -', client.info());
-});
-
-// Receive packet
-server.on(Event.receive, (client: Client, data: Packet, length: number) => {
-  console.log('Receive -', data.toString());
-});
-
-// Client close
-server.on(Event.close, (client: Client) => {
-  console.log('Client close -', client.info());
-});
-
-// Server finish
-server.on(Event.shutdown, () => {
-  console.log('Server is shutdown');
-});
-
-// Handle error
-server.on(Event.error, (e) => {
-  console.error(e);
-});
-
-// Do
-await server.listen(); // Start listen
-server.broadcast('Hello');
-// server.broadcast('Hello', client); //Ignore broadcast
-// server.broadcast('Hello', [client]); //Ignore broadcast
+await app.listen({ port: 8000 });
