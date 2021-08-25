@@ -1,7 +1,7 @@
 /** @format */
 import { Encoder } from './protocol/encoder.js';
 
-//import { Decoder } from './protocol/decoder.js'
+import { Decoder } from './protocol/decoder.js'
 
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
@@ -10,6 +10,8 @@ import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
 import MessageSet from './protocol/messageSet/index.js';
 
 import request from './protocol/request.js';
+
+import v0response from './protocol/requests/produce/v0/response.js'
 
 import {
   ProducerBatch,
@@ -115,6 +117,7 @@ export default async function func(string: string = date) {
     request: message,
   });
 
+
   console.log('before sending,', pleaseWork.buf)
   const writer = await writeAll(conn, pleaseWork.buf);
   const tempBuf = new Uint8Array(100);
@@ -123,6 +126,14 @@ export default async function func(string: string = date) {
   await conn.read(tempBuf);
   console.log('response:', tempBuf)
   console.log('decoded', dcd.decode(tempBuf))
+
+  //try the kjs decoder
+  v0response.decode(tempBuf);
+  
+  // const decoded = await v0response.decode(tempBuf.buffer);
+  // //const parsed = v0response.parse(tempBuf);
+  // console.log('decoded: ', decoded);
+  // //console.log('parsed: ', parsed);
 
 
   conn.close();

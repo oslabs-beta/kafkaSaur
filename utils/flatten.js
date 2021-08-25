@@ -9,4 +9,4 @@ function flatten(arrays) {
   return [].concat.apply([], arrays)
 }
 
-module.exports = flatten
+export default flatten

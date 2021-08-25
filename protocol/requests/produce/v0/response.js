@@ -1,6 +1,10 @@
-const Decoder = require('../../../decoder')
-const { failure, createErrorFromCode } = require('../../../error')
-const flatten = require('../../../../utils/flatten')
+import { Decoder } from '../../../decoder.js'
+//import  flatten  from '../../../../utils/flatten'
+import { failure, createErrorFromCode } from '../../../error.js'
+
+//const Decoder = require('../../../decoder')
+//const { failure, createErrorFromCode } = require('../../../error')
+//const flatten = require('../../../../utils/flatten')
 
 /**
  * v0
@@ -10,6 +14,10 @@ const flatten = require('../../../../utils/flatten')
  *   ErrorCode => int16
  *   Offset => int64
  */
+
+function flatten(arrays) {
+  return [].concat.apply([], arrays)
+}
 
 const partition = decoder => ({
   partition: decoder.readInt32(),
@@ -43,7 +51,7 @@ const parse = async data => {
   return data
 }
 
-module.exports = {
+export default {
   decode,
   parse,
 }

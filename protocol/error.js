@@ -1,5 +1,8 @@
-const { KafkaJSProtocolError } = require('../errors')
-const websiteUrl = require('../utils/websiteUrl')
+import KafkaJSProtocolError from '../errors.js'
+//import { websiteUrl } from '../utls/websiteUrl'
+
+// const { KafkaJSProtocolError } = require('../errors')
+// const websiteUrl = require('../utils/websiteUrl')
 
 const errorCodes = [
   {
@@ -175,7 +178,8 @@ const errorCodes = [
     code: 27,
     retriable: false,
     message: 'The group is rebalancing, so a rejoin is needed',
-    helpUrl: websiteUrl('docs/faq', 'what-does-it-mean-to-get-rebalance-in-progress-errors'),
+    //helpUrl: websiteUrl('docs/faq', 'what-does-it-mean-to-get-rebalance-in-progress-errors'),
+    helpUrl: 'www.google.com'
   },
   {
     type: 'INVALID_COMMIT_OFFSET_SIZE',
@@ -374,7 +378,8 @@ const errorCodes = [
     code: 58,
     retriable: false,
     message: 'SASL Authentication failed',
-    helpUrl: websiteUrl('docs/configuration', 'sasl'),
+    helpUrl: 'www.google.com'
+    //helpUrl: websiteUrl('docs/configuration', 'sasl'),
   },
   {
     type: 'UNKNOWN_PRODUCER_ID',
@@ -592,7 +597,7 @@ const staleMetadata = e =>
     e.type
   )
 
-module.exports = {
+export {
   failure,
   errorCodes,
   createErrorFromCode,
