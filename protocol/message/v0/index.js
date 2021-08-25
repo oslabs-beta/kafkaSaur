@@ -1,10 +1,10 @@
 /** @format */
 
-import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/encoder.js';
+import { Encoder } from '../../encoder.js';
 
-import { crc32 } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/crc32.js';
+import { crc32 } from '../../crc32.js'
 
-import Compression from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/message/compression/index.js';
+import Compression from '../compression/index.js';
 
 const COMPRESSION_CODEC_MASK = 0x07;
 

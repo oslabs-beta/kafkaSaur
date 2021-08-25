@@ -1,7 +1,7 @@
 /** @format */
 
-import { Encoder } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/encoder.js';
-import { MessageProtocol } from 'file:///C:/Users/wesge/Desktop/Coding/kafkaEx/protocol/message/index.js';
+import { Encoder } from '../encoder.js';
+import { MessageProtocol } from '../message/index.js';
 //const { Types } = require('../message/compression');
 
 /**
