@@ -1,7 +1,7 @@
 const Decoder = require('../../decoder')
 const { KafkaJSPartialMessageError } = require('../../../errors')
 const { lookupCodecByAttributes } = require('../../message/compression')
-const RecordDecoder = require('../record/v0/decoder')
+const RecordDecoder = require('../record/v0/decoder').default
 const TimestampTypes = require('../../timestampTypes')
 
 const TIMESTAMP_TYPE_FLAG_MASK = 0x8

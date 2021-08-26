@@ -1,8 +1,9 @@
-const Long = require('../../utils/long')
-const Decoder = require('../decoder')
-const MessageDecoder = require('../message/decoder')
-const { lookupCodecByAttributes } = require('../message/compression')
-const { KafkaJSPartialMessageError } = require('../../errors')
+//import { fromValue } from '../../utils/long.js'
+import Decoder from '../decoder.js'
+import MessageDecoder from '../message/decoder.js'
+import { lookupCodecByAttributes } from '../message/compression/index.js'
+import { KafkaJSPartialMessageError } from '../../errors.js'
+import Long from '../../utils/long.js';
 
 /**
  * MessageSet => [Offset MessageSize Message]
@@ -11,7 +12,7 @@ const { KafkaJSPartialMessageError } = require('../../errors')
  *  Message => Bytes
  */
 
-module.exports = async (primaryDecoder, size = null) => {
+export default async (primaryDecoder, size = null) => {
   const messages = []
   const messageSetSize = size || primaryDecoder.readInt32()
   const messageSetDecoder = primaryDecoder.slice(messageSetSize)

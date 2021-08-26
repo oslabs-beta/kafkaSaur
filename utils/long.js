@@ -6,7 +6,7 @@
  * @constructor
  */
 
-class Long {
+export class Long {
   constructor(value) {
     this.value = value;
   }
@@ -338,4 +338,5 @@ Long.ZERO = Long.fromInt(0);
  */
 Long.ONE = Long.fromInt(1);
 
-export default Long;
+//export default Long;
+ 

@@ -11,7 +11,7 @@ import MessageSet from './protocol/messageSet/index.js';
 
 import request from './protocol/request.js';
 
-import v0response from './protocol/requests/produce/v0/response.js'
+//import v0response from './protocol/requests/produce/v0/response.js'
 
 import {
   ProducerBatch,
@@ -49,7 +49,7 @@ export default async function func(string: string = date) {
       }>;
     }>;
   }
-
+  //**ENCODING METHODS START HERE *********************************************/
   //topicData structure
   const td = [
     {
@@ -72,7 +72,6 @@ export default async function func(string: string = date) {
     },
   ];
 
- 
   const producedMessage = ({ acks, timeout, topicData }: ProducerBatch) => ({
     apiKey: 0, //0
     apiVersion: 0,
@@ -110,7 +109,6 @@ export default async function func(string: string = date) {
     topicData: td,
   });
 
-
   const pleaseWork = await request({
     correlationId: 1,
     clientId: 'my-app',
@@ -118,27 +116,58 @@ export default async function func(string: string = date) {
   });
 
 
-  console.log('before sending,', pleaseWork.buf)
-  const writer = await writeAll(conn, pleaseWork.buf);
-  const tempBuf = new Uint8Array(100);
-  const dcd = new TextDecoder()
-  //READ INTO THE BUFFER - THE ARGUMENT IS THE DESTINATION, CALL READ ON THE CONNECTION
-  await conn.read(tempBuf);
-  console.log('response:', tempBuf)
-  console.log('decoded', dcd.decode(tempBuf))
+  //**DECODING METHODS START HERE *************************************************/
+  const partition: any = (decoder: any) => ({
+    partition: decoder.readInt32(),
+    errorCode: decoder.readInt16(),
+    offset: decoder.readInt64().toString(),
+  })
 
-  //try the kjs decoder
-  v0response.decode(tempBuf);
+  const decode: any = async (rawData: any) => {
+    const decoder = new Decoder(rawData)
+    decoder.offset = 8
+    console.log('decoder offset? ', decoder)
+    console.log('partition', partition.partition)
+    console.log('partition type', typeof partition)
+    const topics = decoder.readArray((decoder: any) => ({
+      topicName: decoder.readString(),
+      partitions: decoder.readArray(partition),
+    }))
   
-  // const decoded = await v0response.decode(tempBuf.buffer);
-  // //const parsed = v0response.parse(tempBuf);
-  // console.log('decoded: ', decoded);
-  // //console.log('parsed: ', parsed);
+    return {
+      topics,
+    }
+  }
 
+  //**ENCODING AND SENDING */
+  const writer = await writeAll(conn, pleaseWork.buf);
+  const response = new Uint8Array(512);
+  
+
+  //**GETTING RESPONSE */
+  await conn.read(response);
+  console.log('response:', response)
+
+  //**DECODING RESPONSE */
+  const newBuff = await new Buffer(response)
+  console.log('new buff', newBuff)
+  const decoded = await decode(newBuff);
+  console.log('decoded: ', decoded.topics[0].partitions);
+  //console.log('parsed: ', parsed);
 
   conn.close();
 }
 
 func()
+
+/**
+ * ??????questions??????
+ * -why does 8 work for the offset?
+ * 
+ * 
+ * 
+ * !!!!test ideas!!!!!
+ * -what if we change what we are sending?
+ */
 
 

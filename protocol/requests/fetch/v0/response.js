@@ -2,7 +2,7 @@ const Decoder = require('../../../decoder')
 const { KafkaJSOffsetOutOfRange } = require('../../../../errors')
 const { failure, createErrorFromCode, errorCodes } = require('../../../error')
 const flatten = require('../../../../utils/flatten')
-const MessageSetDecoder = require('../../../messageSet/decoder')
+const MessageSetDecoder = require('../../../messageSet/decoder').default
 
 /**
  * Fetch Response (Version: 0) => [responses]

@@ -1,6 +1,9 @@
 import { Encoder } from './protocol/encoder.js';
 import request from './protocol/request.js';
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
+import { Decoder } from './protocol/decoder.js'
+import { MessageSetDecoder } from './protocol/messageSet/decoder.js'
+
 /*
 Fetch Request (Version: 0) => replica_id max_wait_ms min_bytes [topics] 
   replica_id => INT32 ; should be -1 for consumer
@@ -103,6 +106,40 @@ export default async function func() {
     clientId: 'my-app',
     request: message,
   });
+
+  /**
+ * Fetch Response (Version: 0) => [responses]
+ *   responses => topic [partition_responses]
+ *     topic => STRING
+ *     partition_responses => partition_header record_set
+ *       partition_header => partition error_code high_watermark
+ *         partition => INT32
+ *         error_code => INT16
+ *         high_watermark => INT64
+ *       record_set => RECORDS
+ */
+
+   const decodePartition = async decoder => ({
+    partition: decoder.readInt32(),
+    errorCode: decoder.readInt16(),
+    highWatermark: decoder.readInt64().toString(),
+    messages: await MessageSetDecoder(decoder),
+  })
+  
+  const decodeResponse = async decoder => ({
+    topicName: decoder.readString(),
+    partitions: await decoder.readArrayAsync(decodePartition),
+  })
+  
+  const decode = async rawData => {
+    const decoder = new Decoder(rawData)
+    const responses = await decoder.readArrayAsync(decodeResponse)
+  
+    return {
+      responses,
+    }
+  }
+
 
   //step 6 - send it
   console.log('before sending,', pleaseWork.buf)

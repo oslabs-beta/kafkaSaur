@@ -51,7 +51,7 @@ const parse = async data => {
   return data
 }
 
-export default {
+export {
   decode,
   parse,
 }

@@ -1,7 +1,7 @@
-const {
+import {
   KafkaJSPartialMessageError,
   KafkaJSUnsupportedMagicByteInMessageSet,
-} = require('../../errors')
+} from '../../errors.js'
 
 const V0Decoder = require('./v0/decoder')
 const V1Decoder = require('./v1/decoder')
@@ -19,7 +19,7 @@ const decodeMessage = (decoder, magicByte) => {
   }
 }
 
-module.exports = (offset, size, decoder) => {
+export default (offset, size, decoder) => {
   // Don't decrement decoder.offset because slice is already considering the current
   // offset of the decoder
   const remainingBytes = Buffer.byteLength(decoder.slice(size).buffer)

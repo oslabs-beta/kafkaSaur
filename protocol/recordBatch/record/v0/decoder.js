@@ -1,6 +1,6 @@
-const Long = require('../../../../utils/long')
-const HeaderDecoder = require('../../header/v0/decoder')
-const TimestampTypes = require('../../../timestampTypes')
+import { fromValue } from '../../../../utils/long'
+import HeaderDecoder from '../../header/v0/decoder'
+import { LOG_APPEND_TIME } from '../../../timestampTypes'
 
 /**
  * v0
@@ -16,7 +16,7 @@ const TimestampTypes = require('../../../timestampTypes')
  *     HeaderValue => VarInt|Bytes
  */
 
-module.exports = (decoder, batchContext = {}) => {
+export default (decoder, batchContext = {}) => {
   const {
     firstOffset,
     firstTimestamp,
@@ -29,14 +29,14 @@ module.exports = (decoder, batchContext = {}) => {
 
   const timestampDelta = decoder.readVarLong()
   const timestamp =
-    timestampType === TimestampTypes.LOG_APPEND_TIME && maxTimestamp
+    timestampType === LOG_APPEND_TIME && maxTimestamp
       ? maxTimestamp
-      : Long.fromValue(firstTimestamp)
+      : fromValue(firstTimestamp)
           .add(timestampDelta)
           .toString()
 
   const offsetDelta = decoder.readVarInt()
-  const offset = Long.fromValue(firstOffset)
+  const offset = fromValue(firstOffset)
     .add(offsetDelta)
     .toString()
 

@@ -1,6 +1,6 @@
-const Decoder = require('../../../decoder')
-const { parse: parseV0 } = require('../v0/response')
-const MessageSetDecoder = require('../../../messageSet/decoder')
+import Decoder from '../../../decoder'
+import { parse as parseV0 } from '../v0/response'
+import MessageSetDecoder from '../../../messageSet/decoder'
 
 /**
  * Fetch Response (Version: 1) => throttle_time_ms [responses]
@@ -38,7 +38,7 @@ const decode = async rawData => {
   }
 }
 
-module.exports = {
+export default {
   decode,
   parse: parseV0,
 }

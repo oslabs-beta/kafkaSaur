@@ -1,7 +1,7 @@
-const Encoder = require('../encoder')
-const Decoder = require('../decoder')
-const MessageSet = require('./index')
-const MessageSetDecoder = require('./decoder')
+import Encoder from '../encoder'
+import Decoder, { int32Size } from '../decoder'
+import MessageSet from './index'
+import MessageSetDecoder from './decoder'
 
 const messages = [
   {
@@ -66,7 +66,7 @@ describe('Protocol > MessageSet > decoder', () => {
     })
 
     // read some bytes to simulate a partial message
-    const messageSetBuffer = messageSet.buffer.slice(Decoder.int32Size(), messageSet.buffer.length)
+    const messageSetBuffer = messageSet.buffer.slice(int32Size(), messageSet.buffer.length)
 
     const temp = new Encoder()
     temp.buffer = messageSetBuffer
