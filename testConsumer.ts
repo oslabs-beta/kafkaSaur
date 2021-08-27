@@ -1,8 +1,10 @@
+/** @format */
+
 import { Encoder } from './protocol/encoder.js';
 import request from './protocol/request.js';
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
-import { Decoder } from './protocol/decoder.js'
-import  MessageSetDecoder  from './protocol/messageSet/decoder.js'
+import { Decoder } from './protocol/decoder.js';
+import MessageSetDecoder from './protocol/messageSet/decoder.js';
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 /*
@@ -34,8 +36,8 @@ import {
 export default async function func() {
   //step 0 - intiate connection
   const conn = await Deno.connect({
-    hostname: '127.0.0.1',
-    port: 9099,
+    hostname: 'localhost',
+    port: 9093,
     transport: 'tcp',
   });
   console.log('Connected', conn);
@@ -53,54 +55,61 @@ export default async function func() {
   }
 
   //step 1 - big encode method - encodes entire message
-  const consumeMessage = ({ replicaId, maxWaitTime, minBytes, topics }: any) => ({
+  const consumeMessage = ({
+    replicaId,
+    maxWaitTime,
+    minBytes,
+    topics,
+  }: any) => ({
     apiKey: 1,
     apiVersion: 0,
     apiName: 'Fetch',
     encode: async () => {
       return new Encoder()
-      .writeInt32(replicaId)
-      .writeInt32(maxWaitTime)
-      .writeInt32(minBytes)
-      .writeArray(topics.map(encodeTopic))
-    }
-  })
+        .writeInt32(replicaId)
+        .writeInt32(maxWaitTime)
+        .writeInt32(minBytes)
+        .writeArray(topics.map(encodeTopic));
+    },
+  });
 
   //step 2a - topic encode method - encodes topic and partitions
   const encodeTopic = ({ topic, partitions }: any) => {
-    return new Encoder().writeString(topic).writeArray(partitions.map(encodePartition))
-  }
+    return new Encoder()
+      .writeString(topic)
+      .writeArray(partitions.map(encodePartition));
+  };
 
   //step 2b - partition encoder - nested in 2a
   const encodePartition = ({ partition, fetchOffset, maxBytes }: any) => {
     return new Encoder()
       .writeInt32(partition)
       .writeInt64(fetchOffset)
-      .writeInt32(maxBytes)
-  }
+      .writeInt32(maxBytes);
+  };
 
   //step 3 - create topic data
   const td = [
-      {
-      topic: 'quickstart-events',
+    {
+      topic: 'sams-topic',
       partitions: [
         {
-          partition: 0,
-          fetchOffset: '110',
+          partition: 1,
+          fetchOffset: '9',
           //maxBytes: 2048
-          maxBytes: 2048
-        }
-      ]
-    }
-  ]
+          maxBytes: 2048,
+        },
+      ],
+    },
+  ];
 
-  //step 4 - use big encoder to make a message  
+  //step 4 - use big encoder to make a message
   const message = consumeMessage({
     replicaId: -1,
-    maxWaitTime: 10000,
+    maxWaitTime: 100000,
     minBytes: 1,
-    topics: td
-  })
+    topics: td,
+  });
 
   //step 5 - create request
   const pleaseWork = await request({
@@ -110,78 +119,87 @@ export default async function func() {
   });
 
   /**
- * Fetch Response (Version: 0) => [responses]
- *   responses => topic [partition_responses]
- *     topic => STRING
- *     partition_responses => partition_header record_set
- *       partition_header => partition error_code high_watermark
- *         partition => INT32
- *         error_code => INT16
- *         high_watermark => INT64
- *       record_set => RECORDS
- */
+   * Fetch Response (Version: 0) => [responses]
+   *   responses => topic [partition_responses]
+   *     topic => STRING
+   *     partition_responses => partition_header record_set
+   *       partition_header => partition error_code high_watermark
+   *         partition => INT32
+   *         error_code => INT16
+   *         high_watermark => INT64
+   *       record_set => RECORDS
+   */
 
-   const decodePartition = async (decoder: any) => ({
+  const decodePartition = async (decoder: any) => ({
     partition: decoder.readInt32(),
     errorCode: decoder.readInt16(),
     highWatermark: decoder.readInt64().toString(),
     messages: await MessageSetDecoder(decoder),
-  })
-  
+  });
+
   //takes in above
   const decodeResponse = async (decoder: any) => ({
     topicName: decoder.readString(),
     partitions: await decoder.readArrayAsync(decodePartition),
-  })
-  
+  });
+
   //takes in above
   const decode = async (rawData: any) => {
-    const decoder = new Decoder(rawData)
+    const decoder = new Decoder(rawData);
     decoder.offset = 8;
-    
-    const responses = await decoder.readArrayAsync(decodeResponse)
-  
+
+    const responses = await decoder.readArrayAsync(decodeResponse);
+
     return {
       responses,
-    }
-  }
-
+    };
+  };
 
   //step 6 - send it
   //**ENCODING AND SENDING */
   // console.log('before sending,', pleaseWork.buf)
   // const writer = await writeAll(conn, pleaseWork.buf);
   // const tempBuf = new Uint8Array(100);
-  const dcd = new TextDecoder()
+  const dcd = new TextDecoder();
   // await conn.read(tempBuf);
   // console.log('response:', tempBuf)
   // console.log('decoded', dcd.decode(tempBuf))
-  
+
   const writer = await writeAll(conn, pleaseWork.buf);
   const response = new Uint8Array(512);
 
   //**GETTING RESPONSE */
   await conn.read(response);
-  console.log('response:', response)
+  console.log('response:', response);
 
   /**DECODING RESPONSE */
-  const newBuff = await new Buffer(response)
-  console.log('new buff', newBuff)
+  const newBuff = await new Buffer(response);
+  console.log('new buff', newBuff);
   const decoded = await decode(newBuff);
-  
-  console.log('decoded with text decoder: ', dcd.decode(response))
+
+  console.log('decoded with text decoder: ', dcd.decode(response));
   console.log('decoded: ', decoded);
-  console.log('partitions: ', decoded.responses[0].partitions)
-  console.log('messages array length', decoded.responses[0].partitions[0].messages.length)
-  console.log('k/v pair 0: ', 
-    'KEY:', dcd.decode(decoded.responses[0].partitions[0].messages[0].key), ' ',  
-    'VALUE:', dcd.decode(decoded.responses[0].partitions[0].messages[0].value)
-  )
-  console.log('k/v pair 1: ', 
-    'KEY:', dcd.decode(decoded.responses[0].partitions[0].messages[1].key), ' ',  
-    'VALUE:', dcd.decode(decoded.responses[0].partitions[0].messages[1].value)
-  )
-  
+  console.log('partitions: ', decoded.responses);
+  console.log(
+    'messages array length',
+    decoded.responses[0].partitions[0].messages.length
+  );
+  console.log(
+    'k/v pair 0: ',
+    'KEY:',
+    dcd.decode(decoded.responses[0].partitions[0].messages[0].key),
+    ' ',
+    'VALUE:',
+    dcd.decode(decoded.responses[0].partitions[0].messages[0].value)
+  );
+  console.log(
+    'k/v pair 1: ',
+    'KEY:',
+    dcd.decode(decoded.responses[0].partitions[0].messages[1].key),
+    ' ',
+    'VALUE:',
+    dcd.decode(decoded.responses[0].partitions[0].messages[1].value)
+  );
 }
 
 func();
