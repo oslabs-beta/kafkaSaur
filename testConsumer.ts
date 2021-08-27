@@ -2,7 +2,8 @@ import { Encoder } from './protocol/encoder.js';
 import request from './protocol/request.js';
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
 import { Decoder } from './protocol/decoder.js'
-import { MessageSetDecoder } from './protocol/messageSet/decoder.js'
+import  MessageSetDecoder  from './protocol/messageSet/decoder.js'
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 /*
 Fetch Request (Version: 0) => replica_id max_wait_ms min_bytes [topics] 
@@ -85,7 +86,8 @@ export default async function func() {
       partitions: [
         {
           partition: 0,
-          fetchOffset: '0',
+          fetchOffset: '110',
+          //maxBytes: 2048
           maxBytes: 2048
         }
       ]
@@ -96,7 +98,7 @@ export default async function func() {
   const message = consumeMessage({
     replicaId: -1,
     maxWaitTime: 10000,
-    minBytes: 9,
+    minBytes: 1,
     topics: td
   })
 
@@ -119,20 +121,24 @@ export default async function func() {
  *       record_set => RECORDS
  */
 
-   const decodePartition = async decoder => ({
+   const decodePartition = async (decoder: any) => ({
     partition: decoder.readInt32(),
     errorCode: decoder.readInt16(),
     highWatermark: decoder.readInt64().toString(),
     messages: await MessageSetDecoder(decoder),
   })
   
-  const decodeResponse = async decoder => ({
+  //takes in above
+  const decodeResponse = async (decoder: any) => ({
     topicName: decoder.readString(),
     partitions: await decoder.readArrayAsync(decodePartition),
   })
   
-  const decode = async rawData => {
+  //takes in above
+  const decode = async (rawData: any) => {
     const decoder = new Decoder(rawData)
+    decoder.offset = 8;
+    
     const responses = await decoder.readArrayAsync(decodeResponse)
   
     return {
@@ -142,15 +148,40 @@ export default async function func() {
 
 
   //step 6 - send it
-  console.log('before sending,', pleaseWork.buf)
-  const writer = await writeAll(conn, pleaseWork.buf);
-  const tempBuf = new Uint8Array(100);
+  //**ENCODING AND SENDING */
+  // console.log('before sending,', pleaseWork.buf)
+  // const writer = await writeAll(conn, pleaseWork.buf);
+  // const tempBuf = new Uint8Array(100);
   const dcd = new TextDecoder()
-  //READ INTO THE BUFFER - THE ARGUMENT IS THE DESTINATION, CALL READ ON THE CONNECTION
-  await conn.read(tempBuf);
-  console.log('response:', tempBuf)
-  console.log('decoded', dcd.decode(tempBuf))
+  // await conn.read(tempBuf);
+  // console.log('response:', tempBuf)
+  // console.log('decoded', dcd.decode(tempBuf))
+  
+  const writer = await writeAll(conn, pleaseWork.buf);
+  const response = new Uint8Array(512);
 
+  //**GETTING RESPONSE */
+  await conn.read(response);
+  console.log('response:', response)
+
+  /**DECODING RESPONSE */
+  const newBuff = await new Buffer(response)
+  console.log('new buff', newBuff)
+  const decoded = await decode(newBuff);
+  
+  console.log('decoded with text decoder: ', dcd.decode(response))
+  console.log('decoded: ', decoded);
+  console.log('partitions: ', decoded.responses[0].partitions)
+  console.log('messages array length', decoded.responses[0].partitions[0].messages.length)
+  console.log('k/v pair 0: ', 
+    'KEY:', dcd.decode(decoded.responses[0].partitions[0].messages[0].key), ' ',  
+    'VALUE:', dcd.decode(decoded.responses[0].partitions[0].messages[0].value)
+  )
+  console.log('k/v pair 1: ', 
+    'KEY:', dcd.decode(decoded.responses[0].partitions[0].messages[1].key), ' ',  
+    'VALUE:', dcd.decode(decoded.responses[0].partitions[0].messages[1].value)
+  )
+  
 }
 
 func();

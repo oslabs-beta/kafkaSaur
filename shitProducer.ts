@@ -152,13 +152,14 @@ export default async function func(string: string = date) {
   const newBuff = await new Buffer(response)
   console.log('new buff', newBuff)
   const decoded = await decode(newBuff);
-  console.log('decoded: ', decoded.topics[0].partitions);
+  console.log('decoded', decoded)
+  console.log('result: ', decoded.topics[0].partitions);
   //console.log('parsed: ', parsed);
 
   conn.close();
 }
 
-func()
+func('THIS IS A TEST AT 349 PM ON 8 26 21')
 
 /**
  * ??????questions??????

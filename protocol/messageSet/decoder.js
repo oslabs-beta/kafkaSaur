@@ -1,9 +1,9 @@
 //import { fromValue } from '../../utils/long.js'
-import Decoder from '../decoder.js'
+import { Decoder } from '../decoder.js'
 import MessageDecoder from '../message/decoder.js'
 import { lookupCodecByAttributes } from '../message/compression/index.js'
 import { KafkaJSPartialMessageError } from '../../errors.js'
-import Long from '../../utils/long.js';
+import { Long }  from '../../utils/long.js';
 
 /**
  * MessageSet => [Offset MessageSize Message]

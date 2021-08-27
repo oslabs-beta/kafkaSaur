@@ -5,7 +5,7 @@ import { Encoder } from '../../encoder.js';
 
 import { crc32 } from '../../crc32.js'
 
-import Compression from '../compression/index.js';
+//import { Compression } from '../compression/index.js';
 
 const COMPRESSION_CODEC_MASK = 0x07;
 
@@ -21,7 +21,7 @@ const COMPRESSION_CODEC_MASK = 0x07;
  */
 
 export function Version1({
-  compression = Compression.None,
+  compression = 0,
   timestamp = Date.now(),
   key,
   value,

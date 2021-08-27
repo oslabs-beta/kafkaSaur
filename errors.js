@@ -241,7 +241,7 @@ class KafkaJSAggregateError extends Error {
   }
 }
 
-export default {
+export {
   KafkaJSError,
   KafkaJSNonRetriableError,
   KafkaJSPartialMessageError,

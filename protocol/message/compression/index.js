@@ -31,10 +31,12 @@ const lookupCodecByAttributes = (attributes) => {
   return codec ? codec() : null;
 };
 
-export default {
+export {
   Types,
   Codecs,
   lookupCodec,
   lookupCodecByAttributes,
   COMPRESSION_CODEC_MASK,
 };
+
+

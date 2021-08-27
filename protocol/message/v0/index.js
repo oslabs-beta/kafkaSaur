@@ -4,7 +4,7 @@ import { Encoder } from '../../encoder.js';
 
 import { crc32 } from '../../crc32.js'
 
-import Compression from '../compression/index.js';
+//import { Compression } from '../compression/index.js';
 
 const COMPRESSION_CODEC_MASK = 0x07;
 
@@ -17,8 +17,8 @@ const COMPRESSION_CODEC_MASK = 0x07;
  *   Key => bytes
  *   Value => bytes
  */
-//Compression.none
-export function Version0({ compression = Compression.None, key, value }) {
+//compression = Compression.none
+export function Version0({ compression = 0, key, value }) {
   const content = new Encoder()
     .writeInt8(0) // magicByte
     .writeInt8(compression & COMPRESSION_CODEC_MASK)

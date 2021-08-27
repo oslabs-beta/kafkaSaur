@@ -5,7 +5,7 @@
 //   KafkaJSInvalidLongError,
 // } = require('../errors');
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
-import Long from '../utils/long.js';
+import { Long }from '../utils/long.js';
 
 const INT8_SIZE = 1;
 const INT16_SIZE = 2;
