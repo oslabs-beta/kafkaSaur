@@ -9,8 +9,21 @@
     <title>Document</title>
   </head>
   <body>
-    <form action="/test" method="GET">
-      <button type="submit">BOSS ASS BUTTON</button>
-    </form>
+    <!-- <input id="input" /> -->
+    <button onclick="bullCrapFunc()">BOSS ASS BUTTON</button>
+
+    <script>
+      const bullCrapFunc = () => {
+        // const field = document.getElementById('input');
+        // const input = field.value;
+        // console.log('The input is ', input);
+
+        fetch('/test', {
+          method: 'POST',
+          'content-type': 'application/json',
+          body: 'fromfrontend',
+        });
+      };
+    </script>
   </body>
 </html>

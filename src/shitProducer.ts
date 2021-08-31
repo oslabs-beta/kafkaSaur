@@ -1,32 +1,32 @@
 /** @format */
-import { Encoder } from './protocol/encoder.js';
+import { Encoder } from '../protocol/encoder.js';
 
-import { Decoder } from './protocol/decoder.js';
+import { Decoder } from '../protocol/decoder.js';
 
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
 
-import MessageSet from './protocol/messageSet/index.js';
+import MessageSet from '../protocol/messageSet/index.js';
 
-import request from './protocol/request.js';
+import request from '../protocol/request.js';
 
 //import v0response from './protocol/requests/produce/v0/response.js'
 
 import {
-  ProducerBatch,
-  Message,
-  IHeaders,
-  TopicMessages,
   Broker,
-  TopicOffsets,
+  IHeaders,
+  Message,
   PartitionOffset,
-} from './index.d.ts';
+  ProducerBatch,
+  TopicMessages,
+  TopicOffsets,
+} from '../index.d.ts';
 
 import {
   Client,
-  Packet,
   Event,
+  Packet,
 } from 'https://deno.land/x/tcp_socket@0.0.1/mods.ts';
 
 let date = new Date(Date.now()).toUTCString();
@@ -125,9 +125,9 @@ export default async function func(string: string = date) {
   const decode: any = async (rawData: any) => {
     const decoder = new Decoder(rawData);
     decoder.offset = 8;
-    console.log('decoder offset? ', decoder);
-    console.log('partition', partition.partition);
-    console.log('partition type', typeof partition);
+    // console.log('decoder offset? ', decoder);
+    // console.log('partition', partition.partition);
+    // console.log('partition type', typeof partition);
     const topics = decoder.readArray((decoder: any) => ({
       topicName: decoder.readString(),
       partitions: decoder.readArray(partition),
@@ -144,20 +144,20 @@ export default async function func(string: string = date) {
 
   //**GETTING RESPONSE */
   await conn.read(response);
-  console.log('response:', response);
+  //console.log('response:', response);
 
   //**DECODING RESPONSE */
   const newBuff = await new Buffer(response);
-  console.log('new buff', newBuff);
+  //console.log('new buff', newBuff);
   const decoded = await decode(newBuff);
-  console.log('decoded', decoded);
-  console.log('result: ', decoded.topics[0].partitions);
+  // console.log('decoded', decoded);
+  // console.log('result: ', decoded.topics[0].partitions);
   //console.log('parsed: ', parsed);
 
   conn.close();
 }
 
-func();
+// func();
 
 /**
  * ??????questions??????

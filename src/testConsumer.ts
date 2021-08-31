@@ -8,28 +8,28 @@ import MessageSetDecoder from './protocol/messageSet/decoder.js';
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 /*
-Fetch Request (Version: 0) => replica_id max_wait_ms min_bytes [topics] 
+Fetch Request (Version: 0) => replica_id max_wait_ms min_bytes [topics]
   replica_id => INT32 ; should be -1 for consumer
   max_wait_ms => INT32 ; idk like 5000 or something
   min_bytes => INT32 ; min bytes to accum in the response
-  topics => topic [partitions] 
+  topics => topic [partitions]
     topic => STRING ; name of topic
-    partitions => partition fetch_offset partition_max_bytes 
+    partitions => partition fetch_offset partition_max_bytes
       partition => INT32 ; number of partition 0
       fetch_offset => INT64 ; message offset???
       partition_max_bytes => INT32  ; max bytes to fetch
-    
+
 */
 
 //type imports
 import {
-  ProducerBatch,
-  Message,
-  IHeaders,
-  TopicMessages,
   Broker,
-  TopicOffsets,
+  IHeaders,
+  Message,
   PartitionOffset,
+  ProducerBatch,
+  TopicMessages,
+  TopicOffsets,
 } from './index.d.ts';
 
 //*****here is the actual function
@@ -95,7 +95,7 @@ export default async function func() {
       partitions: [
         {
           partition: 1,
-          fetchOffset: '9',
+          fetchOffset: '0',
           //maxBytes: 2048
           maxBytes: 2048,
         },
