@@ -107,7 +107,7 @@ export default async function func(string: string = date) {
 
   const message = producedMessage();
 
-  const pleaseWork = await request({
+  const sendMessage = await request({
     correlationId: 1,
     clientId: 'my-app',
     request: message,
@@ -137,7 +137,7 @@ export default async function func(string: string = date) {
   };
 
   //**ENCODING AND SENDING */
-  const writer = await writeAll(conn, pleaseWork.buf);
+  const writer = await writeAll(conn, sendMessage.buf);
   const response = new Uint8Array(512);
 
   //**GETTING RESPONSE */

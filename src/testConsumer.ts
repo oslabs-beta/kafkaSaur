@@ -112,7 +112,7 @@ export default async function func() {
   });
 
   //step 5 - create request
-  const pleaseWork = await request({
+  const consumeRequest = await request({
     correlationId: 1,
     clientId: 'my-app',
     request: message,
@@ -165,7 +165,7 @@ export default async function func() {
   // console.log('response:', tempBuf)
   // console.log('decoded', dcd.decode(tempBuf))
 
-  const writer = await writeAll(conn, pleaseWork.buf);
+  const writer = await writeAll(conn, consumeRequest.buf);
   const response = new Uint8Array(512);
 
   //**GETTING RESPONSE */
