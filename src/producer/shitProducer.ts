@@ -1,15 +1,17 @@
 /** @format */
-import { Encoder } from '../protocol/encoder.js';
+import { Encoder } from '../../protocol/encoder.js';
 
-import { Decoder } from '../protocol/decoder.js';
+import { Decoder } from '../../protocol/decoder.js';
 
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
 
-import MessageSet from '../protocol/messageSet/index.js';
+import MessageSet from '../../protocol/messageSet/index.js';
 
-import request from '../protocol/request.js';
+import request from '../../protocol/request.js';
+
+import producedMessage from './createTopicData.ts';
 
 //import v0response from './protocol/requests/produce/v0/response.js'
 
@@ -21,7 +23,7 @@ import {
   ProducerBatch,
   TopicMessages,
   TopicOffsets,
-} from '../index.d.ts';
+} from '../../index.d.ts';
 
 import {
   Client,
@@ -39,75 +41,71 @@ export default async function func(string: string = date) {
   });
   console.log('Connected', conn);
 
-  interface topicDataType {
-    topicData: Array<{
-      topic: string;
-      partitions: Array<{
-        partition: number;
-        firstSequence?: number;
-        messages: Message[];
-      }>;
-    }>;
-  }
-  //**ENCODING METHODS START HERE *********************************************/
-  //topicData structure
-  const td = [
-    {
-      topic: 'sams-topic',
-      partitions: [
-        {
-          partition: 1,
-          firstSequence: undefined,
-          messages: [
-            {
-              key: 'new-key6',
-              value: string,
-              partition: 1,
-              headers: undefined,
-              timestamp: Date.now(),
-            },
-          ],
-        },
-      ],
-    },
-  ];
+  // interface topicDataType {
+  //   topicData: Array<{
+  //     topic: string;
+  //     partitions: Array<{
+  //       partition: number;
+  //       firstSequence?: number;
+  //       messages: Message[];
+  //     }>;
+  //   }>;
+  // }
+  // //**ENCODING METHODS START HERE *********************************************/
+  // //topicData structure
+  // const td = [
+  //   {
+  //     topic: 'sams-topic',
+  //     partitions: [
+  //       {
+  //         partition: 1,
+  //         firstSequence: undefined,
+  //         messages: [
+  //           {
+  //             key: 'new-key6',
+  //             value: string,
+  //             partition: 1,
+  //             headers: undefined,
+  //             timestamp: Date.now(),
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ];
 
-  const producedMessage = ({ acks, timeout, topicData }: ProducerBatch) => ({
-    apiKey: 0, //0
-    apiVersion: 0,
-    apiName: 'Produce',
-    //expectResponse: () => acks !== 0,
-    encode: async () => {
-      return new Encoder()
-        .writeInt16(acks)
-        .writeInt32(timeout)
-        .writeArray(topicData.map(encodeTopic));
-    },
-  });
+  // const producedMessage = ({ acks, timeout, topicData }: ProducerBatch) => ({
+  //   apiKey: 0, //0
+  //   apiVersion: 0,
+  //   apiName: 'Produce',
+  //   //expectResponse: () => acks !== 0,
+  //   encode: async () => {
+  //     return new Encoder()
+  //       .writeInt16(acks)
+  //       .writeInt32(timeout)
+  //       .writeArray(topicData.map(encodeTopic));
+  //   },
+  // });
 
-  const encodeTopic = ({ topic, partitions }: any) => {
-    return new Encoder()
-      .writeString(topic)
-      .writeArray(partitions.map(encodePartitions));
-  };
+  // const encodeTopic = ({ topic, partitions }: any) => {
+  //   return new Encoder()
+  //     .writeString(topic)
+  //     .writeArray(partitions.map(encodePartitions));
+  // };
 
-  const encodePartitions = ({ partition, messages }: any) => {
-    const messageSet = MessageSet({
-      messageVersion: 0,
-      compression: 0,
-      entries: messages,
-    });
-    return new Encoder()
-      .writeInt32(partition)
-      .writeInt32(messageSet.size())
-      .writeEncoder(messageSet);
-  };
+  // const encodePartitions = ({ partition, messages }: any) => {
+  //   const messageSet = MessageSet({
+  //     messageVersion: 0,
+  //     compression: 0,
+  //     entries: messages,
+  //   });
+  //   return new Encoder()
+  //     .writeInt32(partition)
+  //     .writeInt32(messageSet.size())
+  //     .writeEncoder(messageSet);
+  // };
 
-  const message = producedMessage({
-    acks: 1,
-    timeout: 1000,
-    topicData: td,
-  });
+  const message = producedMessage();
 
   const pleaseWork = await request({
     correlationId: 1,
