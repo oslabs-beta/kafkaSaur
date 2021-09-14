@@ -1,10 +1,10 @@
 /** @format */
 
-import { Encoder } from './protocol/encoder.js';
-import request from './protocol/request.js';
+import { Encoder } from '../protocol/encoder.js';
+import request from '../protocol/request.js';
 import { readAll, writeAll } from 'https://deno.land/std@0.105.0/io/util.ts';
-import { Decoder } from './protocol/decoder.js';
-import MessageSetDecoder from './protocol/messageSet/decoder.js';
+import { Decoder } from '../protocol/decoder.js';
+import MessageSetDecoder from '../protocol/messageSet/decoder.js';
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 /*
@@ -30,7 +30,7 @@ import {
   ProducerBatch,
   TopicMessages,
   TopicOffsets,
-} from './index.d.ts';
+} from '../index.d.ts';
 
 //*****here is the actual function
 export default async function func() {

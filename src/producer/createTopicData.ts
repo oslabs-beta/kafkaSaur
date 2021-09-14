@@ -26,7 +26,7 @@ interface topicDataType {
 //**ENCODING METHODS START HERE *********************************************/
 //topicData structure
 
-const string = 'produced message';
+const string = JSON.stringify(Date.now());
 
 const td = [
   {
