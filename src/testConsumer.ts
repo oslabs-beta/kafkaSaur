@@ -157,13 +157,8 @@ export default async function func() {
 
   //step 6 - send it
   //**ENCODING AND SENDING */
-  // console.log('before sending,', pleaseWork.buf)
-  // const writer = await writeAll(conn, pleaseWork.buf);
-  // const tempBuf = new Uint8Array(100);
+
   const dcd = new TextDecoder();
-  // await conn.read(tempBuf);
-  // console.log('response:', tempBuf)
-  // console.log('decoded', dcd.decode(tempBuf))
 
   const writer = await writeAll(conn, consumeRequest.buf);
   const response = new Uint8Array(512);
@@ -173,6 +168,7 @@ export default async function func() {
   console.log('response:', response);
 
   /**DECODING RESPONSE */
+  // newBuff is changing the Uint8Array from response into a Buffer class/type
   const newBuff = await new Buffer(response);
   console.log('new buff', newBuff);
   const decoded = await decode(newBuff);
@@ -182,7 +178,7 @@ export default async function func() {
   console.log('partitions: ', decoded.responses);
   console.log(
     'messages array length',
-    decoded.responses[0].partitions[0].messages.length
+    decoded.responses[0].partitions[0].messages.byteLength
   );
   console.log(
     'k/v pair 0: ',
@@ -203,3 +199,5 @@ export default async function func() {
 }
 
 func();
+
+// setInterval(() => func(), 2000);
