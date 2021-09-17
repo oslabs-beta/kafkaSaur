@@ -18,7 +18,6 @@ Fetch Request (Version: 0) => replica_id max_wait_ms min_bytes [topics]
       partition => INT32 ; number of partition 0
       fetch_offset => INT64 ; message offset???
       partition_max_bytes => INT32  ; max bytes to fetch
-
 */
 
 //type imports
@@ -95,7 +94,7 @@ export default async function func() {
       partitions: [
         {
           partition: 1,
-          fetchOffset: '0',
+          fetchOffset: '265',
           //maxBytes: 2048
           maxBytes: 2048,
         },
@@ -157,8 +156,13 @@ export default async function func() {
 
   //step 6 - send it
   //**ENCODING AND SENDING */
-
+  // console.log('before sending,', pleaseWork.buf)
+  // const writer = await writeAll(conn, pleaseWork.buf);
+  // const tempBuf = new Uint8Array(100);
   const dcd = new TextDecoder();
+  // await conn.read(tempBuf);
+  // console.log('response:', tempBuf)
+  // console.log('decoded', dcd.decode(tempBuf))
 
   const writer = await writeAll(conn, consumeRequest.buf);
   const response = new Uint8Array(512);
@@ -168,7 +172,6 @@ export default async function func() {
   console.log('response:', response);
 
   /**DECODING RESPONSE */
-  // newBuff is changing the Uint8Array from response into a Buffer class/type
   const newBuff = await new Buffer(response);
   console.log('new buff', newBuff);
   const decoded = await decode(newBuff);
@@ -178,7 +181,7 @@ export default async function func() {
   console.log('partitions: ', decoded.responses);
   console.log(
     'messages array length',
-    decoded.responses[0].partitions[0].messages.byteLength
+    decoded.responses[0].partitions[0].messages.length
   );
   console.log(
     'k/v pair 0: ',
@@ -199,5 +202,3 @@ export default async function func() {
 }
 
 func();
-
-// setInterval(() => func(), 2000);

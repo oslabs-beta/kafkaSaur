@@ -103,7 +103,6 @@ export default async function func() {
     request: body,
   });
 
-  console.log('wes is here');
   //step 4 - send request
   // Buffer created from invoking request. Then we write request to the connection with what's populated in the buffer
   const writer = await writeAll(conn, listOffsetsRequest.buf);
@@ -151,7 +150,22 @@ export default async function func() {
   const newBuff = await new Buffer(response);
   const decoded = await decode(newBuff);
 
-  console.log('decoded', decoded);
+  //returns array of topics
+  /* response = [
+    {
+      topic: NAME
+      partitions: [
+        {
+          partition: NUMBER,
+          errorCode: 0,
+          offsets: [""]
+        }
+      ]
+    }
+  ]*/
+  console.log('full response', decoded.responses);
+
+  console.log('decoded', decoded.responses[0].partitions[0].offsets);
 }
 
 func();
