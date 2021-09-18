@@ -94,7 +94,7 @@ export default async function func() {
       partitions: [
         {
           partition: 1,
-          fetchOffset: '265',
+          fetchOffset: 10,
           //maxBytes: 2048
           maxBytes: 2048,
         },
