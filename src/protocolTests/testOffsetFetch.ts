@@ -16,10 +16,10 @@ export default async function func() {
   console.log('Connected', conn);
 
   //step 2 - encode according to request message protocol - look in protocol/[listOffsets(or w/e)]/[message]/[version]/request.js!!
-  const offsetCommitMessage = ({ groupId, topics }: any) => ({
-    apiKey: 8,
-    apiVersion: 0,
-    apiName: 'OffsetCommit',
+  const offsetFetchMessage = ({ groupId, topics }: any) => ({
+    apiKey: 9,
+    apiVersion: 1,
+    apiName: 'OffsetFetch',
     encode: async () => {
       return new Encoder()
         .writeString(groupId)
@@ -33,43 +33,72 @@ export default async function func() {
       .writeArray(partitions.map(encodePartition));
   };
 
-  const encodePartition = ({ partition, offset, metadata = null }: any) => {
-    return new Encoder()
-      .writeInt32(partition)
-      .writeInt64(offset)
-      .writeString(metadata);
+  const encodePartition = ({ partition }: any) => {
+    return new Encoder().writeInt32(partition);
   };
 
   //step 2a - make topic data
+
+  /* 
+  Offset fetch requests are used to retrieve an offset value for one or more topic partitions of a Kafka consumer group. 
+  These kinds of requests require Kafka version 0.8. 1.1 or above. Offset fetch requests must be sent to the current offset 
+  coordinator broker, which can be discovered using a ConsumerMetadata request.
+  
+  I suspect the reason this API call isn't working is that its the incorrect request. In the protocol here is the 
+   Format on the protocol docs: 
+
+    OffsetFetch Request (Version: 1) => group_id [topics] 
+      group_id => STRING
+      topics => name [partition_indexes] 
+        name => STRING
+        partition_indexes => INT32
+
+    And why are we requesting using V1? Haven't all of our other calls been V0? Don't know if that could be a thing...
+   */
+
+  /**
+   * OffsetFetch Request (Version: 1) => group_id [topics]
+   *   group_id => STRING
+   *   topics => topic [partitions]
+   *     topic => STRING
+   *     partitions => partition
+   *       partition => INT32
+   */
+
   const td = [
     {
       topic: 'sams-topic',
       partitions: [
         {
           partition: 1,
-          offset: ['268'],
-          // metadata: ,
+          offset: 2,
+          metadata: [
+            {
+              topicErrorCode: 0,
+              topic: 'sams-topic',
+              partitionMetadata: [
+                {
+                  partitionErrorCode: 0,
+                  partitionId: 1,
+                  leader: 1,
+                  replicas: [1],
+                  isr: [1],
+                },
+              ],
+            },
+          ],
         },
       ],
     },
   ];
 
-  // OffsetCommit Request (Version: 0) => group_id [topics]
-  //   group_id => STRING
-  //   topics => name [partitions]
-  //     name => STRING
-  //     partitions => partition_index committed_offset committed_metadata
-  //       partition_index => INT32
-  //       committed_offset => INT64
-  //       committed_metadata => NULLABLE_STRING
-
-  const body = offsetCommitMessage({
+  const body = offsetFetchMessage({
     //WHAT IS THE GROUP ID!?
-    groupId: '',
+    groupId: 'console-consumer-3063',
     topics: td, //remains the same for everything (until we abstract it away)
   });
 
-  const offsetCommitRequest = await request({
+  const offsetFetchRequest = await request({
     correlationId: 1,
     clientId: 'my-app',
     request: body,
@@ -90,21 +119,14 @@ export default async function func() {
 
   const decodePartitions = (decoder: any) => ({
     partition: decoder.readInt32(),
+    offset: decoder.readInt64().toString(),
+    metadata: decoder.readString(),
     errorCode: decoder.readInt16(),
   });
 
-  /**
-   * OffsetCommit Response (Version: 0) => [responses]
-   *   responses => topic [partition_responses]
-   *     topic => STRING
-   *     partition_responses => partition error_code
-   *       partition => INT32
-   *       error_code => INT16
-   */
+  console.log('offsetFetch.buff', offsetFetchRequest.buf);
 
-  console.log('offsetCommit.buff', offsetCommitRequest.buf);
-
-  const writer = await writeAll(conn, offsetCommitRequest.buf);
+  const writer = await writeAll(conn, offsetFetchRequest.buf);
   const response = new Uint8Array(512);
 
   await conn.read(response);

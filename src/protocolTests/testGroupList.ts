@@ -34,7 +34,7 @@ export default async function func() {
   //   protocol_type => STRING
 
   const decodeGroup = (decoder: any) => ({
-    groupId: decoder.readString(),
+    groupId: 'console-consumer-3063',
     protocolType: decoder.readString(),
   });
 
@@ -69,6 +69,7 @@ export default async function func() {
   const decoded = await decode(newBuff);
 
   console.log('full response', decoded);
+  console.log('full response', decoded.groups.length);
 }
 
 func();
