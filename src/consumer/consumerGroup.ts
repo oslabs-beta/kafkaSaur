@@ -8,19 +8,19 @@ import arrayDiff from '../../utils/arrayDiff.js';
 import createRetry from '../retry/index.js';
 import sharedPromiseTo from '../../utils/sharedPromiseTo.js';
 
-import OffsetManager from './offsetManager/index.ts';
+import { OffsetManager } from './offsetManager/index.ts';
 import { Batch } from './batch.ts';
 import { SeekOffsets } from './seekOffsets.ts';
 import { SubscriptionState } from './subscriptionState.ts';
 import { events } from './instrumentationEvents.ts';
 
-import MemberAssignment from './assignerProtocol.ts';
+import { MemberAssignment } from './assignerProtocol.ts';
 
 import {
   KafkaJSError,
   KafkaJSNonRetriableError,
   KafkaJSStaleTopicMetadataAssignment,
-} from '../errors';
+} from '../../errors.js';
 
 const { keys } = Object;
 const { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS } = events;
@@ -46,41 +46,45 @@ const PRIVATE = {
 };
 
 export class ConsumerGroup {
-  cluster: any;
-  groupId: any;
-  topics: any;
-  topicsSubscribed: any;
-  topicConfigurations: any;
-  logger: any;
-  instrumentationEmitter: any;
-  retrier: any;
-  assigners: any;
-  sessionTimeout: any;
-  rebalanceTimeout: any;
-  maxBytesPerPartition: any;
-  minBytes: any;
-  maxBytes: any;
-  maxWaitTimeInMs: any;
-  autoCommit: any;
-  autoCommitInterval: any;
-  autoCommitThreshold: any;
-  isolationLevel: any;
-  rackId: any;
-  metadataMaxAge: any;
-  maxWaitTime: any;
-  seekOffset: any;
-  coordinator: any;
-  generationId: any;
-  leaderId: any;
-  memberId: any;
-  members: any;
-  groupProtocol: any;
-  partitionsPerSubscribedTopic: any;
-  offsetManager: any;
-  subscriptionState: any;
+  [key: symbol | number | string]: any;
+  // [key: string]: any;
+  // [key: number]: any;
 
-  preferredReadReplicasPerTopicPartition: any;
-  lastRequest: any;
+  // cluster: any;
+  // groupId: any;
+  topics: any;
+  // topicsSubscribed: any;
+  // topicConfigurations: any;
+  // logger: any;
+  // instrumentationEmitter: any;
+  // retrier: any;
+  // assigners: any;
+  // sessionTimeout: any;
+  // rebalanceTimeout: any;
+  // maxBytesPerPartition: any;
+  // minBytes: any;
+  // maxBytes: any;
+  // maxWaitTimeInMs: any;
+  // autoCommit: any;
+  // autoCommitInterval: any;
+  // autoCommitThreshold: any;
+  // isolationLevel: any;
+  // rackId: any;
+  // metadataMaxAge: any;
+  // maxWaitTime: any;
+  // seekOffset: any;
+  // coordinator: any;
+  // generationId: any;
+  // leaderId: any;
+  // memberId: any;
+  // members: any;
+  // groupProtocol: any;
+  // partitionsPerSubscribedTopic: any;
+  // offsetManager: any;
+  // subscriptionState: any;
+
+  // preferredReadReplicasPerTopicPartition: any;
+  // lastRequest: any;
 
   constructor({
     retry,
@@ -112,7 +116,7 @@ export class ConsumerGroup {
     this.topicConfigurations = topicConfigurations;
     this.logger = logger.namespace('ConsumerGroup');
     this.instrumentationEmitter = instrumentationEmitter;
-    this.retrier = createRetry(); //Object.assign({}, retry) => was inside createRetry()
+    this.retrier = createRetry(Object.assign({}, retry));
     this.assigners = assigners;
     this.sessionTimeout = sessionTimeout;
     this.rebalanceTimeout = rebalanceTimeout;
@@ -469,7 +473,7 @@ export class ConsumerGroup {
       const { topics, maxBytesPerPartition, maxWaitTime, minBytes, maxBytes } =
         this;
       /** @type {{[nodeId: string]: {topic: string, partitions: { partition: number; fetchOffset: string; maxBytes: number }[]}[]}} */
-      const requestsPerNode = {};
+      const requestsPerNode: any = {};
 
       await this.cluster.refreshMetadataIfNecessary();
       this.checkForStaleAssignment();
@@ -810,7 +814,7 @@ export class ConsumerGroup {
     return partitions.reduce((result: any, id: any) => {
       const partitionId = parseInt(id, 10);
       const metadata = partitionMetadata.find(
-        (p) => p.partitionId === partitionId
+        (p: any) => p.partitionId === partitionId
       );
       if (!metadata) {
         return result;
@@ -818,9 +822,9 @@ export class ConsumerGroup {
 
       if (metadata.leader == null) {
         throw new KafkaJSError('Invalid partition metadata', {
-          topic,
-          partitionId,
-          metadata,
+          //topic,
+          //partitionId,
+          //// metadata,
         });
       }
 

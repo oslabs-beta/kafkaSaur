@@ -4,6 +4,12 @@ import { Encoder } from '../../protocol/encoder.js';
 import { Decoder } from '../../protocol/decoder.js';
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
+type MemberMetadata = {
+  version: number;
+  topics: string[];
+  userData: Buffer;
+};
+
 const MemberMetadata = {
   /**
    * @param {Object} metadata
@@ -85,4 +91,4 @@ const MemberAssignment = {
   },
 };
 
-export default { MemberMetadata, MemberAssignment };
+export { MemberMetadata, MemberAssignment };

@@ -1,6 +1,8 @@
-import { fromValue } from '../../../../utils/long'
-import HeaderDecoder from '../../header/v0/decoder'
-import { LOG_APPEND_TIME } from '../../../timestampTypes'
+/** @format */
+
+import { fromValue } from '../../../../utils/long.js';
+import HeaderDecoder from '../../header/v0/decoder.js';
+import { LOG_APPEND_TIME } from '../../../timestampTypes.js';
 
 /**
  * v0
@@ -24,27 +26,23 @@ export default (decoder, batchContext = {}) => {
     isControlBatch = false,
     timestampType,
     maxTimestamp,
-  } = batchContext
-  const attributes = decoder.readInt8()
+  } = batchContext;
+  const attributes = decoder.readInt8();
 
-  const timestampDelta = decoder.readVarLong()
+  const timestampDelta = decoder.readVarLong();
   const timestamp =
     timestampType === LOG_APPEND_TIME && maxTimestamp
       ? maxTimestamp
-      : fromValue(firstTimestamp)
-          .add(timestampDelta)
-          .toString()
+      : fromValue(firstTimestamp).add(timestampDelta).toString();
 
-  const offsetDelta = decoder.readVarInt()
-  const offset = fromValue(firstOffset)
-    .add(offsetDelta)
-    .toString()
+  const offsetDelta = decoder.readVarInt();
+  const offset = fromValue(firstOffset).add(offsetDelta).toString();
 
-  const key = decoder.readVarIntBytes()
-  const value = decoder.readVarIntBytes()
+  const key = decoder.readVarIntBytes();
+  const value = decoder.readVarIntBytes();
   const headers = decoder
     .readVarIntArray(HeaderDecoder)
-    .reduce((obj, { key, value }) => ({ ...obj, [key]: value }), {})
+    .reduce((obj, { key, value }) => ({ ...obj, [key]: value }), {});
 
   return {
     magicByte,
@@ -56,5 +54,5 @@ export default (decoder, batchContext = {}) => {
     headers,
     isControlRecord: isControlBatch,
     batchContext,
-  }
-}
+  };
+};

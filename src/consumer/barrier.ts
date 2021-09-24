@@ -4,7 +4,7 @@
  * @return {{lock: Promise<T>, unlock: (v?: T) => void, unlockWithError: (e: Error) => void}}
  */
 
-export default () => {
+export default (): any => {
   let unlock;
   let unlockWithError;
   const lock = new Promise((resolve) => {

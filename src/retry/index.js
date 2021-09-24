@@ -77,7 +77,7 @@ const createRetriable = (configs, resolve, reject, fn) => {
  * @param {import("../../types").RetryOptions} [opts]
  * @returns {Retrier}
  */
-export default function () {
+export default function (opts) {
   (opts = {}) =>
     (fn) => {
       return new Promise((resolve, reject) => {

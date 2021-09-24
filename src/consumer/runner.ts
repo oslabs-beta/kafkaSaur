@@ -1,28 +1,28 @@
 /** @format */
 
-import { EventEmitter } from 'events';
-import Long from '../../utils/long.js';
+import { EventEmitter } from 'https://deno.land/std@0.108.0/node/events.ts';
+import { asap } from 'https://deno.land/x/denjucks@1.1.1/src/deps/asap/asap@2.0.6';
+import { Long } from '../../utils/long.js';
 import createRetry from '../retry/index.js';
 import limitConcurrency from '../../utils/concurrency.js';
 import { KafkaJSError } from '../../errors.js';
-import barrier from './barrier.js';
+import barrier from './barrier.ts';
+import { events } from './instrumentationEvents.ts';
 
 const {
-  events: {
-    FETCH,
-    FETCH_START,
-    START_BATCH_PROCESS,
-    END_BATCH_PROCESS,
-    REBALANCING,
-  },
-} = require('./instrumentationEvents');
+  FETCH,
+  FETCH_START,
+  START_BATCH_PROCESS,
+  END_BATCH_PROCESS,
+  REBALANCING,
+} = events;
 
-const isRebalancing = (e) =>
+const isRebalancing = (e: any) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
-const isKafkaJSError = (e) => e instanceof KafkaJSError;
+const isKafkaJSError = (e: any) => e instanceof KafkaJSError;
 const isSameOffset = (offsetA: any, offsetB: any) =>
-  Long.fromValue(offsetA).equals(Long.fromValue(offsetB));
+  Long.fromValue(offsetA).equals(Long.fromValue(offsetB) as any);
 const CONSUMING_START = 'consuming-start';
 const CONSUMING_STOP = 'consuming-stop';
 
@@ -55,6 +55,8 @@ export class Runner extends EventEmitter {
   retrier: any;
   running: any;
   _consuming: any;
+  once: any; //this might not work
+  emit: any; //this also might not work
 
   constructor({
     logger,
@@ -77,7 +79,8 @@ export class Runner extends EventEmitter {
     this.eachBatch = eachBatch;
     this.eachMessage = eachMessage;
     this.heartbeatInterval = heartbeatInterval;
-    this.retrier = createRetry(Object.assign({}, retry));
+    //this function was originally currying. However we refactored due to Typescripts mishandling of curried func
+    this.retrier = createRetry(Object.assign({}, retry)); //Object.assign({}, retry)
     this.onCrash = onCrash;
     this.autoCommit = autoCommit;
     this.partitionsConsumedConcurrently = partitionsConsumedConcurrently;
@@ -90,7 +93,7 @@ export class Runner extends EventEmitter {
     return this._consuming;
   }
 
-  set consuming(value) {
+  set consuming(value: any) {
     if (this._consuming !== value) {
       this._consuming = value;
       this.emit(value ? CONSUMING_START : CONSUMING_STOP);
@@ -149,7 +152,7 @@ export class Runner extends EventEmitter {
   }
 
   waitForConsumer() {
-    return new Promise((resolve) => {
+    return new Promise((resolve: any) => {
       if (!this.consuming) {
         return resolve();
       }
@@ -163,7 +166,7 @@ export class Runner extends EventEmitter {
     });
   }
 
-  async processEachMessage(batch) {
+  async processEachMessage(batch: any) {
     const { topic, partition } = batch;
 
     for (const message of batch.messages) {
@@ -202,14 +205,14 @@ export class Runner extends EventEmitter {
     }
   }
 
-  async processEachBatch(batch) {
+  async processEachBatch(batch: any) {
     const { topic, partition } = batch;
     const lastFilteredMessage = batch.messages[batch.messages.length - 1];
 
     try {
       await this.eachBatch({
         batch,
-        resolveOffset: (offset) => {
+        resolveOffset: (offset: any) => {
           /**
            * The transactional producer generates a control record after committing the transaction.
            * The control record is the last record on the RecordBatch, and it is filtered before it
@@ -246,7 +249,7 @@ export class Runner extends EventEmitter {
          *
          * @param {OffsetsByTopicPartition} [offsets] Optional.
          */
-        commitOffsetsIfNecessary: async (offsets) => {
+        commitOffsetsIfNecessary: async (offsets: any) => {
           return offsets
             ? this.consumerGroup.commitOffsets(offsets)
             : this.consumerGroup.commitOffsetsIfNecessary();
@@ -303,7 +306,7 @@ export class Runner extends EventEmitter {
       duration: Date.now() - startFetch,
     });
 
-    const onBatch = async (batch) => {
+    const onBatch = async (batch: any) => {
       const startBatchProcess = Date.now();
       const payload = {
         topic: batch.topic,
@@ -337,7 +340,7 @@ export class Runner extends EventEmitter {
       });
     };
 
-    const { lock, unlock, unlockWithError } = barrier();
+    const { lock, unlock, unlockWithError }: any = barrier();
     const concurrently = limitConcurrency({
       limit: this.partitionsConsumedConcurrently,
     });
@@ -436,7 +439,7 @@ export class Runner extends EventEmitter {
         this.consuming = false;
 
         if (this.running) {
-          setImmediate(() => this.scheduleFetch());
+          asap(() => this.scheduleFetch());
         }
       } catch (e) {
         if (!this.running) {
@@ -463,7 +466,7 @@ export class Runner extends EventEmitter {
           });
 
           await this.join();
-          setImmediate(() => this.scheduleFetch());
+          asap(() => this.scheduleFetch());
           return;
         }
 
@@ -481,12 +484,12 @@ export class Runner extends EventEmitter {
 
           this.consumerGroup.memberId = null;
           await this.join();
-          setImmediate(() => this.scheduleFetch());
+          asap(() => this.scheduleFetch());
           return;
         }
 
         if (e.name === 'KafkaJSOffsetOutOfRange') {
-          setImmediate(() => this.scheduleFetch());
+          asap(() => this.scheduleFetch());
           return;
         }
 
@@ -560,7 +563,7 @@ export class Runner extends EventEmitter {
             memberId: this.consumerGroup.memberId,
           });
 
-          setImmediate(() => this.scheduleJoin());
+          asap(() => this.scheduleJoin());
 
           bail(new KafkaJSError(e));
         }
@@ -578,7 +581,7 @@ export class Runner extends EventEmitter {
           );
 
           this.consumerGroup.memberId = null;
-          setImmediate(() => this.scheduleJoin());
+          asap(() => this.scheduleJoin());
 
           bail(new KafkaJSError(e));
         }

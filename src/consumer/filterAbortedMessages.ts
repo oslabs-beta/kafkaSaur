@@ -33,7 +33,7 @@ const isAbortMarker = ({ key }: any) => {
  * @param {string}  producerId  Int64
  * @param {boolean}  inTransaction
  */
-module.exports = ({ messages, abortedTransactions }: any) => {
+export default ({ messages, abortedTransactions }: any) => {
   const currentAbortedTransactions = new Map();
 
   if (!abortedTransactions || !abortedTransactions.length) {
