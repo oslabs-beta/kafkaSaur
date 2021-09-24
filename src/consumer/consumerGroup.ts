@@ -150,7 +150,7 @@ export class ConsumerGroup {
 
     this.lastRequest = Date.now();
 
-    (this[PRIVATE.SHAREDHEARTBEAT] : any) = sharedPromiseTo(async ({ interval }) => {
+    this[PRIVATE.SHAREDHEARTBEAT] = sharedPromiseTo(async ({ interval }) => {
       const { groupId, generationId, memberId } = this;
       const now = Date.now();
 
@@ -561,9 +561,9 @@ export class ConsumerGroup {
             partitions,
           });
         }
-      }      
+      }
 
-      const requests = keys(requestsPerNode).map(async (nodeId : any) => {
+      const requests = keys(requestsPerNode).map(async (nodeId: any) => {
         const broker = await this.cluster.findBroker({ nodeId });
         const { responses } = await broker.fetch({
           maxWaitTime,
