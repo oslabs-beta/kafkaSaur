@@ -1,5 +1,5 @@
 /** @format */
 
-import Kafka from './src/producer/index.ts';
+import Kafka from './src/index.ts';
 
 export { Kafka };

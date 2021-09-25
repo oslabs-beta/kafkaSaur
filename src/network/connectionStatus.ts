@@ -1,0 +1,14 @@
+/** @format */
+
+const CONNECTION_STATUS = {
+  CONNECTED: 'connected',
+  DISCONNECTING: 'disconnecting',
+  DISCONNECTED: 'disconnected',
+};
+
+const CONNECTED_STATUS = [
+  CONNECTION_STATUS.CONNECTED,
+  CONNECTION_STATUS.DISCONNECTING,
+];
+
+export { CONNECTION_STATUS, CONNECTED_STATUS };

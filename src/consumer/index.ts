@@ -1,27 +1,32 @@
-import Long from '../../utils/long'
-import createRetry from '../retry/index.js'
-import { initialRetryTime } from '../retry/defaults.js'
-import ConsumerGroup from './consumerGroup'
-import Runner from './runner'
-import { events, wrap: wrapEvent, unwrap: unwrapEvent } from './instrumentationEvents'
-import InstrumentationEventEmitter from '../instrumentation/emitter'
-import { KafkaJSNonRetriableError } from '../errors'
-import { roundRobin }  from './assigners'
-import { EARLIEST_OFFSET, LATEST_OFFSET } from '../constants'
-import ISOLATION_LEVEL from '../protocol/isolationLevel'
+/** @format */
 
-const { keys, values } = Object
-const { CONNECT, DISCONNECT, STOP, CRASH } = events
+import { Long } from '../../utils/long.js';
+import createRetry from '../retry/index.js';
+import initialRetryTime from '../retry/defaults.js';
+import { ConsumerGroup } from './consumerGroup.ts';
+import { Runner } from './runner.ts';
+import { events, wrap, unwrap } from './instrumentationEvents.ts';
+import InstrumentationEventEmitter from '../instrumentation/emitter.js';
+import { KafkaJSNonRetriableError } from '../../errors.js';
+import { roundRobin } from './assigners/index.js';
+import { EARLIEST_OFFSET, LATEST_OFFSET } from '../constants.js';
+import ISOLATION_LEVEL from '../../protocol/isolationLevel.js';
 
-const eventNames = values(events)
+const { keys, values } = Object;
+const { CONNECT, DISCONNECT, STOP, CRASH } = events;
+
+const eventNames = values(events);
 const eventKeys = keys(events)
-  .map(key => `consumer.events.${key}`)
-  .join(', ')
+  .map((key) => `consumer.events.${key}`)
+  .join(', ');
 
 const specialOffsets = [
   Long.fromValue(EARLIEST_OFFSET).toString(),
   Long.fromValue(LATEST_OFFSET).toString(),
-]
+];
+
+const { wrapEvent }: any = wrap;
+const { unwrapEvent }: any = unwrap;
 
 /**
  * @param {Object} params
@@ -44,7 +49,7 @@ const specialOffsets = [
  *
  * @returns {import("../../types").Consumer}
  */
-export default({
+export default ({
   cluster,
   groupId,
   retry,
@@ -63,26 +68,33 @@ export default({
   metadataMaxAge,
 }: any) => {
   if (!groupId) {
-    throw new KafkaJSNonRetriableError('Consumer groupId must be a non-empty string.')
+    throw new KafkaJSNonRetriableError(
+      'Consumer groupId must be a non-empty string.'
+    );
   }
 
-  const logger = rootLogger.namespace('Consumer')
-  const instrumentationEmitter = rootInstrumentationEmitter || new InstrumentationEventEmitter()
-  const assigners = partitionAssigners.map((createAssigner:any) =>
+  const logger = rootLogger.namespace('Consumer');
+  const instrumentationEmitter =
+    rootInstrumentationEmitter || new InstrumentationEventEmitter();
+  const assigners = partitionAssigners.map((createAssigner: any) =>
     createAssigner({ groupId, logger, cluster })
-  )
+  );
 
-  const topics = {}
-  let runner:any = null
-  let consumerGroup:any = null
+  const topics = {};
+  let runner: any = null;
+  let consumerGroup: any = null;
 
   if (heartbeatInterval >= sessionTimeout) {
     throw new KafkaJSNonRetriableError(
       `Consumer heartbeatInterval (${heartbeatInterval}) must be lower than sessionTimeout (${sessionTimeout}). It is recommended to set heartbeatInterval to approximately a third of the sessionTimeout.`
-    )
+    );
   }
 
-  const createConsumerGroup = ({ autoCommit, autoCommitInterval, autoCommitThreshold }: any) => {
+  const createConsumerGroup = ({
+    autoCommit,
+    autoCommitInterval,
+    autoCommitThreshold,
+  }: any) => {
     return new ConsumerGroup({
       logger: rootLogger,
       topics: keys(topics),
@@ -104,8 +116,8 @@ export default({
       isolationLevel,
       rackId,
       metadataMaxAge,
-    })
-  }
+    });
+  };
 
   const createRunner = ({
     eachBatchAutoResolve,
@@ -114,7 +126,7 @@ export default({
     onCrash,
     autoCommit,
     partitionsConsumedConcurrently,
-  }:any) => {
+  }: any) => {
     return new Runner({
       autoCommit,
       logger: rootLogger,
@@ -127,82 +139,84 @@ export default({
       retry,
       onCrash,
       partitionsConsumedConcurrently,
-    })
-  }
+    });
+  };
 
   /** @type {import("../../types").Consumer["connect"]} */
   const connect = async () => {
-    await cluster.connect()
-    instrumentationEmitter.emit(CONNECT)
-  }
+    await cluster.connect();
+    instrumentationEmitter.emit(CONNECT);
+  };
 
   /** @type {import("../../types").Consumer["disconnect"]} */
   const disconnect = async () => {
     try {
-      await stop()
-      logger.debug('consumer has stopped, disconnecting', { groupId })
-      await cluster.disconnect()
-      instrumentationEmitter.emit(DISCONNECT)
+      await stop();
+      logger.debug('consumer has stopped, disconnecting', { groupId });
+      await cluster.disconnect();
+      instrumentationEmitter.emit(DISCONNECT);
     } catch (e) {}
-  }
+  };
 
   /** @type {import("../../types").Consumer["stop"]} */
   const stop = async () => {
     try {
       if (runner) {
-        await runner.stop()
-        runner = null
-        consumerGroup = null
-        instrumentationEmitter.emit(STOP)
+        await runner.stop();
+        runner = null;
+        consumerGroup = null;
+        instrumentationEmitter.emit(STOP);
       }
 
-      logger.info('Stopped', { groupId })
+      logger.info('Stopped', { groupId });
     } catch (e) {}
-  }
+  };
 
   /** @type {import("../../types").Consumer["subscribe"]} */
   const subscribe = async ({ topic, fromBeginning = false }: any) => {
     if (consumerGroup) {
-      throw new KafkaJSNonRetriableError('Cannot subscribe to topic while consumer is running')
+      throw new KafkaJSNonRetriableError(
+        'Cannot subscribe to topic while consumer is running'
+      );
     }
 
     if (!topic) {
-      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
     }
 
-    const isRegExp = topic instanceof RegExp
+    const isRegExp = topic instanceof RegExp;
     if (typeof topic !== 'string' && !isRegExp) {
       throw new KafkaJSNonRetriableError(
         `Invalid topic ${topic} (${typeof topic}), the topic name has to be a String or a RegExp`
-      )
+      );
     }
 
-    const topicsToSubscribe = []
+    const topicsToSubscribe = [];
     if (isRegExp) {
-      const topicRegExp = topic
-      const metadata = await cluster.metadata()
+      const topicRegExp = topic;
+      const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
-        .map(({ topic: topicName }:any) => topicName)
-        .filter((topicName: any) => topicRegExp.test(topicName))
+        .map(({ topic: topicName }: any) => topicName)
+        .filter((topicName: any) => topicRegExp.test(topicName));
 
       logger.debug('Subscription based on RegExp', {
         groupId,
         topicRegExp: topicRegExp.toString(),
         matchedTopics,
-      })
+      });
 
-      topicsToSubscribe.push(...matchedTopics)
+      topicsToSubscribe.push(...matchedTopics);
     } else {
-      topicsToSubscribe.push(topic)
+      topicsToSubscribe.push(topic);
     }
     //we messed with this...a lot...
     for (const t of topicsToSubscribe) {
-      let topics: {[t: number | string | undefined | null | boolean]:any} = {}
-      topics[t] = { fromBeginning }
+      let topics: { [t: number | string | symbol]: any } = {};
+      topics[t] = { fromBeginning };
     }
 
-    await cluster.addMultipleTargetTopics(topicsToSubscribe)
-  }
+    await cluster.addMultipleTargetTopics(topicsToSubscribe);
+  };
 
   /** @type {import("../../types").Consumer["run"]} */
   const run = async ({
@@ -215,18 +229,21 @@ export default({
     eachMessage = null,
   } = {}) => {
     if (consumerGroup) {
-      logger.warn('consumer#run was called, but the consumer is already running', { groupId })
-      return
+      logger.warn(
+        'consumer#run was called, but the consumer is already running',
+        { groupId }
+      );
+      return;
     }
 
     consumerGroup = createConsumerGroup({
       autoCommit,
       autoCommitInterval,
       autoCommitThreshold,
-    })
+    });
 
-    const start = async (onCrash: any)=> {
-      logger.info('Starting', { groupId })
+    const start = async (onCrash: any) => {
+      logger.info('Starting', { groupId });
       runner = createRunner({
         autoCommit,
         eachBatchAutoResolve,
@@ -234,34 +251,35 @@ export default({
         eachMessage,
         onCrash,
         partitionsConsumedConcurrently,
-      })
+      });
 
-      await runner.start()
-    }
+      await runner.start();
+    };
 
-    const restart = (onCrash : any) => {
+    const restart = (onCrash: any) => {
       consumerGroup = createConsumerGroup({
         autoCommitInterval,
         autoCommitThreshold,
-      })
+      });
 
-      start(onCrash)
-    }
+      start(onCrash);
+    };
 
     const onCrash = async (e: any) => {
       logger.error(`Crash: ${e.name}: ${e.message}`, {
         groupId,
         retryCount: e.retryCount,
         stack: e.stack,
-      })
+      });
 
       if (e.name === 'KafkaJSConnectionClosedError') {
-        cluster.removeBroker({ host: e.host, port: e.port })
+        cluster.removeBroker({ host: e.host, port: e.port });
       }
 
-      await disconnect()
+      await disconnect();
 
-      const isErrorRetriable = e.name === 'KafkaJSNumberOfRetriesExceeded' || e.retriable === true
+      const isErrorRetriable =
+        e.name === 'KafkaJSNumberOfRetriesExceeded' || e.retriable === true;
       const shouldRestart =
         isErrorRetriable &&
         (!retry ||
@@ -274,48 +292,54 @@ export default({
                 originalError: e.message || e,
                 groupId,
               }
-            )
+            );
 
-            return true
-          })))
+            return true;
+          })));
 
       instrumentationEmitter.emit(CRASH, {
         error: e,
         groupId,
         restart: shouldRestart,
-      })
+      });
 
       if (shouldRestart) {
-        const retryTime = e.retryTime || (retry && retry.initialRetryTime) || initialRetryTime
+        const retryTime =
+          e.retryTime || (retry && retry.initialRetryTime) || initialRetryTime;
         logger.error(`Restarting the consumer in ${retryTime}ms`, {
           retryCount: e.retryCount,
           retryTime,
           groupId,
-        })
+        });
 
-        setTimeout(() => restart(onCrash), retryTime)
+        setTimeout(() => restart(onCrash), retryTime);
       }
-    }
+    };
 
-    await start(onCrash)
-  }
+    await start(onCrash);
+  };
 
   /** @type {import("../../types").Consumer["on"]} */
   const on = (eventName: any, listener: any) => {
     if (!eventNames.includes(eventName)) {
-      throw new KafkaJSNonRetriableError(`Event name should be one of ${eventKeys}`)
+      throw new KafkaJSNonRetriableError(
+        `Event name should be one of ${eventKeys}`
+      );
     }
 
-    return instrumentationEmitter.addListener(unwrapEvent(eventName), (event: any) => {
-      event.type = wrapEvent(event.type)
-      Promise.resolve(listener(event)).catch(e => {
-        logger.error(`Failed to execute listener: ${e.message}`, {
-          eventName,
-          stack: e.stack,
-        })
-      })
-    })
-  }
+    return instrumentationEmitter.addListener(
+      unwrapEvent(eventName),
+      (event: any) => {
+        event.type = wrapEvent(event.type);
+        Promise.resolve(listener(event)).catch((e) => {
+          logger.error(`Failed to execute listener: ${e.message}`, {
+            eventName,
+            stack: e.stack,
+          });
+        });
+      }
+    );
+  };
 
   /**
    * @type {import("../../types").Consumer["commitOffsets"]}
@@ -326,101 +350,113 @@ export default({
     const commitsByTopic: any = topicPartitions.reduce(
       (payload, { topic, partition, offset, metadata = null }) => {
         if (!topic) {
-          throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+          throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
         }
 
         if (isNaN(partition)) {
           throw new KafkaJSNonRetriableError(
             `Invalid partition, expected a number received ${partition}`
-          )
+          );
         }
 
-        let commitOffset
+        let commitOffset;
         try {
-          commitOffset = Long.fromValue(offset)
+          commitOffset = Long.fromValue(offset);
         } catch (_) {
-          throw new KafkaJSNonRetriableError(`Invalid offset, expected a long received ${offset}`)
+          throw new KafkaJSNonRetriableError(
+            `Invalid offset, expected a long received ${offset}`
+          );
         }
 
         if (commitOffset.lessThan(0)) {
-          throw new KafkaJSNonRetriableError('Offset must not be a negative number')
+          throw new KafkaJSNonRetriableError(
+            'Offset must not be a negative number'
+          );
         }
 
         if (metadata !== null && typeof metadata !== 'string') {
           throw new KafkaJSNonRetriableError(
             `Invalid offset metadata, expected string or null, received ${metadata}`
-          )
+          );
         }
 
-        const topicCommits: any = payload[topic] || []
+        const topicCommits: any = payload[topic] || [];
 
-        topicCommits.push({ partition, offset: commitOffset, metadata })
+        topicCommits.push({ partition, offset: commitOffset, metadata });
 
-        return { ...payload, [topic]: topicCommits }
+        return { ...payload, [topic]: topicCommits };
       },
       {}
-    )
+    );
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    const topics = Object.keys(commitsByTopic)
-    
+    const topics = Object.keys(commitsByTopic);
+
     return runner.commitOffsets({
-      topics: topics.map(topic  => {
-        
+      topics: topics.map((topic) => {
         return {
           topic,
           partitions: commitsByTopic[topic],
-        }
+        };
       }),
-    })
-  }
+    });
+  };
 
   /** @type {import("../../types").Consumer["seek"]} */
   const seek = ({ topic, partition, offset }: any) => {
     if (!topic) {
-      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
     }
 
     if (isNaN(partition)) {
       throw new KafkaJSNonRetriableError(
         `Invalid partition, expected a number received ${partition}`
-      )
+      );
     }
 
-    let seekOffset
+    let seekOffset;
     try {
-      seekOffset = Long.fromValue(offset)
+      seekOffset = Long.fromValue(offset);
     } catch (_) {
-      throw new KafkaJSNonRetriableError(`Invalid offset, expected a long received ${offset}`)
+      throw new KafkaJSNonRetriableError(
+        `Invalid offset, expected a long received ${offset}`
+      );
     }
 
-    if (seekOffset.lessThan(0) && !specialOffsets.includes(seekOffset.toString())) {
-      throw new KafkaJSNonRetriableError('Offset must not be a negative number')
+    if (
+      seekOffset.lessThan(0) &&
+      !specialOffsets.includes(seekOffset.toString())
+    ) {
+      throw new KafkaJSNonRetriableError(
+        'Offset must not be a negative number'
+      );
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.seek({ topic, partition, offset: seekOffset.toString() })
-  }
+    consumerGroup.seek({ topic, partition, offset: seekOffset.toString() });
+  };
 
   /** @type {import("../../types").Consumer["describeGroup"]} */
   const describeGroup = async () => {
-    const coordinator = await cluster.findGroupCoordinator({ groupId })
-    const retrier = createRetry(retry)
+    const coordinator = await cluster.findGroupCoordinator({ groupId });
+    const retrier = createRetry(retry);
     return retrier(async () => {
-      const { groups } = await coordinator.describeGroups({ groupIds: [groupId] })
-      return groups.find((group: any) => group.groupId === groupId)
-    })
-  }
+      const { groups } = await coordinator.describeGroups({
+        groupIds: [groupId],
+      });
+      return groups.find((group: any) => group.groupId === groupId);
+    });
+  };
 
   /**
    * @type {import("../../types").Consumer["pause"]}
@@ -431,26 +467,29 @@ export default({
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !topicPartition.topic) {
         throw new KafkaJSNonRetriableError(
-          `Invalid topic ${(topicPartition && topicPartition.topic) || topicPartition}`
-        )
+          `Invalid topic ${
+            (topicPartition && topicPartition.topic) || topicPartition
+          }`
+        );
       } else if (
         typeof topicPartition.partitions !== 'undefined' &&
-        (!Array.isArray(topicPartition.partitions) || topicPartition.partitions.some(isNaN))
+        (!Array.isArray(topicPartition.partitions) ||
+          topicPartition.partitions.some(isNaN))
       ) {
         throw new KafkaJSNonRetriableError(
           `Array of valid partitions required to pause specific partitions instead of ${topicPartition.partitions}`
-        )
+        );
       }
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.pause(topicPartitions)
-  }
+    consumerGroup.pause(topicPartitions);
+  };
 
   /**
    * Returns the list of topic partitions paused on this consumer
@@ -459,11 +498,11 @@ export default({
    */
   const paused = () => {
     if (!consumerGroup) {
-      return []
+      return [];
     }
 
-    return consumerGroup.paused()
-  }
+    return consumerGroup.paused();
+  };
 
   /**
    * @type {import("../../types").Consumer["resume"]}
@@ -474,31 +513,34 @@ export default({
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !topicPartition.topic) {
         throw new KafkaJSNonRetriableError(
-          `Invalid topic ${(topicPartition && topicPartition.topic) || topicPartition}`
-        )
+          `Invalid topic ${
+            (topicPartition && topicPartition.topic) || topicPartition
+          }`
+        );
       } else if (
         typeof topicPartition.partitions !== 'undefined' &&
-        (!Array.isArray(topicPartition.partitions) || topicPartition.partitions.some(isNaN))
+        (!Array.isArray(topicPartition.partitions) ||
+          topicPartition.partitions.some(isNaN))
       ) {
         throw new KafkaJSNonRetriableError(
           `Array of valid partitions required to resume specific partitions instead of ${topicPartition.partitions}`
-        )
+        );
       }
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.resume(topicPartitions)
-  }
+    consumerGroup.resume(topicPartitions);
+  };
 
   /**
    * @return {Object} logger
    */
-  const getLogger = () => logger
+  const getLogger = () => logger;
 
   return {
     connect,
@@ -515,5 +557,5 @@ export default({
     on,
     events,
     logger: getLogger,
-  }
-}
+  };
+};

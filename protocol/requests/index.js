@@ -1,5 +1,10 @@
-const apiKeys = require('./apiKeys')
-const { KafkaJSServerDoesNotSupportApiKey, KafkaJSNotImplemented } = require('../../errors')
+/** @format */
+
+const apiKeys = require('./apiKeys');
+const {
+  KafkaJSServerDoesNotSupportApiKey,
+  KafkaJSNotImplemented,
+} = require('../../errors');
 
 /**
  * @typedef {(options?: Object) => { request: any, response: any, logResponseErrors?: boolean }} Request
@@ -19,9 +24,9 @@ const { KafkaJSServerDoesNotSupportApiKey, KafkaJSNotImplemented } = require('..
 const noImplementedRequestDefinitions = {
   versions: [],
   protocol: () => {
-    throw new KafkaJSNotImplemented()
+    throw new KafkaJSNotImplemented();
   },
-}
+};
 
 /**
  * @type {{[apiName: string]: RequestDefinitions}}
@@ -70,33 +75,33 @@ const requests = {
   ExpireDelegationToken: noImplementedRequestDefinitions,
   DescribeDelegationToken: noImplementedRequestDefinitions,
   DeleteGroups: require('./deleteGroups'),
-}
+};
 
-const names = Object.keys(apiKeys)
-const keys = Object.values(apiKeys)
-const findApiName = apiKey => names[keys.indexOf(apiKey)]
+const names = Object.keys(apiKeys);
+const keys = Object.values(apiKeys);
+const findApiName = (apiKey) => names[keys.indexOf(apiKey)];
 
 /**
  * @param {import("../../../types").ApiVersions} versions
  * @returns {Lookup}
  */
-const lookup = versions => (apiKey, definition) => {
-  const version = versions[apiKey]
-  const availableVersions = definition.versions.map(Number)
-  const bestImplementedVersion = Math.max.apply(this, availableVersions)
+const lookup = (versions) => (apiKey, definition) => {
+  const version = versions[apiKey];
+  const availableVersions = definition.versions.map(Number);
+  const bestImplementedVersion = Math.max.apply(this, availableVersions);
 
   if (!version || version.maxVersion == null) {
     throw new KafkaJSServerDoesNotSupportApiKey(
       `The Kafka server does not support the requested API version`,
       { apiKey, apiName: findApiName(apiKey) }
-    )
+    );
   }
 
-  const bestSupportedVersion = Math.min(bestImplementedVersion, version.maxVersion)
-  return definition.protocol({ version: bestSupportedVersion })
-}
+  const bestSupportedVersion = Math.min(
+    bestImplementedVersion,
+    version.maxVersion
+  );
+  return definition.protocol({ version: bestSupportedVersion });
+};
 
-module.exports = {
-  requests,
-  lookup,
-}
+export { requests, lookup };

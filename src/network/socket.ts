@@ -1,4 +1,5 @@
 /**
+ * @format
  * @param {Object} options
  * @param {import("../../types").ISocketFactory} options.socketFactory
  * @param {string} options.host
@@ -10,7 +11,8 @@
  * @param {(err: Error) => void} options.onError
  * @param {() => void} options.onTimeout
  */
-module.exports = ({
+
+export default ({
   socketFactory,
   host,
   port,
@@ -20,13 +22,13 @@ module.exports = ({
   onEnd,
   onError,
   onTimeout,
-}) => {
-  const socket = socketFactory({ host, port, ssl, onConnect })
+}: any) => {
+  const socket = socketFactory({ host, port, ssl, onConnect });
 
-  socket.on('data', onData)
-  socket.on('end', onEnd)
-  socket.on('error', onError)
-  socket.on('timeout', onTimeout)
+  socket.on('data', onData);
+  socket.on('end', onEnd);
+  socket.on('error', onError);
+  socket.on('timeout', onTimeout);
 
-  return socket
-}
+  return socket;
+};

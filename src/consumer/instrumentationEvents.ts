@@ -2,7 +2,7 @@
 
 import swapObject from '../../utils/swapObject.js';
 import InstrumentationEventType from '../instrumentation/eventType.js';
-import networkEvents from '../network/instrumentationEvents.js';
+import networkEvents from '../network/instrumentationEvents.ts';
 const consumerType = InstrumentationEventType('consumer');
 
 const events: any = {

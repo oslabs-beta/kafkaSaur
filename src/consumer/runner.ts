@@ -1,7 +1,7 @@
 /** @format */
 
 import { EventEmitter } from 'https://deno.land/std@0.108.0/node/events.ts';
-import { asap } from 'https://deno.land/x/denjucks@1.1.1/src/deps/asap/asap@2.0.6';
+//import { asap } from 'https://deno.land/x/denjucks@1.1.1/src/deps/asap/asap@2.0.6';
 import { Long } from '../../utils/long.js';
 import createRetry from '../retry/index.js';
 import limitConcurrency from '../../utils/concurrency.js';
@@ -439,7 +439,7 @@ export class Runner extends EventEmitter {
         this.consuming = false;
 
         if (this.running) {
-          asap(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(), 0);
         }
       } catch (e) {
         if (!this.running) {
@@ -466,7 +466,7 @@ export class Runner extends EventEmitter {
           });
 
           await this.join();
-          asap(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
@@ -484,12 +484,12 @@ export class Runner extends EventEmitter {
 
           this.consumerGroup.memberId = null;
           await this.join();
-          asap(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
         if (e.name === 'KafkaJSOffsetOutOfRange') {
-          asap(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
@@ -563,7 +563,7 @@ export class Runner extends EventEmitter {
             memberId: this.consumerGroup.memberId,
           });
 
-          asap(() => this.scheduleJoin());
+          setTimeout(() => this.scheduleJoin(), 0);
 
           bail(new KafkaJSError(e));
         }
@@ -581,7 +581,7 @@ export class Runner extends EventEmitter {
           );
 
           this.consumerGroup.memberId = null;
-          asap(() => this.scheduleJoin());
+          setTimeout(() => this.scheduleJoin(), 0);
 
           bail(new KafkaJSError(e));
         }

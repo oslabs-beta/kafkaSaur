@@ -130,7 +130,6 @@ export class ConsumerGroup {
     this.isolationLevel = isolationLevel;
     this.rackId = rackId;
     this.metadataMaxAge = metadataMaxAge;
-
     this.seekOffset = new SeekOffsets();
     this.coordinator = null;
     this.generationId = null;
