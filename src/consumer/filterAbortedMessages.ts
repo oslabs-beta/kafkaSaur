@@ -1,15 +1,17 @@
-/** @format */
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
+const Long = require('../utils/long')
+// @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
+const ABORTED_MESSAGE_KEY = Buffer.from([0, 0, 0, 0])
 
-import { Long } from '../../utils/long.js';
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
-const ABORTED_MESSAGE_KEY = Buffer.from([0, 0, 0, 0]);
-
-const isAbortMarker = ({ key }: any) => {
+const isAbortMarker = ({
+  key
+}: any) => {
   // Handle null/undefined keys.
-  if (!key) return false;
+  if (!key) return false
   // Cast key to buffer defensively
-  return Buffer.from(key).equals(ABORTED_MESSAGE_KEY);
-};
+  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
+  return Buffer.from(key).equals(ABORTED_MESSAGE_KEY)
+}
 
 /**
  * Remove messages marked as aborted according to the aborted transactions list.
@@ -33,37 +35,40 @@ const isAbortMarker = ({ key }: any) => {
  * @param {string}  producerId  Int64
  * @param {boolean}  inTransaction
  */
-export default ({ messages, abortedTransactions }: any) => {
-  const currentAbortedTransactions = new Map();
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+module.exports = ({
+  messages,
+  abortedTransactions
+}: any) => {
+  // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
+  const currentAbortedTransactions = new Map()
 
   if (!abortedTransactions || !abortedTransactions.length) {
-    return messages;
+    return messages
   }
 
-  const remainingAbortedTransactions = [...abortedTransactions];
+  const remainingAbortedTransactions = [...abortedTransactions]
 
   return messages.filter((message: any) => {
     // If the message offset is GTE the first offset of the next aborted transaction
     // then we have stepped into an aborted transaction.
     if (
       remainingAbortedTransactions.length &&
-      Long.fromValue(message.offset).gte(
-        remainingAbortedTransactions[0].firstOffset
-      )
+      Long.fromValue(message.offset).gte(remainingAbortedTransactions[0].firstOffset)
     ) {
-      const { producerId } = remainingAbortedTransactions.shift();
-      currentAbortedTransactions.set(producerId, true);
+      const { producerId } = remainingAbortedTransactions.shift()
+      currentAbortedTransactions.set(producerId, true)
     }
 
-    const { producerId, inTransaction } = message.batchContext;
+    const { producerId, inTransaction } = message.batchContext
 
     if (isAbortMarker(message)) {
       // Transaction is over, we no longer need to ignore messages from this producer
-      currentAbortedTransactions.delete(producerId);
+      currentAbortedTransactions.delete(producerId)
     } else if (currentAbortedTransactions.has(producerId) && inTransaction) {
-      return false;
+      return false
     }
 
-    return true;
+    return true
   });
-};
+}

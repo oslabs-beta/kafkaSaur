@@ -1,54 +1,37 @@
-/** @format */
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
+const Long = require('../utils/long')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'filterAbor... Remove this comment to see the full error message
+const filterAbortedMessages = require('./filterAbortedMessages')
 
-import { KafkaMessage } from '../../index.d.ts';
-import { Long } from '../../utils/long.js';
-import filterAbortedMessages from './filterAbortedMessages.ts';
-
-// type Batch = {
-//   topic: string;
-//   partition: number;
-//   highWatermark: string;
-//   messages: KafkaMessage[];
-//   isEmpty(): boolean;
-//   firstOffset(): string | null;
-//   lastOffset(): string;
-//   offsetLag(): string;
-//   offsetLagLow(): string;
-// };
 /**
  * A batch collects messages returned from a single fetch call.
  *
  * A batch could contain _multiple_ Kafka RecordBatches.
  */
-export class Batch {
-  topic: string;
-  partition: number;
-  highWatermark: string;
-  messages: KafkaMessage[];
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+module.exports = class Batch {
   fetchedOffset: any;
-  rawMessages: any;
+  highWatermark: any;
+  messages: any;
   messagesWithinOffset: any;
-  //isEmpty(): boolean;
-  // firstOffset(): string | null;
-  // lastOffset(): string;
-  // offsetLag(): string;
-  // offsetLagLow(): string;
+  partition: any;
+  rawMessages: any;
+  topic: any;
   constructor(topic: any, fetchedOffset: any, partitionData: any) {
-    this.fetchedOffset = fetchedOffset;
-    const longFetchedOffset = Long.fromValue(this.fetchedOffset);
-    const { abortedTransactions, messages } = partitionData;
+    this.fetchedOffset = fetchedOffset
+    const longFetchedOffset = Long.fromValue(this.fetchedOffset)
+    const { abortedTransactions, messages } = partitionData
 
-    this.topic = topic;
-    this.partition = partitionData.partition;
-    this.highWatermark = partitionData.highWatermark;
+    this.topic = topic
+    this.partition = partitionData.partition
+    this.highWatermark = partitionData.highWatermark
 
-    this.rawMessages = messages;
+    this.rawMessages = messages
     // Apparently fetch can return different offsets than the target offset provided to the fetch API.
     // Discard messages that are not in the requested offset
     // https://github.com/apache/kafka/blob/bf237fa7c576bd141d78fdea9f17f65ea269c290/clients/src/main/java/org/apache/kafka/clients/consumer/internals/Fetcher.java#L912
-    this.messagesWithinOffset = this.rawMessages.filter((message: any) =>
-      Long.fromValue(message.offset).gte(longFetchedOffset)
-    );
+    this.messagesWithinOffset = this.rawMessages.filter((message: any) => Long.fromValue(message.offset).gte(longFetchedOffset)
+    )
 
     // 1. Don't expose aborted messages
     // 2. Don't expose control records
@@ -56,24 +39,21 @@ export class Batch {
     this.messages = filterAbortedMessages({
       messages: this.messagesWithinOffset,
       abortedTransactions,
-    }).filter((message: any) => !message.isControlRecord);
+    }).filter((message: any) => !message.isControlRecord)
   }
 
-  isEmpty(): boolean {
-    return this.messages.length === 0;
+  isEmpty() {
+    return this.messages.length === 0
   }
 
-  isEmptyIncludingFiltered(): boolean {
-    return this.messagesWithinOffset.length === 0;
+  isEmptyIncludingFiltered() {
+    return this.messagesWithinOffset.length === 0
   }
 
   isEmptyControlRecord() {
-    return (
-      this.isEmpty() &&
-      this.messagesWithinOffset.some(
-        ({ isControlRecord }: any) => isControlRecord
-      )
-    );
+    return this.isEmpty() && this.messagesWithinOffset.some(({
+      isControlRecord
+    }: any) => isControlRecord);
   }
 
   /**
@@ -86,53 +66,48 @@ export class Batch {
    *
    * @returns boolean True if the batch is empty, because of log compacted messages in the partition.
    */
-  isEmptyDueToLogCompactedMessages(): boolean {
-    const hasMessages = this.rawMessages.length > 0;
-    return hasMessages && this.isEmptyIncludingFiltered();
+  isEmptyDueToLogCompactedMessages() {
+    const hasMessages = this.rawMessages.length > 0
+    return hasMessages && this.isEmptyIncludingFiltered()
   }
 
-  firstOffset(): any {
-    return this.isEmptyIncludingFiltered()
-      ? null
-      : this.messagesWithinOffset[0].offset;
+  firstOffset() {
+    return this.isEmptyIncludingFiltered() ? null : this.messagesWithinOffset[0].offset
   }
 
-  lastOffset(): string {
+  lastOffset() {
     if (this.isEmptyDueToLogCompactedMessages()) {
-      return this.fetchedOffset;
+      return this.fetchedOffset
     }
 
     if (this.isEmptyIncludingFiltered()) {
-      return Long.fromValue(this.highWatermark).add(-1).toString();
+      return Long.fromValue(this.highWatermark)
+        .add(-1)
+        .toString()
     }
 
-    return this.messagesWithinOffset[this.messagesWithinOffset.length - 1]
-      .offset;
+    return this.messagesWithinOffset[this.messagesWithinOffset.length - 1].offset
   }
 
   /**
    * Returns the lag based on the last offset in the batch (also known as "high")
    */
-  offsetLag(): string {
-    const lastOffsetOfPartition = Long.fromValue(this.highWatermark).add(-1);
-    const lastConsumedOffset = Long.fromValue(this.lastOffset());
-    return lastOffsetOfPartition
-      .add(lastConsumedOffset.multiply(-1))
-      .toString();
+  offsetLag() {
+    const lastOffsetOfPartition = Long.fromValue(this.highWatermark).add(-1)
+    const lastConsumedOffset = Long.fromValue(this.lastOffset())
+    return lastOffsetOfPartition.add(lastConsumedOffset.multiply(-1)).toString()
   }
 
   /**
    * Returns the lag based on the first offset in the batch
    */
-  offsetLagLow(): string {
+  offsetLagLow() {
     if (this.isEmptyIncludingFiltered()) {
-      return '0';
+      return '0'
     }
 
-    const lastOffsetOfPartition = Long.fromValue(this.highWatermark).add(-1);
-    const firstConsumedOffset = Long.fromValue(this.firstOffset());
-    return lastOffsetOfPartition
-      .add(firstConsumedOffset.multiply(-1))
-      .toString();
+    const lastOffsetOfPartition = Long.fromValue(this.highWatermark).add(-1)
+    const firstConsumedOffset = Long.fromValue(this.firstOffset())
+    return lastOffsetOfPartition.add(firstConsumedOffset.multiply(-1)).toString()
   }
 }

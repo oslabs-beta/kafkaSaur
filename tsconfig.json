@@ -1,6 +1,0 @@
-{
-  "compilerOptions": {
-    "noImplicitAny": true,
-    "noPropertyAccessFromIndexSignature": true
-  }
-}

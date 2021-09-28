@@ -1,5 +1,4 @@
 /**
- * @format
  * @param {Object} options
  * @param {import("../../types").ISocketFactory} options.socketFactory
  * @param {string} options.host
@@ -11,8 +10,8 @@
  * @param {(err: Error) => void} options.onError
  * @param {() => void} options.onTimeout
  */
-
-export default ({
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+module.exports = ({
   socketFactory,
   host,
   port,
@@ -21,14 +20,14 @@ export default ({
   onData,
   onEnd,
   onError,
-  onTimeout,
+  onTimeout
 }: any) => {
-  const socket = socketFactory({ host, port, ssl, onConnect });
+  const socket = socketFactory({ host, port, ssl, onConnect })
 
-  socket.on('data', onData);
-  socket.on('end', onEnd);
-  socket.on('error', onError);
-  socket.on('timeout', onTimeout);
+  socket.on('data', onData)
+  socket.on('end', onEnd)
+  socket.on('error', onError)
+  socket.on('timeout', onTimeout)
 
-  return socket;
-};
+  return socket
+}

@@ -1,22 +1,42 @@
-/** @format */
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
+const Long = require('../../utils/long')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
+const flatten = require('../../utils/flatten')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isInvalidO... Remove this comment to see the full error message
+const isInvalidOffset = require('./isInvalidOffset')
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'initialize... Remove this comment to see the full error message
+const initializeConsumerOffsets = require('./initializeConsumerOffsets')
+const {
+  events: { COMMIT_OFFSETS },
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+} = require('../instrumentationEvents')
 
-import { Long } from '../../../utils/long.js';
-import flatten from '../../../utils/flatten.js';
-import isInvalidOffset from './isInvalidOffset.ts';
-import initializeConsumerOffsets from './initializeConsumerOffsets.ts';
-import { events } from '../instrumentationEvents.ts';
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
+const { keys, assign } = Object
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'indexTopic... Remove this comment to see the full error message
+const indexTopics = (topics: any) => topics.reduce((obj: any, topic: any) => assign(obj, { [topic]: {} }), {})
 
-const { COMMIT_OFFSETS } = events;
-
-const { keys, assign } = Object;
-const indexTopics = (topics: any) =>
-  topics.reduce((obj: any, topic: any) => assign(obj, { [topic]: {} }), {});
-
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
+  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets'),
-};
-export class OffsetManager {
-  [key: string | number | symbol]: any;
+}
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+module.exports = class OffsetManager {
+  autoCommit: any;
+  autoCommitInterval: any;
+  autoCommitThreshold: any;
+  cluster: any;
+  coordinator: any;
+  generationId: any;
+  groupId: any;
+  instrumentationEmitter: any;
+  lastCommit: any;
+  memberAssignment: any;
+  memberId: any;
+  resolvedOffsets: any;
+  topicConfigurations: any;
+  topics: any;
   /**
    * @param {Object} options
    * @param {import("../../../types").Cluster} options.cluster
@@ -42,31 +62,31 @@ export class OffsetManager {
     instrumentationEmitter,
     groupId,
     generationId,
-    memberId,
+    memberId
   }: any) {
-    this.cluster = cluster;
-    this.coordinator = coordinator;
+    this.cluster = cluster
+    this.coordinator = coordinator
 
     // memberAssignment format:
     // {
     //   'topic1': [0, 1, 2, 3],
     //   'topic2': [0, 1, 2, 3, 4, 5],
     // }
-    this.memberAssignment = memberAssignment;
+    this.memberAssignment = memberAssignment
 
-    this.topicConfigurations = topicConfigurations;
-    this.instrumentationEmitter = instrumentationEmitter;
-    this.groupId = groupId;
-    this.generationId = generationId;
-    this.memberId = memberId;
+    this.topicConfigurations = topicConfigurations
+    this.instrumentationEmitter = instrumentationEmitter
+    this.groupId = groupId
+    this.generationId = generationId
+    this.memberId = memberId
 
-    this.autoCommit = autoCommit;
-    this.autoCommitInterval = autoCommitInterval;
-    this.autoCommitThreshold = autoCommitThreshold;
-    this.lastCommit = Date.now();
+    this.autoCommit = autoCommit
+    this.autoCommitInterval = autoCommitInterval
+    this.autoCommitThreshold = autoCommitThreshold
+    this.lastCommit = Date.now()
 
-    this.topics = keys(memberAssignment);
-    this.clearAllOffsets();
+    this.topics = keys(memberAssignment)
+    this.clearAllOffsets()
   }
 
   /**
@@ -76,16 +96,15 @@ export class OffsetManager {
    */
   nextOffset(topic: any, partition: any) {
     if (!this.resolvedOffsets[topic][partition]) {
-      this.resolvedOffsets[topic][partition] =
-        this.committedOffsets()[topic][partition];
+      this.resolvedOffsets[topic][partition] = this.committedOffsets()[topic][partition]
     }
 
-    let offset = this.resolvedOffsets[topic][partition];
+    let offset = this.resolvedOffsets[topic][partition]
     if (isInvalidOffset(offset)) {
-      offset = '0';
+      offset = '0'
     }
 
-    return Long.fromValue(offset);
+    return Long.fromValue(offset)
   }
 
   /**
@@ -93,83 +112,78 @@ export class OffsetManager {
    */
   async getCoordinator() {
     if (!this.coordinator.isConnected()) {
-      this.coordinator = await this.cluster.findBroker(this.coordinator);
+      this.coordinator = await this.cluster.findBroker(this.coordinator)
     }
 
-    return this.coordinator;
+    return this.coordinator
   }
 
   /**
    * @param {import("../../../types").TopicPartition} topicPartition
    */
-  resetOffset({ topic, partition }: any) {
-    this.resolvedOffsets[topic][partition] =
-      this.committedOffsets()[topic][partition];
+  resetOffset({
+    topic,
+    partition
+  }: any) {
+    this.resolvedOffsets[topic][partition] = this.committedOffsets()[topic][partition]
   }
 
   /**
    * @param {import("../../../types").TopicPartitionOffset} topicPartitionOffset
    */
-  resolveOffset({ topic, partition, offset }: any) {
+  resolveOffset({
+    topic,
+    partition,
+    offset
+  }: any) {
     this.resolvedOffsets[topic][partition] = Long.fromValue(offset)
       .add(1)
-      .toString();
+      .toString()
   }
 
   /**
    * @returns {Long}
    */
-  countResolvedOffsets(): any {
-    const committedOffsets = this.committedOffsets();
+  countResolvedOffsets() {
+    const committedOffsets = this.committedOffsets()
 
     const subtractOffsets = (resolvedOffset: any, committedOffset: any) => {
-      const resolvedOffsetLong = Long.fromValue(resolvedOffset);
+      const resolvedOffsetLong = Long.fromValue(resolvedOffset)
       return isInvalidOffset(committedOffset)
         ? resolvedOffsetLong
-        : resolvedOffsetLong.subtract(Long.fromValue(committedOffset));
-    };
+        : resolvedOffsetLong.subtract(Long.fromValue(committedOffset))
+    }
 
-    const subtractPartitionOffsets = (
-      resolvedTopicOffsets: any,
-      committedTopicOffsets: any
-    ) =>
-      keys(resolvedTopicOffsets).map((partition) =>
-        subtractOffsets(
-          resolvedTopicOffsets[partition],
-          committedTopicOffsets[partition]
-        )
-      );
+    const subtractPartitionOffsets = (resolvedTopicOffsets: any, committedTopicOffsets: any) =>
+      keys(resolvedTopicOffsets).map(partition =>
+        subtractOffsets(resolvedTopicOffsets[partition], committedTopicOffsets[partition])
+      )
 
-    const subtractTopicOffsets = (topic: any) =>
-      subtractPartitionOffsets(
-        this.resolvedOffsets[topic],
-        committedOffsets[topic]
-      );
+    const subtractTopicOffsets = (topic: any) => subtractPartitionOffsets(this.resolvedOffsets[topic], committedOffsets[topic])
 
-    const offsetsDiff = this.topics.map(subtractTopicOffsets);
-    return flatten(offsetsDiff).reduce(
-      (sum: any, offset: any) => sum.add(offset),
-      Long.fromValue(0)
-    );
+    const offsetsDiff = this.topics.map(subtractTopicOffsets)
+    return flatten(offsetsDiff).reduce((sum: any, offset: any) => sum.add(offset), Long.fromValue(0));
   }
 
   /**
    * @param {import("../../../types").TopicPartition} topicPartition
    */
-  async setDefaultOffset({ topic, partition }: any) {
-    const { groupId, generationId, memberId } = this;
-    const defaultOffset = this.cluster.defaultOffset(
-      this.topicConfigurations[topic]
-    );
-    const coordinator = await this.getCoordinator();
+  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+  async setDefaultOffset({
+    topic,
+    partition
+  }: any) {
+    const { groupId, generationId, memberId } = this
+    const defaultOffset = this.cluster.defaultOffset(this.topicConfigurations[topic])
+    const coordinator = await this.getCoordinator()
 
     if (!this.autoCommit) {
       this.resolveOffset({
         topic,
         partition,
         offset: defaultOffset,
-      });
-      return;
+      })
+      return
     }
 
     await coordinator.offsetCommit({
@@ -182,9 +196,9 @@ export class OffsetManager {
           partitions: [{ partition, offset: defaultOffset }],
         },
       ],
-    });
+    })
 
-    this.clearOffsets({ topic, partition });
+    this.clearOffsets({ topic, partition })
   }
 
   /**
@@ -193,25 +207,29 @@ export class OffsetManager {
    *
    * @param {import("../../../types").TopicPartitionOffset} topicPartitionOffset
    */
-  async seek({ topic, partition, offset }: any) {
-    if (
-      !this.memberAssignment[topic] ||
-      !this.memberAssignment[topic].includes(partition)
-    ) {
-      return;
+  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+  async seek({
+    topic,
+    partition,
+    offset
+  }: any) {
+    if (!this.memberAssignment[topic] || !this.memberAssignment[topic].includes(partition)) {
+      return
     }
 
     if (!this.autoCommit) {
       this.resolveOffset({
         topic,
         partition,
-        offset: Long.fromValue(offset).subtract(1).toString(),
-      });
-      return;
+        offset: Long.fromValue(offset)
+          .subtract(1)
+          .toString(),
+      })
+      return
     }
 
-    const { groupId, generationId, memberId } = this;
-    const coordinator = await this.getCoordinator();
+    const { groupId, generationId, memberId } = this
+    const coordinator = await this.getCoordinator()
 
     await coordinator.offsetCommit({
       groupId,
@@ -223,24 +241,23 @@ export class OffsetManager {
           partitions: [{ partition, offset }],
         },
       ],
-    });
+    })
 
-    this.clearOffsets({ topic, partition });
+    this.clearOffsets({ topic, partition })
   }
 
   async commitOffsetsIfNecessary() {
-    const now = Date.now();
+    const now = Date.now()
 
     const timeoutReached =
-      this.autoCommitInterval != null &&
-      now >= this.lastCommit + this.autoCommitInterval;
+      this.autoCommitInterval != null && now >= this.lastCommit + this.autoCommitInterval
 
     const thresholdReached =
       this.autoCommitThreshold != null &&
-      this.countResolvedOffsets().gte(Long.fromValue(this.autoCommitThreshold));
+      this.countResolvedOffsets().gte(Long.fromValue(this.autoCommitThreshold))
 
     if (timeoutReached || thresholdReached) {
-      return this.commitOffsets();
+      return this.commitOffsets()
     }
   }
 
@@ -259,41 +276,47 @@ export class OffsetManager {
    * @property {string} offset
    */
   uncommittedOffsets() {
-    const offsets = (topic: any) => keys(this.resolvedOffsets[topic]);
-    const emptyPartitions = ({ partitions }: any) => partitions.length > 0;
+    const offsets = (topic: any) => keys(this.resolvedOffsets[topic])
+    const emptyPartitions = ({
+      partitions
+    }: any) => partitions.length > 0
     const toPartitions = (topic: any) => (partition: any) => ({
       partition,
-      offset: this.resolvedOffsets[topic][partition],
-    });
-    const changedOffsets =
-      (topic: any) =>
-      ({ partition, offset }: any) => {
-        return (
-          offset !== this.committedOffsets()[topic][partition] &&
-          Long.fromValue(offset).greaterThanOrEqual(0)
-        );
-      };
+      offset: this.resolvedOffsets[topic][partition]
+    })
+    const changedOffsets = (topic: any) => ({
+      partition,
+      offset
+    }: any) => {
+      return (
+        offset !== this.committedOffsets()[topic][partition] &&
+        Long.fromValue(offset).greaterThanOrEqual(0)
+      )
+    }
 
     // Select and format updated partitions
     const topicsWithPartitionsToCommit = this.topics
       .map((topic: any) => ({
-        topic,
-        partitions: offsets(topic)
-          .map(toPartitions(topic))
-          .filter(changedOffsets(topic)),
-      }))
-      .filter(emptyPartitions);
+      topic,
 
-    return { topics: topicsWithPartitionsToCommit };
+      partitions: offsets(topic)
+        .map(toPartitions(topic))
+        .filter(changedOffsets(topic))
+    }))
+      .filter(emptyPartitions)
+
+    return { topics: topicsWithPartitionsToCommit }
   }
 
+  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async commitOffsets(offsets = {}) {
-    const { groupId, generationId, memberId } = this;
-    const { topics = this.uncommittedOffsets().topics }: any = offsets;
+    const { groupId, generationId, memberId } = this
+    // @ts-expect-error ts-migrate(2339) FIXME: Property 'topics' does not exist on type '{}'.
+    const { topics = this.uncommittedOffsets().topics } = offsets
 
     if (topics.length === 0) {
-      this.lastCommit = Date.now();
-      return;
+      this.lastCommit = Date.now()
+      return
     }
 
     const payload = {
@@ -301,128 +324,152 @@ export class OffsetManager {
       memberId,
       groupGenerationId: generationId,
       topics,
-    };
+    }
 
     try {
-      const coordinator = await this.getCoordinator();
-      await coordinator.offsetCommit(payload);
-      this.instrumentationEmitter.emit(COMMIT_OFFSETS, payload);
+      const coordinator = await this.getCoordinator()
+      await coordinator.offsetCommit(payload)
+      this.instrumentationEmitter.emit(COMMIT_OFFSETS, payload)
 
       // Update local reference of committed offsets
-      topics.forEach(({ topic, partitions }: any) => {
+      topics.forEach(({
+        topic,
+        partitions
+      }: any) => {
         const updatedOffsets = partitions.reduce(
-          (obj: any, { partition, offset }: any) =>
-            assign(obj, { [partition]: offset }),
+          (obj: any, {
+            partition,
+            offset
+          }: any) => assign(obj, { [partition]: offset }),
           {}
-        );
-        assign(this.committedOffsets()[topic], updatedOffsets);
-      });
+        )
+        assign(this.committedOffsets()[topic], updatedOffsets)
+      })
 
-      this.lastCommit = Date.now();
+      this.lastCommit = Date.now()
     } catch (e) {
       // metadata is stale, the coordinator has changed due to a restart or
       // broker reassignment
       if (e.type === 'NOT_COORDINATOR_FOR_GROUP') {
-        await this.cluster.refreshMetadata();
+        await this.cluster.refreshMetadata()
       }
 
-      throw e;
+      throw e
     }
   }
 
+  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async resolveOffsets() {
-    const { groupId } = this;
+    const { groupId } = this
     const invalidOffset = (topic: any) => (partition: any) => {
-      return isInvalidOffset(this.committedOffsets()[topic][partition]);
-    };
+      return isInvalidOffset(this.committedOffsets()[topic][partition])
+    }
 
     const pendingPartitions = this.topics
       .map((topic: any) => ({
-        topic,
-        partitions: this.memberAssignment[topic]
-          .filter(invalidOffset(topic))
-          .map((partition: any) => ({ partition })),
+      topic,
+
+      partitions: this.memberAssignment[topic]
+        .filter(invalidOffset(topic))
+        .map((partition: any) => ({
+        partition
       }))
-      .filter((t: any) => t.partitions.length > 0);
+    }))
+      .filter((t: any) => t.partitions.length > 0)
 
     if (pendingPartitions.length === 0) {
-      return;
+      return
     }
 
-    const coordinator = await this.getCoordinator();
+    const coordinator = await this.getCoordinator()
     const { responses: consumerOffsets } = await coordinator.offsetFetch({
       groupId,
       topics: pendingPartitions,
-    });
+    })
 
-    const unresolvedPartitions = consumerOffsets.map(
-      ({ topic, partitions }: any) =>
-        assign(
-          {
-            topic,
-            partitions: partitions
-              .filter(({ offset }: any) => isInvalidOffset(offset))
-              .map(({ partition }: any) => assign({ partition })),
-          },
-          this.topicConfigurations[topic]
-        )
-    );
+    const unresolvedPartitions = consumerOffsets.map(({
+      topic,
+      partitions
+    }: any) =>
+      assign(
+        {
+          topic,
+          partitions: partitions
+            .filter(({
+            offset
+          }: any) => isInvalidOffset(offset))
+            .map(({
+            partition
+          }: any) => assign({ partition })),
+        },
+        this.topicConfigurations[topic]
+      )
+    )
 
-    const indexPartitions = (obj: any, { partition, offset }: any) => {
-      return assign(obj, { [partition]: offset });
-    };
-
-    const hasUnresolvedPartitions = () =>
-      unresolvedPartitions.some((t: any) => t.partitions.length > 0);
-
-    let offsets = consumerOffsets;
-    if (hasUnresolvedPartitions()) {
-      const topicOffsets = await this.cluster.fetchTopicsOffset(
-        unresolvedPartitions
-      );
-      offsets = initializeConsumerOffsets(consumerOffsets, topicOffsets);
+    const indexPartitions = (obj: any, {
+      partition,
+      offset
+    }: any) => {
+      return assign(obj, { [partition]: offset })
     }
 
-    offsets.forEach(({ topic, partitions }: any) => {
+    const hasUnresolvedPartitions = () => unresolvedPartitions.some((t: any) => t.partitions.length > 0)
+
+    let offsets = consumerOffsets
+    if (hasUnresolvedPartitions()) {
+      const topicOffsets = await this.cluster.fetchTopicsOffset(unresolvedPartitions)
+      offsets = initializeConsumerOffsets(consumerOffsets, topicOffsets)
+    }
+
+    offsets.forEach(({
+      topic,
+      partitions
+    }: any) => {
       this.committedOffsets()[topic] = partitions.reduce(indexPartitions, {
         ...this.committedOffsets()[topic],
-      });
-    });
+      })
+    })
   }
 
   /**
    * @private
    * @param {import("../../../types").TopicPartition} topicPartition
    */
-  clearOffsets({ topic, partition }: any) {
-    delete this.committedOffsets()[topic][partition];
-    delete this.resolvedOffsets[topic][partition];
+  clearOffsets({
+    topic,
+    partition
+  }: any) {
+    delete this.committedOffsets()[topic][partition]
+    delete this.resolvedOffsets[topic][partition]
   }
 
   /**
    * @private
    */
   clearAllOffsets() {
-    const committedOffsets = this.committedOffsets();
+    const committedOffsets = this.committedOffsets()
 
     for (const topic in committedOffsets) {
-      delete committedOffsets[topic];
+      delete committedOffsets[topic]
     }
 
     for (const topic of this.topics) {
-      committedOffsets[topic] = {};
+      committedOffsets[topic] = {}
     }
 
-    this.resolvedOffsets = indexTopics(this.topics);
+    this.resolvedOffsets = indexTopics(this.topics)
   }
 
   committedOffsets() {
-    if (!this[PRIVATE.COMMITTED_OFFSETS]) {
-      this[PRIVATE.COMMITTED_OFFSETS] = this.groupId
-        ? this.cluster.committedOffsets({ groupId: this.groupId })
-        : {};
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    if (!this[(PRIVATE as any).COMMITTED_OFFSETS]) {
+      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+      this[(PRIVATE as any).COMMITTED_OFFSETS] = this.groupId
+    ? this.cluster.committedOffsets({ groupId: this.groupId })
+    : {};
     }
 
-    return this[PRIVATE.COMMITTED_OFFSETS];
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    return this[(PRIVATE as any).COMMITTED_OFFSETS];
   }
 }
