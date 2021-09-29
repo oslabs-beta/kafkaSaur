@@ -1,10 +1,10 @@
 //import { EventEmitter } from 'events';
 //Deno Library import...
 
-import InstrumentationEvent from './event.ts';
+import {InstrumentationEvent} from './event.ts';
 import { KafkaJSError } from '../errors.ts';
 
-export default class InstrumentationEventEmitter {
+export class InstrumentationEventEmitter {
   emitter: any;
   constructor() {
     this.emitter = new EventEmitter()

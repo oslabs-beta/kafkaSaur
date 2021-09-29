@@ -1,8 +1,19 @@
+
 export default class SeekOffsets {
   constructor(private map: Map <any, any> = new Map()){}
 
   public set(topic: any, partition: any, offset: any) {
     this.map.set([topic, partition], offset)
+
+
+export class SeekOffsets extends Map {
+  delete: any;
+  entries: any;
+  keys: any;
+  size: any;
+  set(topic: any, partition: any, offset: any) {
+    super.set([topic, partition], offset)
+
   }
 
   public has(topic: any, partition: any) {
