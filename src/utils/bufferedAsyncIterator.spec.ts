@@ -2,9 +2,9 @@
 jest.setTimeout(1000)
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
-const sleep = require('./sleep')
+import sleep from './sleep'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'BufferedAs... Remove this comment to see the full error message
-const BufferedAsyncIterator = require('./bufferedAsyncIterator')
+import BufferedAsyncIterator from './bufferedAsyncIterator'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Utils > BufferedAsyncIterator', () => {

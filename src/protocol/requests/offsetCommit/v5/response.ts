@@ -11,7 +11,7 @@ const { parse, decode } = require('../v4/response')
  *       error_code => INT16
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   decode,
   parse,
 }

@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
+import Decoder from '../../../decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import { failure, createErrorFromCode } from '../../../error'
 
 /**
  * AlterConfigs Response (Version: 0) => throttle_time_ms [resources]
@@ -46,7 +46,7 @@ const parse = async (data: any) => {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   decode,
   parse,
 }

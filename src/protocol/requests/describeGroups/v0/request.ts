@@ -12,7 +12,7 @@ const { DescribeGroups: apiKey } = require('../../apiKeys')
  * @param {Array} groupIds List of groupIds to request metadata for (an empty groupId array will return empty group metadata)
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
  groupIds
 }: any) => ({
   apiKey,

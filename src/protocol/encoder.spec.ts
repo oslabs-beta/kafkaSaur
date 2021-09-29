@@ -1,10 +1,10 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
+import Long from '../utils/long'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('./encoder')
+import Encoder from './encoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('./decoder')
+import Decoder from './decoder'
 
 const MAX_SAFE_POSITIVE_SIGNED_INT = 2147483647
 const MIN_SAFE_NEGATIVE_SIGNED_INT = -2147483648

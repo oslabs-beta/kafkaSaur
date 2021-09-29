@@ -12,7 +12,8 @@ const indexTopics = (obj: any, {
 }: any) =>
   assign(obj, { [topic]: partitions.reduce(indexPartitions, {}) })
 
-export default (consumerOffsets: any, topicOffsets: any) => {
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+export (consumerOffsets: any, topicOffsets: any) => {
   const indexedConsumerOffsets = consumerOffsets.reduce(indexTopics, {})
   const indexedTopicOffsets = topicOffsets.reduce(indexTopics, {})
 

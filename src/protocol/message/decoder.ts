@@ -27,7 +27,7 @@ const decodeMessage = (decoder: any, magicByte: any) => {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (offset: any, size: any, decoder: any) => {
+export (offset: any, size: any, decoder: any) => {
   // Don't decrement decoder.offset because slice is already considering the current
   // offset of the decoder
   // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?

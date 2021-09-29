@@ -1,9 +1,9 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'waitFor'.
-const waitFor = require('./waitFor')
+import waitFor from './waitFor'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('./flatten')
+import flatten from './flatten'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Lock'.
-const Lock = require('./lock')
+import Lock from './lock'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
 const sleep = (value: any) => waitFor((delay: any) => delay >= value)

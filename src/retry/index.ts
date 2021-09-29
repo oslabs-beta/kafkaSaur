@@ -1,10 +1,15 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNum... Remove this comment to see the full error message
-const { KafkaJSNumberOfRetriesExceeded } = require('../errors')
+import { KafkaJSNumberOfRetriesExceeded } from '../errors'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const isTestMode = process.env.NODE_ENV === 'test'
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const RETRY_DEFAULT = isTestMode ? require('./defaults.test') : require('./defaults')
+//const RETRY_DEFAULT = isTestMode ? import * from  : import * from './defaults'
+if (isTestMode){
+  import RETRY_DEFAULT from './defaults.test'
+
+} else import RETRY_DEFAULT from './defaults'
+
 
 const random = (min: any, max: any) => {
   return Math.random() * (max - min) + min
@@ -66,7 +71,7 @@ const createRetriable = (configs: any, resolve: any, reject: any, fn: any) => {
  * @returns {Retrier}
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (opts = {}) => (fn: any) => {
+export (opts = {}) => (fn: any) => {
   // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   return new Promise((resolve: any, reject: any) => {
     // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message

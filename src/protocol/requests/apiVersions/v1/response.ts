@@ -1,9 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
-const { failIfVersionNotSupported } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
+import Decoder from '../../../decoder'
+import { failIfVersionNotSupported } from '../../../error'
+import { parse as parseV0 } from '../v0/response'
 
 /**
  * ApiVersions Response (Version: 1) => error_code [api_versions] throttle_time_ms
@@ -48,8 +46,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   decode,
   parse: parseV0,
 }

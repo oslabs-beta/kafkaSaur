@@ -1,28 +1,22 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createAdmi... Remove this comment to see the full error message
-const createAdmin = require('../index')
+import createAdmin from '../index'
 
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'secureRand... Remove this comment to see the full error message
+import {
   secureRandom,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createClus... Remove this comment to see the full error message
   createCluster,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'newLogger'... Remove this comment to see the full error message
   newLogger,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'saslConnec... Remove this comment to see the full error message
   saslConnectionOpts,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'saslBroker... Remove this comment to see the full error message
-  saslBrokers,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('testHelpers')
+  saslBrokers
+} from 'testHelpers'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_RESOUR... Remove this comment to see the full error message
-const ACL_RESOURCE_TYPES = require('../../protocol/aclResourceTypes')
+import ACL_RESOURCE_TYPES from '../../protocol/aclResourceTypes'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_OPERAT... Remove this comment to see the full error message
-const ACL_OPERATION_TYPES = require('../../protocol/aclOperationTypes')
+import ACL_OPERATION_TYPES from '../../protocol/aclOperationTypes'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_PERMIS... Remove this comment to see the full error message
-const ACL_PERMISSION_TYPES = require('../../protocol/aclPermissionTypes')
+import ACL_PERMISSION_TYPES from '../../protocol/aclPermissionTypes'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RESOURCE_P... Remove this comment to see the full error message
-const RESOURCE_PATTERN_TYPES = require('../../protocol/resourcePatternTypes')
+import RESOURCE_PATTERN_TYPES from '../../protocol/resourcePatternTypes'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Admin', () => {

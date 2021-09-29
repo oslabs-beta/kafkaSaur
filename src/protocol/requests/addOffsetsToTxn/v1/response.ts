@@ -1,5 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-const { parse, decode: decodeV0 } = require('../v0/response')
+
+import { parse, decode as decodeV0 } from '../v0/response'
+//stephanie 
+//if error try bellow 
+//import { decodeV0 } from '../v0/response'
+//const {parse, decode } =decodeV0 
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.

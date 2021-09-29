@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { format } = require('util')
+import { format } from 'util'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSLoc... Remove this comment to see the full error message
-const { KafkaJSLockTimeout } = require('../errors')
+import { KafkaJSLockTimeout } from '../src/errors.ts'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
@@ -18,7 +18,7 @@ const PRIVATE = {
 const TIMEOUT_MESSAGE = 'Timeout while acquiring lock (%d waiting locks)'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Lock {
+export class Lock {
   constructor({
     timeout,
     description = null

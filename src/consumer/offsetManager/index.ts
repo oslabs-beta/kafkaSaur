@@ -12,6 +12,7 @@ const indexTopics = (topics: any) => topics.reduce((obj: any, topic: any) => ass
 const PRIVATE = {
   COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets'),
 }
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class OffsetManager {
   autoCommit: any;
   autoCommitInterval: any;

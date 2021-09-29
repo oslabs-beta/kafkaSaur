@@ -1,5 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RequestV1P... Remove this comment to see the full error message
-const RequestV1Protocol = require('./request')
+
+import RequestV1Protocol from './request'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > CreateAcls > v1', () => {

@@ -25,7 +25,7 @@ if (global && global.crypto) {
 const MAX_BYTES = 65536
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (size: any) => {
+export (size: any) => {
   if (size > MAX_BYTES) {
     throw new KafkaJSNonRetriableError(
       `Byte length (${size}) exceeds the max number of bytes of entropy available (${MAX_BYTES})`

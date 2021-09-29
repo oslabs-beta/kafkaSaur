@@ -23,7 +23,9 @@ const notInitializedLookup = () => {
  *
  * @type {import("../../types").Broker}
  */
+
 export default class Broker {
+
     allowAutoTopicCreation: any;
     authenticatedAt: any;
     authenticationTimeout: any;

@@ -22,7 +22,10 @@ import { KafkaJSConnectionError, KafkaJSNonRetriableError } from '../errors.ts'
  * @param {import("../instrumentation/emitter")} [options.instrumentationEmitter]
  * @returns {ConnectionBuilder}
  */
-export default ({
+
+// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+export ({
+
   socketFactory,
   brokers,
   ssl,

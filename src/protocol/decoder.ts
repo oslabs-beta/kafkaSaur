@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSInv... Remove this comment to see the full error message
-const { KafkaJSInvalidVarIntError, KafkaJSInvalidLongError } = require('../errors')
+import { KafkaJSInvalidVarIntError, KafkaJSInvalidLongError } from '../errors'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
+import Long from '../utils/long'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT8_SIZE'... Remove this comment to see the full error message
 const INT8_SIZE = 1
@@ -20,7 +20,7 @@ const MOST_SIGNIFICANT_BIT = 0x80 // 128
 const OTHER_BITS = 0x7f // 127
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Decoder {
+export class Decoder {
   buffer: any;
   offset: any;
   static int32Size() {

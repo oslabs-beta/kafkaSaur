@@ -27,7 +27,7 @@ const SUPPORTED_MECHANISMS = Object.keys(AUTHENTICATORS)
 const UNLIMITED_SESSION_LIFETIME = '0'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class SASLAuthenticator {
+export class SASLAuthenticator {
   connection: any;
   logger: any;
   protocolAuthentication: any;

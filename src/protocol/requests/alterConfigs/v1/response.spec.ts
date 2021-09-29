@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const { decode, parse } = require('./response')
+import { decode, parse } from './response'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RESOURCE_T... Remove this comment to see the full error message
-const RESOURCE_TYPES = require('../../../resourceTypes')
+import RESOURCE_TYPES from '../../../resourceTypes'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > AlterConfigs > v1', () => {
