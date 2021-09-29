@@ -1,15 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Broker'.
-const Broker = require('../broker')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'shuffle'.
-const shuffle = require('../utils/shuffle')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'arrayDiff'... Remove this comment to see the full error message
-const arrayDiff = require('../utils/arrayDiff')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSBro... Remove this comment to see the full error message
-const { KafkaJSBrokerNotFound, KafkaJSProtocolError } = require('../errors')
+import Broker from '../broker'
+import createRetry from '../retry'
+import shuffle from '../utils/shuffle.ts'
+import arrayDiff from '../utils/arrayDiff.ts'
+import { KafkaJSBrokerNotFound, KafkaJSProtocolError } from '../errors.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
+
 const { keys, assign, values } = Object
 const hasBrokerBeenReplaced = (broker: any, {
   host,
@@ -20,8 +15,7 @@ const hasBrokerBeenReplaced = (broker: any, {
   broker.connection.port !== port ||
   broker.connection.rack !== rack
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class BrokerPool {
+export class BrokerPool {
   brokers: any;
   connectionBuilder: any;
   createBroker: any;
@@ -86,7 +80,7 @@ module.exports = class BrokerPool {
     (this.seedBroker ? this.seedBroker.isConnected() : false);
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+  
   async createSeedBroker() {
     if (this.seedBroker) {
       await this.seedBroker.disconnect()
@@ -111,12 +105,12 @@ module.exports = class BrokerPool {
       await this.createSeedBroker()
     }
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+    
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await this.seedBroker.connect()
         this.versions = this.seedBroker.versions
-      } catch (e) {
+      } catch (e : any) {
         if (e.name === 'KafkaJSConnectionError' || e.type === 'ILLEGAL_SASL_STATE') {
           // Connection builder will always rotate the seed broker
           await this.createSeedBroker()
@@ -140,7 +134,7 @@ module.exports = class BrokerPool {
    */
   async disconnect() {
     this.seedBroker && (await this.seedBroker.disconnect())
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
+    
     await Promise.all(values(this.brokers).map((broker: any) => broker.disconnect()))
 
     this.brokers = {}
@@ -182,7 +176,6 @@ module.exports = class BrokerPool {
     const broker = await this.findConnectedBroker()
     const { host: seedHost, port: seedPort } = this.seedBroker.connection
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         this.metadata = await broker.metadata(topics)
@@ -241,9 +234,7 @@ module.exports = class BrokerPool {
           })
         })
 
-        // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'broker' implicitly has an 'any' type.
-        const replacedBrokersDisconnects = replacedBrokers.map(broker => broker.disconnect())
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
+        const replacedBrokersDisconnects = replacedBrokers.map((broker: any) => broker.disconnect())
         await Promise.all([...brokerDisconnects, ...replacedBrokersDisconnects])
       } catch (e) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
@@ -287,7 +278,6 @@ module.exports = class BrokerPool {
     const broker = this.brokers[nodeId]
 
     if (!broker) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSBrokerNotFound(`Broker ${nodeId} not found in the cached metadata`)
     }
 
@@ -304,7 +294,6 @@ module.exports = class BrokerPool {
   async withBroker(callback: any) {
     const brokers = shuffle(keys(this.brokers))
     if (brokers.length === 0) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSBrokerNotFound('No brokers in the broker pool')
     }
 
@@ -355,7 +344,7 @@ module.exports = class BrokerPool {
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await broker.connect()
-      } catch (e) {
+      } catch (e : any) {
         if (e.name === 'KafkaJSConnectionError' || e.type === 'ILLEGAL_SASL_STATE') {
           await broker.disconnect()
         }

@@ -22,7 +22,7 @@ const reversedWrappedEvents = swapObject(wrappedEvents)
 const unwrap = (eventName: any) => wrappedEvents[eventName] || eventName
 const wrap = (eventName: any) => reversedWrappedEvents[eventName] || eventName
 
-export default {
+export {
   events,
   wrap,
   unwrap,

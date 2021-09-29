@@ -4,7 +4,8 @@ import waitFor from '../utils/waitFor.ts'
 import groupBy from '../utils/groupBy.ts'
 import createConsumer from '../consumer'
 import InstrumentationEventEmitter from '../instrumentation/emitter.ts'
-import { events, wrap as wrapEvent, unwrap as unwrapEvent } from './instrumentationEvents.ts'
+import  * as events  from './instrumentationEvents.ts'
+
 import { LEVELS } from '../loggers'
 import {
   KafkaJSNonRetriableError,
@@ -21,8 +22,11 @@ import ACL_PERMISSION_TYPES from '../protocol/aclPermissionTypes.ts'
 import RESOURCE_PATTERN_TYPES from '../protocol/resourcePatternTypes.ts'
 import Constants from '../constants.ts'
 
+const { wrapEvent } : any = events.wrap
+const { unwrapEvent } : any = events.unwrap
+
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
-const { CONNECT, DISCONNECT } = events
+const { CONNECT, DISCONNECT } : any = events
 
 const NO_CONTROLLER_ID = -1
 
@@ -1639,7 +1643,6 @@ export default ({
 
     return instrumentationEmitter.addListener(unwrapEvent(eventName), (event: any) => {
       event.type = wrapEvent(event.type)
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       Promise.resolve(listener(event)).catch((e: any) => {
         logger.error(`Failed to execute listener: ${e.message}`, {
           eventName,

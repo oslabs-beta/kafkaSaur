@@ -1,24 +1,21 @@
-export class SeekOffsets extends Map {
-  delete: any;
-  entries: any;
-  keys: any;
-  size: any;
-  set(topic: any, partition: any, offset: any) {
-    super.set([topic, partition], offset)
+export default class SeekOffsets {
+  constructor(private map: Map <any, any> = new Map()){}
+
+  public set(topic: any, partition: any, offset: any) {
+    this.map.set([topic, partition], offset)
   }
 
-  has(topic: any, partition: any) {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
-    return Array.from(this.keys()).some(([t, p]) => t === topic && p === partition)
+  public has(topic: any, partition: any) {
+    return Array.from(this.map.keys()).some(([t, p]) => t === topic && p === partition)
   }
 
-  pop() {
-    if (this.size === 0) {
+  public pop() {
+    if (this.map.size === 0) {
       return
     }
 
-    const [key, offset] = this.entries().next().value
-    this.delete(key)
+    const [key, offset] = this.map.entries().next().value
+    this.map.delete(key)
     const [topic, partition] = key
     return { topic, partition, offset }
   }
