@@ -1,5 +1,5 @@
 import Long from '../utils/long.ts'
-import Lock from '../utils/lock.ts'
+import {Lock} from '../utils/lock.ts'
 import { Types as Compression } from '../protocol/message/compression'
 import { requests, lookup } from '../protocol/requests'
 import { KafkaJSNonRetriableError } from '../errors.ts'
@@ -24,7 +24,7 @@ const notInitializedLookup = () => {
  * @type {import("../../types").Broker}
  */
 
-export default class Broker {
+export class Broker {
 
     allowAutoTopicCreation: any;
     authenticatedAt: any;

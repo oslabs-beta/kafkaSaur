@@ -8,8 +8,8 @@ import sharedPromiseTo from '../utils/sharedPromiseTo.ts'
 
 import OffsetManager from './offsetManager'
 import Batch from './batch.ts'
-import SeekOffsets from './seekOffsets.ts'
-import SubscriptionState from './subscriptionState.ts'
+import {SeekOffsets} from './seekOffsets.ts'
+import {SubscriptionState} from './subscriptionState.ts'
 import {events} from './instrumentationEvents.ts'
 import { MemberAssignment } from './assignerProtocol.ts'
 import {

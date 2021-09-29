@@ -3,7 +3,7 @@ import flatten from '../utils/flatten.ts'
 import waitFor from '../utils/waitFor.ts'
 import groupBy from '../utils/groupBy.ts'
 import createConsumer from '../consumer'
-import InstrumentationEventEmitter from '../instrumentation/emitter.ts'
+import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts'
 import  * as events  from './instrumentationEvents.ts'
 
 import { LEVELS } from '../loggers'
@@ -82,7 +82,6 @@ const indexByPartition = (array: any) => array.reduce(
  * @returns {import("../../types").Admin}
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 
 export default ({
 
@@ -168,7 +167,7 @@ export default ({
         }
 
         return true
-      } catch (e) {
+      } catch (e:any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not create topics', { error: e.message, retryCount, retryTime })
           throw e
@@ -222,7 +221,7 @@ export default ({
         await cluster.refreshMetadata()
         const broker = await cluster.findControllerBroker()
         await broker.createPartitions({ topicPartitions, validateOnly, timeout })
-      } catch (e) {
+      } catch (e:any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not create topics', { error: e.message, retryCount, retryTime })
           throw e
@@ -336,7 +335,7 @@ export default ({
           low: lowPartitions.find(({ partition: lowPartition }) => lowPartition === partition)
             .offset,
         }));
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'UNKNOWN_TOPIC_OR_PARTITION') {
           await cluster.refreshMetadata()
           throw e
@@ -376,7 +375,7 @@ export default ({
             partitions,
           },
         ])
-        const { partitions: highPartitions } = high.pop()
+        const { partitions: highPartitions } : any = high.pop()
 
         const offsets = await cluster.fetchTopicsOffset([
           {
@@ -395,8 +394,7 @@ export default ({
           offset:
             parseInt(offset, 10) >= 0
               ? offset
-              : // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'highPartition' implicitly has an ... Remove this comment to see the full error message
-                highPartitions.find(({ partition: highPartition }) => highPartition === partition)
+                highPartitions.find(({ partition: highPartition }: any) => highPartition === partition)
                   .offset,
         }));
       } catch (e) {
@@ -448,7 +446,6 @@ export default ({
     }
 
     const coordinator = await cluster.findGroupCoordinator({ groupId })
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const topicsToFetch = await Promise.all(
       topics.map(async (topic: any) => {
         const partitions = await findTopicPartitions(cluster, topic)
@@ -464,7 +461,6 @@ export default ({
     })
 
     if (resolveOffsets) {
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       consumerOffsets = await Promise.all(
         consumerOffsets.map(async ({
           topic,
@@ -594,7 +590,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise((resolve: any, reject: any) => {
       consumer.on(consumer.events.FETCH, async () =>
         consumer
@@ -619,7 +614,6 @@ export default ({
     });
   }
 
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'any[]'... Remove this comment to see the full error message
   const isBrokerConfig = (type: any) => [CONFIG_RESOURCE_TYPES.BROKER, CONFIG_RESOURCE_TYPES.BROKER_LOGGER].includes(type)
 
   /**
@@ -666,9 +660,7 @@ export default ({
       throw new KafkaJSNonRetriableError('Resources array cannot be empty')
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourceTypes = Object.values(CONFIG_RESOURCE_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidType = resources.find((r: any) => !validResourceTypes.includes(r.type))
 
     if (invalidType) {
@@ -677,7 +669,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidName = resources.find((r: any) => !r.name || typeof r.name !== 'string')
 
     if (invalidName) {
@@ -686,7 +677,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidConfigs = resources.find(
       (r: any) => !Array.isArray(r.configNames) && r.configNames != null
     )
@@ -717,9 +707,7 @@ export default ({
           })
         }
 
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
         const brokers = Array.from(resourcerByBroker.keys())
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         const responses = await Promise.all(brokers.map(describeConfigsAction))
         const responseResources = responses.reduce(
           (result: any, {
@@ -729,7 +717,7 @@ export default ({
         )
 
         return { resources: responseResources }
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not describe configs', { error: e.message, retryCount, retryTime })
           throw e
@@ -766,9 +754,7 @@ export default ({
       throw new KafkaJSNonRetriableError('Resources array cannot be empty')
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourceTypes = Object.values(CONFIG_RESOURCE_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidType = resources.find((r: any) => !validResourceTypes.includes(r.type))
 
     if (invalidType) {
@@ -777,7 +763,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidName = resources.find((r: any) => !r.name || typeof r.name !== 'string')
 
     if (invalidName) {
@@ -786,7 +771,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidConfigs = resources.find((r: any) => !Array.isArray(r.configEntries))
 
     if (invalidConfigs) {
@@ -796,7 +780,6 @@ export default ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     const invalidConfigValue = resources.find((r: any) => r.configEntries.some((e: any) => typeof e.name !== 'string' || typeof e.value !== 'string')
     )
 
@@ -825,9 +808,7 @@ export default ({
           })
         }
 
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
         const brokers = Array.from(resourcerByBroker.keys())
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         const responses = await Promise.all(brokers.map(alterConfigsAction))
         const responseResources = responses.reduce(
           (result: any, {
@@ -837,7 +818,7 @@ export default ({
         )
 
         return { resources: responseResources }
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not alter configs', { error: e.message, retryCount, retryTime })
           throw e
@@ -880,9 +861,7 @@ export default ({
     const { topics } = options || {}
 
     if (topics) {
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       await Promise.all(
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         topics.map(async (topic: any) => {
           if (!topic) {
             throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
@@ -890,7 +869,7 @@ export default ({
 
           try {
             await cluster.addTargetTopic(topic)
-          } catch (e) {
+          } catch (e: any) {
             e.message = `Failed to add target topic ${topic}: ${e.message}`
             throw e
           }
@@ -902,7 +881,6 @@ export default ({
     const targetTopics = topics || [...cluster.targetTopics]
 
     return {
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       topics: await Promise.all(
         targetTopics.map(async (topic: any) => ({
           name: topic,
@@ -1025,7 +1003,6 @@ export default ({
    * @return {Promise<GroupDescriptions>}
    */
   const describeGroups = async (groupIds: any) => {
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const coordinatorsForGroup = await Promise.all(
       groupIds.map(async (groupId: any) => {
         const coordinator = await cluster.findGroupCoordinator({ groupId })
@@ -1036,7 +1013,6 @@ export default ({
       })
     )
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const groupsByCoordinator = Object.values(
       coordinatorsForGroup.reduce((coordinators: any, {
         coordinator,
@@ -1056,7 +1032,6 @@ export default ({
       }, {})
     )
 
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const responses = await Promise.all(
       groupsByCoordinator.map(async ({
         coordinator,
@@ -1106,22 +1081,17 @@ export default ({
 
         await cluster.refreshMetadata()
 
-        const brokersPerGroups = {}
-        const brokersPerNode = {}
+        const brokersPerGroups: any = {}
+        const brokersPerNode: any = {}
         for (const groupId of clonedGroupIds) {
           const broker = await cluster.findGroupCoordinator({ groupId })
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           if (brokersPerGroups[broker.nodeId] === undefined) brokersPerGroups[broker.nodeId] = []
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           brokersPerGroups[broker.nodeId].push(groupId)
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           brokersPerNode[broker.nodeId] = broker
         }
 
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         const res = await Promise.all(
           Object.keys(brokersPerNode).map(
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             async nodeId => await brokersPerNode[nodeId].deleteGroups(brokersPerGroups[nodeId])
           )
         )
@@ -1153,7 +1123,7 @@ export default ({
         }: any) => results))
 
         return results
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'NOT_CONTROLLER' || e.type === 'COORDINATOR_NOT_AVAILABLE') {
           logger.warn('Could not delete groups', { error: e.message, retryCount, retryTime })
           throw e
@@ -1234,8 +1204,7 @@ export default ({
     }
 
     const seekEntriesByBroker = entries(partitionsByBroker).reduce(
-      // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'nodeId' implicitly has an 'any' t... Remove this comment to see the full error message
-      (obj: any, [nodeId, nodePartitions]) => {
+      (obj: any, [nodeId, nodePartitions]: any) => {
         obj[nodeId] = {
           topic,
           partitions: partitions.filter((p: any) => nodePartitions.includes(p.partition)),
@@ -1246,20 +1215,15 @@ export default ({
     )
 
     const retrier = createRetry(retry)
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     return retrier(async (bail: any) => {
       try {
         const partitionErrors: any = []
 
         const brokerRequests = entries(seekEntriesByBroker).map(
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'nodeId' implicitly has an 'any' t... Remove this comment to see the full error message
           ([nodeId, {
-            // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topic' implicitly has an 'any' ty... Remove this comment to see the full error message
             topic,
-            // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'partitions' implicitly has an 'an... Remove this comment to see the full error message
             partitions
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'any' implicitly has an 'any' type... Remove this comment to see the full error message
-          }: any]) => async () => {
+          }]: any) => async () => {
             const broker = await cluster.findBroker({ nodeId })
             await broker.deleteRecords({ topics: [{ topic, partitions }] })
             // remove successful entry so it's ignored on retry
@@ -1267,7 +1231,6 @@ export default ({
           }
         )
 
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         await Promise.all(
           brokerRequests.map((request: any) => request().catch((e: any) => {
             if (e.name === 'KafkaJSDeleteTopicRecordsError') {
@@ -1296,7 +1259,7 @@ export default ({
             partitions: partitionErrors,
           })
         }
-      } catch (e) {
+      } catch (e:any) {
         if (
           e.retriable &&
           e.partitions.some(
@@ -1349,9 +1312,7 @@ export default ({
 
     let invalidType
     // Validate operation
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validOperationTypes = Object.values(ACL_OPERATION_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = acl.find((i: any) => !validOperationTypes.includes(i.operation))
 
     if (invalidType) {
@@ -1361,9 +1322,7 @@ export default ({
     }
 
     // Validate resourcePatternTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourcePatternTypes = Object.values(RESOURCE_PATTERN_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = acl.find((i: any) => !validResourcePatternTypes.includes(i.resourcePatternType))
 
     if (invalidType) {
@@ -1375,9 +1334,7 @@ export default ({
     }
 
     // Validate permissionTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validPermissionTypes = Object.values(ACL_PERMISSION_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = acl.find((i: any) => !validPermissionTypes.includes(i.permissionType))
 
     if (invalidType) {
@@ -1387,9 +1344,7 @@ export default ({
     }
 
     // Validate resourceTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourceTypes = Object.values(ACL_RESOURCE_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = acl.find((i: any) => !validResourceTypes.includes(i.resourceType))
 
     if (invalidType) {
@@ -1407,7 +1362,7 @@ export default ({
         await broker.createAcls({ acl })
 
         return true
-      } catch (e) {
+      } catch (e:any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not create ACL', { error: e.message, retryCount, retryTime })
           throw e
@@ -1462,14 +1417,12 @@ export default ({
     }
 
     // Validate operation
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validOperationTypes = Object.values(ACL_OPERATION_TYPES)
     if (!validOperationTypes.includes(operation)) {
       throw new KafkaJSNonRetriableError(`Invalid operation type ${operation}`)
     }
 
     // Validate resourcePatternType
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourcePatternTypes = Object.values(RESOURCE_PATTERN_TYPES)
     if (!validResourcePatternTypes.includes(resourcePatternType)) {
       throw new KafkaJSNonRetriableError(

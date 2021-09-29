@@ -1,11 +1,14 @@
 
-export class SeekOffsets extends Map {
+export class SeekOffsets{
+  constructor(private map: Map <any, any> = new Map()){}
+
   delete: any;
   entries: any;
   keys: any;
   size: any;
-  set(topic: any, partition: any, offset: any) {
-    super.set([topic, partition], offset)
+  
+  public set(topic: any, partition: any, offset: any) {
+    this.map.set([topic, partition], offset)
 
   }
 
