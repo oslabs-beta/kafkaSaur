@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPro... Remove this comment to see the full error message
-const { KafkaJSProtocolError } = require('../errors')
+import { KafkaJSProtocolError } from '../errors'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'websiteUrl... Remove this comment to see the full error message
-const websiteUrl = require('../utils/websiteUrl')
+import websiteUrl from '../utils/websiteUrl'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'errorCodes... Remove this comment to see the full error message
 const errorCodes = [
@@ -600,7 +600,7 @@ const staleMetadata = (e: any) => ['UNKNOWN_TOPIC_OR_PARTITION', 'LEADER_NOT_AVA
 )
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   failure,
   errorCodes,
   createErrorFromCode,

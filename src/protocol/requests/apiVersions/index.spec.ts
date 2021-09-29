@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const ApiVersions = require('./index')
+import ApiVersions from './index'
 const ApiVersionsV0 = ApiVersions.protocol({ version: 0 })
 const ApiVersionsV1 = ApiVersions.protocol({ version: 1 })
 const ApiVersionsV2 = ApiVersions.protocol({ version: 2 })

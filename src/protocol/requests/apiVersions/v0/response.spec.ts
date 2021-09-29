@@ -1,8 +1,8 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'unsupporte... Remove this comment to see the full error message
-const { unsupportedVersionResponse } = require('testHelpers')
+import { unsupportedVersionResponse } from 'testHelpers'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const { decode, parse } = require('./response')
-
+import { decode, parse } from './response'
+//steph line 2 "testHelper"
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > ApiVersions > v0', () => {
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message

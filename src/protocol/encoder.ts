@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
+import {Long} from '../utils/long'
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT8_SIZE'... Remove this comment to see the full error message
 const INT8_SIZE = 1
@@ -21,7 +21,7 @@ const UNSIGNED_INT32_MAX_NUMBER = 0xffffff80
 const UNSIGNED_INT64_MAX_NUMBER = 0xffffffffffffff80n
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Encoder {
+export class Encoder {
   buf: any;
   offset: any;
   static encodeZigZag(value: any) {

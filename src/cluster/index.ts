@@ -21,6 +21,7 @@ const mergeTopics = (
   [topic]: [...(obj[topic] || []), ...partitions]
 })
 
+
 export class Cluster {
   brokerPool: any;
   committedOffsetsByGroup: any;

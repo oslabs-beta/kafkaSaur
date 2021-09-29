@@ -6,7 +6,7 @@ const createState = (topic: any) => ({
 })
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class SubscriptionState {
+export class SubscriptionState {
   assignedPartitionsByTopic: any;
   subscriptionStatesByTopic: any;
   constructor() {

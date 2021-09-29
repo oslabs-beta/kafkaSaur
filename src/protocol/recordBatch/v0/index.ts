@@ -1,18 +1,24 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../../../utils/long')
+
+import Long from '../../../utils/long'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../encoder')
+import Encoder from '../../encoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'crc32C'.
-const crc32C = require('../crc32C')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Compressio... Remove this comment to see the full error message
-  Types: Compression,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookupCode... Remove this comment to see the full error message
+import crc32C from '../crc32C'
+import {
+  Types as Compression,
   lookupCodec,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'COMPRESSIO... Remove this comment to see the full error message
-  COMPRESSION_CODEC_MASK,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../../message/compression')
+  COMPRESSION_CODEC_MASK
+} from '../../message/compression'
+
+// const {
+//   
+//   Types: Compression,
+//   
+//   lookupCodec,
+//   
+//   COMPRESSION_CODEC_MASK,
+// 
+// } = require('../../message/compression')
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MAGIC_BYTE... Remove this comment to see the full error message
 const MAGIC_BYTE = 2
@@ -97,7 +103,7 @@ const compressRecords = async (compression: any, records: any) => {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   RecordBatch,
   MAGIC_BYTE,
 }

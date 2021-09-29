@@ -7,7 +7,7 @@
  * Returns promise from the currently executing invocation.
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (asyncFunction: any) => {
+export (asyncFunction: any) => {
   let promise: any = null
 
   return (...args: any[]) => {

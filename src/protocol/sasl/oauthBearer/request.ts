@@ -26,7 +26,7 @@
  */
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../encoder')
+import Encoder from '../../encoder'
 
 const SEPARATOR = '\u0001' // SOH - Start Of Header ASCII
 
@@ -47,7 +47,7 @@ function formatExtensions(extensions: any) {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = async ({ authorizationIdentity = null }, oauthBearerToken: any) => {
+export default async ({ authorizationIdentity = null }, oauthBearerToken: any) => {
   const authzid = authorizationIdentity == null ? '' : `"a=${authorizationIdentity}`
   let ext = formatExtensions(oauthBearerToken.extensions)
   if (ext.length > 0) {

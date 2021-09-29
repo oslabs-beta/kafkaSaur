@@ -21,7 +21,7 @@ const hasBrokerBeenReplaced = (broker: any, {
   broker.connection.rack !== rack
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class BrokerPool {
+export class BrokerPool {
   brokers: any;
   connectionBuilder: any;
   createBroker: any;

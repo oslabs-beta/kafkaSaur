@@ -260,7 +260,7 @@ var CRC_TABLE = new Int32Array([
 ])
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (encoder: any) => {
+export default (encoder: any) => {
   const { buffer } = encoder
   const l = buffer.length
   let crc = -1
@@ -268,4 +268,4 @@ module.exports = (encoder: any) => {
     crc = CRC_TABLE[(crc ^ buffer[n]) & 0xff] ^ (crc >>> 8)
   }
   return crc ^ -1
-}
+}}

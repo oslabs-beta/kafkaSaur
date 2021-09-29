@@ -1,13 +1,13 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../../utils/long')
+import Long from '../../utils/long'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../decoder')
+import Decoder from '../decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageDec... Remove this comment to see the full error message
-const MessageDecoder = require('../message/decoder')
+import MessageDecoder from '../message/decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookupCode... Remove this comment to see the full error message
-const { lookupCodecByAttributes } = require('../message/compression')
+import { lookupCodecByAttributes } from '../message/compression'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPar... Remove this comment to see the full error message
-const { KafkaJSPartialMessageError } = require('../../errors')
+import { KafkaJSPartialMessageError } from '../../errors'
 
 /**
  * MessageSet => [Offset MessageSize Message]
@@ -17,7 +17,7 @@ const { KafkaJSPartialMessageError } = require('../../errors')
  */
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = async (primaryDecoder: any, size = null) => {
+export default async (primaryDecoder: any, size = null) => {
   const messages = []
   const messageSetSize = size || primaryDecoder.readInt32()
   const messageSetDecoder = primaryDecoder.slice(messageSetSize)

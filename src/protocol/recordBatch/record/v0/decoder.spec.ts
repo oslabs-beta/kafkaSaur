@@ -1,9 +1,9 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
+import Decoder from '../../../decoder'
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const recordDecoder = require('./decoder')
+import recordDecoder from './decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'TimestampT... Remove this comment to see the full error message
-const TimestampTypes = require('../../../timestampTypes')
+import TimestampTypes from '../../../timestampTypes'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > RecordBatch > Record > v0', () => {

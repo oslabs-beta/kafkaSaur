@@ -18,7 +18,7 @@ const PRIVATE = {
 const REQUEST_QUEUE_EMPTY = 'requestQueueEmpty'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class RequestQueue extends EventEmitter {
+export class RequestQueue extends EventEmitter {
   broker: any;
   clientId: any;
   emit: any;

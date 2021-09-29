@@ -1,5 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const { decode, parse } = require('./response')
+
+import { decode, parse } from './response'
+//steph
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > CreateAcls > v1', () => {

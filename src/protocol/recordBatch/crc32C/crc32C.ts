@@ -16,7 +16,7 @@ const crc32C = (buffer: any) => {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = crc32C
+export default crc32C
 
 // prettier-ignore
 var T = new Int32Array([

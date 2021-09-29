@@ -6,7 +6,9 @@ import filterAbortedMessages from './filterAbortedMessages.ts';
  *
  * A batch could contain _multiple_ Kafka RecordBatches.
  */
+
 export default class Batch {
+
   fetchedOffset: any;
   highWatermark: any;
   messages: any;

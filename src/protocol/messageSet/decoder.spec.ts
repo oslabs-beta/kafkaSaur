@@ -1,11 +1,11 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../encoder')
+import Encoder from '../encoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../decoder')
+import Decoder from '../decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSet = require('./index')
+import MessageSet from './index'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSetDecoder = require('./decoder')
+import MessageSetDecoder from './decoder'
 
 const messages = [
   {

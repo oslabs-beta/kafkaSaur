@@ -1,8 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
 const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
 const { CreateAcls: apiKey } = require('../../apiKeys')
-
+//steph
 /**
  * CreateAcls Request (Version: 1) => [creations]
  *   creations => resource_type resource_name resource_pattern_type principal host operation permission_type
@@ -15,7 +13,6 @@ const { CreateAcls: apiKey } = require('../../apiKeys')
  *     permission_type => INT8
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeCrea... Remove this comment to see the full error message
 const encodeCreations = ({
   resourceType,
   resourceName,
@@ -36,7 +33,7 @@ const encodeCreations = ({
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
   creations
 }: any) => ({
   apiKey,

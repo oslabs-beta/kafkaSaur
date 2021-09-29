@@ -1,3 +1,4 @@
+
 export class SeekOffsets extends Map {
   delete: any;
   entries: any;

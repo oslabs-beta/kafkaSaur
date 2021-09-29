@@ -20,7 +20,7 @@ const CONSUMING_START = 'consuming-start'
 const CONSUMING_STOP = 'consuming-stop'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Runner extends EventEmitter {
+export class Runner extends EventEmitter {
   _consuming: any;
   autoCommit: any;
   consumerGroup: any;

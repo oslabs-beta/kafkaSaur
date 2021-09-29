@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
+import { KafkaJSNonRetriableError } from '../errors'
 
 const REJECTED_ERROR = new KafkaJSNonRetriableError(
   'Queued function aborted due to earlier promise rejection'
@@ -67,4 +67,4 @@ const concurrency = ({
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = concurrency
+export concurrency

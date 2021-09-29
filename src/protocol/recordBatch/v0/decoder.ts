@@ -1,13 +1,13 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../decoder')
+import Decoder from '../../decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPar... Remove this comment to see the full error message
-const { KafkaJSPartialMessageError } = require('../../../errors')
+import { KafkaJSPartialMessageError } from '../../../errors'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookupCode... Remove this comment to see the full error message
-const { lookupCodecByAttributes } = require('../../message/compression')
+import { lookupCodecByAttributes } from '../../message/compression'
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const RecordDecoder = require('../record/v0/decoder')
+import RecordDecoder from '../record/v0/decoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'TimestampT... Remove this comment to see the full error message
-const TimestampTypes = require('../../timestampTypes')
+import TimestampTypes from '../../timestampTypes'
 
 const TIMESTAMP_TYPE_FLAG_MASK = 0x8
 const TRANSACTIONAL_FLAG_MASK = 0x10
@@ -32,7 +32,7 @@ const CONTROL_FLAG_MASK = 0x20
  */
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = async (fetchDecoder: any) => {
+export async (fetchDecoder: any) => {
   const firstOffset = fetchDecoder.readInt64().toString()
   const length = fetchDecoder.readInt32()
   const decoder = fetchDecoder.slice(length)
