@@ -4,7 +4,7 @@ const KEEP_ALIVE_DELAY = 60000 // in ms
  * @returns {import("../../types").ISocketFactory}
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = () => {
+export () => {
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
   const net = require('net')
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message

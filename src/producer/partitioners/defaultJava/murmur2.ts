@@ -16,7 +16,7 @@ const M = Long.fromValue(0x5bd1e995)
 const R = Long.fromValue(24)
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (key: any) => {
+export (key: any) => {
   // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
   const data = Buffer.isBuffer(key) ? key : Buffer.from(String(key))
   const length = data.length

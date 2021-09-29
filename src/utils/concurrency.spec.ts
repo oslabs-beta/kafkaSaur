@@ -1,9 +1,9 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
+import { KafkaJSNonRetriableError } from '../errors'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
-const sleep = require('./sleep')
+import sleep from './sleep'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'concurrenc... Remove this comment to see the full error message
-const concurrency = require('./concurrency')
+import concurrency from './concurrency'
 
 const after = async (delay: any, fn: any) =>
   // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message

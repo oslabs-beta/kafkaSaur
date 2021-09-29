@@ -12,7 +12,7 @@ const { SaslHandshake: apiKey } = require('../../apiKeys')
  * @param {string} mechanism - SASL Mechanism chosen by the client
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
  mechanism
 }: any) => ({
   apiKey,

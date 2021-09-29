@@ -19,7 +19,7 @@ const toPositive = (x: any) => x & 0x7fffffff
  *  - If no partition or key is present choose a partition in a round-robin fashion
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (murmur2: any) => () => {
+export (murmur2: any) => () => {
   let counter = randomBytes(32).readUInt32BE(0)
 
   return ({

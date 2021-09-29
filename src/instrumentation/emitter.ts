@@ -6,7 +6,7 @@ const InstrumentationEvent = require('./event')
 const { KafkaJSError } = require('../errors')
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class InstrumentationEventEmitter {
+export class InstrumentationEventEmitter {
   emitter: any;
   constructor() {
     this.emitter = new EventEmitter()

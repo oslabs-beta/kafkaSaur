@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('./long')
+import Long from './long'
 
 // @ts-expect-error ts-migrate(2737) FIXME: BigInt literals are not available when targeting l... Remove this comment to see the full error message
 const max = new Long(9223372036854775807n) // max signed int 64

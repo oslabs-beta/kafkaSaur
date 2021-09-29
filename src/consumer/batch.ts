@@ -9,7 +9,7 @@ const filterAbortedMessages = require('./filterAbortedMessages')
  * A batch could contain _multiple_ Kafka RecordBatches.
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Batch {
+export class Batch {
   fetchedOffset: any;
   highWatermark: any;
   messages: any;

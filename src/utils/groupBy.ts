@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = async (array: any, groupFn: any) => {
+export async (array: any, groupFn: any) => {
   // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
   const result = new Map()
 

@@ -1,9 +1,9 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../encoder')
+import Encoder from '../../encoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'crc32'.
-const crc32 = require('../../crc32')
+import crc32 from '../../crc32'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Compressio... Remove this comment to see the full error message
-const { Types: Compression, COMPRESSION_CODEC_MASK } = require('../compression')
+import { Types as Compression, COMPRESSION_CODEC_MASK } from '../compression'
 
 /**
  * v1 (supported since 0.10.0)
@@ -17,7 +17,7 @@ const { Types: Compression, COMPRESSION_CODEC_MASK } = require('../compression')
  */
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
   compression = Compression.None,
   timestamp = Date.now(),
   key,
