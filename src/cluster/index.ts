@@ -1,37 +1,17 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'BrokerPool... Remove this comment to see the full error message
-const BrokerPool = require('./brokerPool')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Lock'.
-const Lock = require('../utils/lock')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'connection... Remove this comment to see the full error message
-const connectionBuilder = require('./connectionBuilder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../utils/flatten')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'EARLIEST_O... Remove this comment to see the full error message
-const { EARLIEST_OFFSET, LATEST_OFFSET } = require('../constants')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSErr... Remove this comment to see the full error message
-  KafkaJSError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSBro... Remove this comment to see the full error message
-  KafkaJSBrokerNotFound,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMet... Remove this comment to see the full error message
-  KafkaJSMetadataNotLoaded,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSTop... Remove this comment to see the full error message
-  KafkaJSTopicMetadataNotLoaded,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSGro... Remove this comment to see the full error message
-  KafkaJSGroupCoordinatorNotFound,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'COORDINATO... Remove this comment to see the full error message
-const COORDINATOR_TYPES = require('../protocol/coordinatorTypes')
+import BrokerPool from './brokerPool.ts'
+import Lock from '../utils/lock.ts'
+import createRetry from '../retry'
+import connectionBuilder from './connectionBuilder.ts'
+import flatten from '../utils/flatten.ts'
+import Constants from '../constants.ts'
+import { KafkaJSError, KafkaJSBrokerNotFound, KafkaJSMetadataNotLoaded, KafkaJSTopicMetadataNotLoaded, KafkaJSGroupCoordinatorNotFound } from '../errors.ts'
+import COORDINATOR_TYPES from '../protocol/coordinatorTypes.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
+const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 const { keys } = Object
 
 const mergeTopics = (
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'obj' implicitly has an 'any' type.
-  obj,
+  obj: any,
   {
     topic,
     partitions
@@ -41,7 +21,7 @@ const mergeTopics = (
   [topic]: [...(obj[topic] || []), ...partitions]
 })
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+
 export class Cluster {
   brokerPool: any;
   committedOffsetsByGroup: any;

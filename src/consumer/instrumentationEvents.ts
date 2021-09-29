@@ -1,12 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'swapObject... Remove this comment to see the full error message
-const swapObject = require('../utils/swapObject')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-const InstrumentationEventType = require('../instrumentation/eventType')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'networkEve... Remove this comment to see the full error message
-const networkEvents = require('../network/instrumentationEvents')
+import swapObject from '../utils/swapObject.ts'
+import InstrumentationEventType from '../instrumentation/eventType.ts'
+import networkEvents from '../network/instrumentationEvents.ts'
+
 const consumerType = InstrumentationEventType('consumer')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'events'.
 const events = {
   HEARTBEAT: consumerType('heartbeat'),
   COMMIT_OFFSETS: consumerType('commit_offsets'),

@@ -1,27 +1,17 @@
-// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { initialRetryTime } = require('../retry/defaults')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ConsumerGr... Remove this comment to see the full error message
-const ConsumerGroup = require('./consumerGroup')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Runner'.
-const Runner = require('./runner')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { events, wrap: wrapEvent, unwrap: unwrapEvent } = require('./instrumentationEvents')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-const InstrumentationEventEmitter = require('../instrumentation/emitter')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'roundRobin... Remove this comment to see the full error message
-const { roundRobin } = require('./assigners')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'EARLIEST_O... Remove this comment to see the full error message
-const { EARLIEST_OFFSET, LATEST_OFFSET } = require('../constants')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('../protocol/isolationLevel')
+import Long from '../utils/long.ts'
+import createRetry from '../retry'
+import { initialRetryTime } from '../retry/defaults.ts'
+import { ConsumerGroup } from './consumerGroup.ts'
+import Runner from './runner.ts'
+import { events, wrap as wrapEvent, unwrap as unwrapEvent } from './instrumentationEvents.ts'
+import InstrumentationEventEmitter from '../instrumentation/emitter.ts'
+import { KafkaJSNonRetriableError } from '../errors.ts'
+import { roundRobin } from './assigners'
+import  Constants from '../constants.ts'
+import ISOLATION_LEVEL from '../protocol/isolationLevel.ts'
 
-// @ts-expect-error ts-migrate(2339) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
+const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants
+
 const { keys, values } = Object
 const { CONNECT, DISCONNECT, STOP, CRASH } = events
 

@@ -1,6 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
+import Long from '../utils/long.ts'
+//import buffer from Deno
+
 const ABORTED_MESSAGE_KEY = Buffer.from([0, 0, 0, 0])
 
 const isAbortMarker = ({

@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Connection... Remove this comment to see the full error message
-const Connection = require('../network/connection')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSCon... Remove this comment to see the full error message
-const { KafkaJSConnectionError, KafkaJSNonRetriableError } = require('../errors')
+import Connection from '../network/connection.ts'
+import { KafkaJSConnectionError, KafkaJSNonRetriableError } from '../errors.ts'
 
 /**
  * @typedef {Object} ConnectionBuilder
@@ -24,8 +22,10 @@ const { KafkaJSConnectionError, KafkaJSNonRetriableError } = require('../errors'
  * @param {import("../instrumentation/emitter")} [options.instrumentationEmitter]
  * @returns {ConnectionBuilder}
  */
+
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export ({
+
   socketFactory,
   brokers,
   ssl,

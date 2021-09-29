@@ -1,14 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../utils/flatten')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isInvalidO... Remove this comment to see the full error message
-const isInvalidOffset = require('./isInvalidOffset')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'initialize... Remove this comment to see the full error message
-const initializeConsumerOffsets = require('./initializeConsumerOffsets')
+import Long from '../../utils/long.ts'
+import flatten from '../../utils/flatten.ts'
+import isInvalidOffset from './isInvalidOffset.ts'
+import initializeConsumerOffsets from './initializeConsumerOffsets.ts'
 const {
   events: { COMMIT_OFFSETS },
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 } = require('../instrumentationEvents')
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.

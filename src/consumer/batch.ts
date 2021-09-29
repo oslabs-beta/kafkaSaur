@@ -1,15 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'filterAbor... Remove this comment to see the full error message
-const filterAbortedMessages = require('./filterAbortedMessages')
+import Long from '../utils/long.ts';
+import filterAbortedMessages from './filterAbortedMessages.ts';
 
 /**
  * A batch collects messages returned from a single fetch call.
  *
  * A batch could contain _multiple_ Kafka RecordBatches.
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export class Batch {
+
+export default class Batch {
+
   fetchedOffset: any;
   highWatermark: any;
   messages: any;

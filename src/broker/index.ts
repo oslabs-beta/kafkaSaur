@@ -1,25 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Lock'.
-const Lock = require('../utils/lock')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Compressio... Remove this comment to see the full error message
-const { Types: Compression } = require('../protocol/message/compression')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requests'.
-const { requests, lookup } = require('../protocol/requests')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
-const apiKeys = require('../protocol/requests/apiKeys')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const SASLAuthenticator = require('./saslAuthenticator')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'shuffle'.
-const shuffle = require('../utils/shuffle')
+import Long from '../utils/long.ts'
+import Lock from '../utils/lock.ts'
+import { Types as Compression } from '../protocol/message/compression'
+import { requests, lookup } from '../protocol/requests'
+import { KafkaJSNonRetriableError } from '../errors.ts'
+import apiKeys from '../protocol/requests/apiKeys.ts'
+import SASLAuthenticator from './saslAuthenticator'
+import shuffle from '../utils/shuffle.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SHOULD_REAUTHENTICATE: Symbol('private:Broker:shouldReauthenticate'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SEND_REQUEST: Symbol('private:Broker:sendRequest'),
 }
 
@@ -34,8 +23,9 @@ const notInitializedLookup = () => {
  *
  * @type {import("../../types").Broker}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export class Broker {
+
+export default class Broker {
+
     allowAutoTopicCreation: any;
     authenticatedAt: any;
     authenticationTimeout: any;
