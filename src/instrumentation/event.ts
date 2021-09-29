@@ -7,8 +7,7 @@ const nextId = () => {
   return id++
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-class InstrumentationEvent {
+export class InstrumentationEvent {
   id: any;
   payload: any;
   timestamp: any;
@@ -25,5 +24,3 @@ class InstrumentationEvent {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = InstrumentationEvent

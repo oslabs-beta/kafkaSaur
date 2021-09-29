@@ -1,53 +1,31 @@
-// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../utils/flatten')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'waitFor'.
-const waitFor = require('../utils/waitFor')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'groupBy'.
-const groupBy = require('../utils/groupBy')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createCons... Remove this comment to see the full error message
-const createConsumer = require('../consumer')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-const InstrumentationEventEmitter = require('../instrumentation/emitter')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'events'.
-const { events, wrap: wrapEvent, unwrap: unwrapEvent } = require('./instrumentationEvents')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'LEVELS'.
-const { LEVELS } = require('../loggers')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
+import createRetry from '../retry'
+import flatten from '../utils/flatten.ts'
+import waitFor from '../utils/waitFor.ts'
+import groupBy from '../utils/groupBy.ts'
+import createConsumer from '../consumer'
+import InstrumentationEventEmitter from '../instrumentation/emitter.ts'
+import { events, wrap as wrapEvent, unwrap as unwrapEvent } from './instrumentationEvents.ts'
+import { LEVELS } from '../loggers'
+import {
   KafkaJSNonRetriableError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSDel... Remove this comment to see the full error message
   KafkaJSDeleteGroupsError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSBro... Remove this comment to see the full error message
   KafkaJSBrokerNotFound,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSDel... Remove this comment to see the full error message
   KafkaJSDeleteTopicRecordsError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSAgg... Remove this comment to see the full error message
-  KafkaJSAggregateError,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'staleMetad... Remove this comment to see the full error message
-const { staleMetadata } = require('../protocol/error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONFIG_RES... Remove this comment to see the full error message
-const CONFIG_RESOURCE_TYPES = require('../protocol/configResourceTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_RESOUR... Remove this comment to see the full error message
-const ACL_RESOURCE_TYPES = require('../protocol/aclResourceTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_OPERAT... Remove this comment to see the full error message
-const ACL_OPERATION_TYPES = require('../protocol/aclOperationTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ACL_PERMIS... Remove this comment to see the full error message
-const ACL_PERMISSION_TYPES = require('../protocol/aclPermissionTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RESOURCE_P... Remove this comment to see the full error message
-const RESOURCE_PATTERN_TYPES = require('../protocol/resourcePatternTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'EARLIEST_O... Remove this comment to see the full error message
-const { EARLIEST_OFFSET, LATEST_OFFSET } = require('../constants')
+  KafkaJSAggregateError
+} from '../errors.ts'
+import { staleMetadata } from '../protocol/error.ts'
+import CONFIG_RESOURCE_TYPES from '../protocol/configResourceTypes.ts'
+import ACL_RESOURCE_TYPES from '../protocol/aclResourceTypes.ts'
+import ACL_OPERATION_TYPES from '../protocol/aclOperationTypes.ts'
+import ACL_PERMISSION_TYPES from '../protocol/aclPermissionTypes.ts'
+import RESOURCE_PATTERN_TYPES from '../protocol/resourcePatternTypes.ts'
+import Constants from '../constants.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONNECT'.
+const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 const { CONNECT, DISCONNECT } = events
 
 const NO_CONTROLLER_ID = -1
 
-// @ts-expect-error ts-migrate(2339) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
 const { values, keys, entries } = Object
 const eventNames = values(events)
 const eventKeys = keys(events)
@@ -58,7 +36,7 @@ const retryOnLeaderNotAvailable = (fn: any, opts = {}) => {
   const callback = async () => {
     try {
       return await fn()
-    } catch (e) {
+    } catch (e: any) {
       if (e.type !== 'LEADER_NOT_AVAILABLE') {
         throw e
       }
@@ -69,7 +47,6 @@ const retryOnLeaderNotAvailable = (fn: any, opts = {}) => {
   return waitFor(callback, opts)
 }
 
-// @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
 const isConsumerGroupRunning = (description: any) => ['Empty', 'Dead'].includes(description.state)
 const findTopicPartitions = async (cluster: any, topic: any) => {
   await cluster.addTargetTopic(topic)
@@ -86,7 +63,6 @@ const indexByPartition = (array: any) => array.reduce(
   (obj: any, {
     partition,
     ...props
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   }: any) => Object.assign(obj, { [partition]: { ...props } }),
   {}
 )
@@ -101,8 +77,7 @@ const indexByPartition = (array: any) => array.reduce(
  *
  * @returns {import("../../types").Admin}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export default ({
   logger: rootLogger,
   instrumentationEmitter: rootInstrumentationEmitter,
   retry,
@@ -114,7 +89,6 @@ module.exports = ({
   /**
    * @returns {Promise}
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const connect = async () => {
     await cluster.connect()
     instrumentationEmitter.emit(CONNECT)
@@ -123,7 +97,6 @@ module.exports = ({
   /**
    * @return {Promise}
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const disconnect = async () => {
     await cluster.disconnect()
     instrumentationEmitter.emit(DISCONNECT)
@@ -162,7 +135,6 @@ module.exports = ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
     const topicNames = new Set(topics.map(({ topic }) => topic))
     if (topicNames.size < topics.length) {
       throw new KafkaJSNonRetriableError(
@@ -179,7 +151,6 @@ module.exports = ({
         await broker.createTopics({ topics, validateOnly, timeout })
 
         if (waitForLeaders) {
-          // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
           const topicNamesArray = Array.from(topicNames.values())
           await retryOnLeaderNotAvailable(async () => await broker.metadata(topicNamesArray), {
             delay: 100,
@@ -229,7 +200,6 @@ module.exports = ({
       )
     }
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
     const topicNames = new Set(topicPartitions.map(({ topic }) => topic))
     if (topicNames.size < topicPartitions.length) {
       throw new KafkaJSNonRetriableError(
@@ -239,7 +209,6 @@ module.exports = ({
 
     const retrier = createRetry(retry)
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     return retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await cluster.refreshMetadata()
@@ -275,7 +244,6 @@ module.exports = ({
 
     const retrier = createRetry(retry)
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     return retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await cluster.refreshMetadata()
@@ -288,8 +256,7 @@ module.exports = ({
         }
 
         await cluster.refreshMetadata()
-      } catch (e) {
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
+      } catch (e: any) {
         if (['NOT_CONTROLLER', 'UNKNOWN_TOPIC_OR_PARTITION'].includes(e.type)) {
           logger.warn('Could not delete topics', { error: e.message, retryCount, retryTime })
           throw e

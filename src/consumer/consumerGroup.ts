@@ -1,44 +1,25 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../utils/flatten')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
-const sleep = require('../utils/sleep')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'BufferedAs... Remove this comment to see the full error message
-const BufferedAsyncIterator = require('../utils/bufferedAsyncIterator')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'websiteUrl... Remove this comment to see the full error message
-const websiteUrl = require('../utils/websiteUrl')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'arrayDiff'... Remove this comment to see the full error message
-const arrayDiff = require('../utils/arrayDiff')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sharedProm... Remove this comment to see the full error message
-const sharedPromiseTo = require('../utils/sharedPromiseTo')
+import flatten from '../utils/flatten.ts'
+import sleep from '../utils/sleep.ts'
+import BufferedAsyncIterator from '../utils/bufferedAsyncIterator.ts'
+import websiteUrl from '../utils/websiteUrl.ts'
+import arrayDiff from '../utils/arrayDiff.ts'
+import createRetry from '../retry'
+import sharedPromiseTo from '../utils/sharedPromiseTo.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'OffsetMana... Remove this comment to see the full error message
-const OffsetManager = require('./offsetManager')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Batch'.
-const Batch = require('./batch')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const SeekOffsets = require('./seekOffsets')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Subscripti... Remove this comment to see the full error message
-const SubscriptionState = require('./subscriptionState')
+import OffsetManager from './offsetManager'
+import Batch from './batch.ts'
+import SeekOffsets from './seekOffsets.ts'
+import SubscriptionState from './subscriptionState.ts'
 const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONNECT'.
   events: { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS },
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 } = require('./instrumentationEvents')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MemberAssi... Remove this comment to see the full error message
-const { MemberAssignment } = require('./assignerProtocol')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSErr... Remove this comment to see the full error message
+import { MemberAssignment } from './assignerProtocol.ts'
+import {
   KafkaJSError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
   KafkaJSNonRetriableError,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSta... Remove this comment to see the full error message
-  KafkaJSStaleTopicMetadataAssignment,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../errors')
+  KafkaJSStaleTopicMetadataAssignment
+} from '../errors.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
 const { keys } = Object
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'STALE_META... Remove this comment to see the full error message
@@ -68,7 +49,7 @@ const PRIVATE = {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class ConsumerGroup {
+export class ConsumerGroup {
     assigners: any;
     autoCommit: any;
     autoCommitInterval: any;
