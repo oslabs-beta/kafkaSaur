@@ -1,5 +1,5 @@
 import Long from '../utils/long.ts'
-import Lock from '../utils/lock.ts'
+import {Lock} from '../utils/lock.ts'
 import { Types as Compression } from '../protocol/message/compression'
 import { requests, lookup } from '../protocol/requests'
 import { KafkaJSNonRetriableError } from '../errors.ts'
@@ -24,7 +24,7 @@ const notInitializedLookup = () => {
  * @type {import("../../types").Broker}
  */
 
-export default class Broker {
+export class Broker {
 
     allowAutoTopicCreation: any;
     authenticatedAt: any;
@@ -90,7 +90,6 @@ export default class Broker {
      * @public
      * @returns {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     async connect() {
         try {
             await this.lock.acquire();
@@ -132,7 +131,6 @@ export default class Broker {
      * @public
      * @returns {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     async disconnect() {
         this.authenticatedAt = null;
         await this.connection.disconnect();
@@ -167,7 +165,6 @@ export default class Broker {
         if (!response) {
             throw new KafkaJSNonRetriableError('API Versions not supported');
         }
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
         return response.apiVersions.reduce((obj: any, version: any) => Object.assign(obj, {
             [version.apiKey]: {
                 minVersion: version.minVersion,
@@ -364,7 +361,7 @@ export default class Broker {
         try {
             return await makeRequest();
         }
-        catch (error) {
+        catch (error : any) {
             if (error.name === 'KafkaJSMemberIdRequired') {
                 return makeRequest(error.memberId);
             }
@@ -374,7 +371,7 @@ export default class Broker {
     /**
      * @public
      * @param {object} request
-     * @param {string} request.groupId
+     * @param {string} request.groupId 
      * @param {string} request.memberId
      * @returns {Promise}
      */

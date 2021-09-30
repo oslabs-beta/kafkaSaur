@@ -40,7 +40,6 @@ export ({
   messages,
   abortedTransactions
 }: any) => {
-  // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
   const currentAbortedTransactions = new Map()
 
   if (!abortedTransactions || !abortedTransactions.length) {

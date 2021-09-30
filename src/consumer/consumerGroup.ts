@@ -8,11 +8,9 @@ import sharedPromiseTo from '../utils/sharedPromiseTo.ts'
 
 import OffsetManager from './offsetManager'
 import Batch from './batch.ts'
-import SeekOffsets from './seekOffsets.ts'
-import SubscriptionState from './subscriptionState.ts'
-const {
-  events: { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS },
-} = require('./instrumentationEvents')
+import {SeekOffsets} from './seekOffsets.ts'
+import {SubscriptionState} from './subscriptionState.ts'
+import {events} from './instrumentationEvents.ts'
 import { MemberAssignment } from './assignerProtocol.ts'
 import {
   KafkaJSError,
@@ -20,9 +18,9 @@ import {
   KafkaJSStaleTopicMetadataAssignment
 } from '../errors.ts'
 
+const  { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS } = events;
 const { keys } = Object
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'STALE_META... Remove this comment to see the full error message
 const STALE_METADATA_ERRORS = [
   'LEADER_NOT_AVAILABLE',
   // Fetch before v9 uses NOT_LEADER_FOR_PARTITION
@@ -33,22 +31,15 @@ const STALE_METADATA_ERRORS = [
   'UNKNOWN_TOPIC_OR_PARTITION',
 ]
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isRebalanc... Remove this comment to see the full error message
 const isRebalancing = (e: any) => e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   JOIN: Symbol('private:ConsumerGroup:join'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SYNC: Symbol('private:ConsumerGroup:sync'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   HEARTBEAT: Symbol('private:ConsumerGroup:heartbeat'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SHAREDHEARTBEAT: Symbol('private:ConsumerGroup:sharedHeartbeat'),
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class ConsumerGroup {
     assigners: any;
     autoCommit: any;

@@ -1,7 +1,7 @@
 //import { EventEmitter } from 'events';
 //Deno Library import...
 
-import InstrumentationEvent from './event.ts';
+import {InstrumentationEvent} from './event.ts';
 import { KafkaJSError } from '../errors.ts';
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message

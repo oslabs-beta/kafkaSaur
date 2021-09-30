@@ -6,7 +6,6 @@ const indexPartitions = (obj: any, {
   partition,
   offset
 }: any) => assign(obj, { [partition]: offset })
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'indexTopic... Remove this comment to see the full error message
 const indexTopics = (obj: any, {
   topic,
   partitions

@@ -1,4 +1,4 @@
-import BrokerPool from './brokerPool.ts'
+import { BrokerPool } from './brokerPool.ts'
 import Lock from '../utils/lock.ts'
 import createRetry from '../retry'
 import connectionBuilder from './connectionBuilder.ts'
