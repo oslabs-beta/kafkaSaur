@@ -2,21 +2,16 @@ import Long from '../../utils/long.ts'
 import flatten from '../../utils/flatten.ts'
 import isInvalidOffset from './isInvalidOffset.ts'
 import initializeConsumerOffsets from './initializeConsumerOffsets.ts'
-const {
-  events: { COMMIT_OFFSETS },
-} = require('../instrumentationEvents')
+import { events } from '../instrumentationEvents.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
+const { COMMIT_OFFSETS } = events;
+
 const { keys, assign } = Object
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'indexTopic... Remove this comment to see the full error message
 const indexTopics = (topics: any) => topics.reduce((obj: any, topic: any) => assign(obj, { [topic]: {} }), {})
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets'),
 }
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class OffsetManager {
   autoCommit: any;
   autoCommitInterval: any;
@@ -163,7 +158,6 @@ export class OffsetManager {
   /**
    * @param {import("../../../types").TopicPartition} topicPartition
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async setDefaultOffset({
     topic,
     partition
@@ -202,7 +196,6 @@ export class OffsetManager {
    *
    * @param {import("../../../types").TopicPartitionOffset} topicPartitionOffset
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async seek({
     topic,
     partition,
@@ -303,7 +296,6 @@ export class OffsetManager {
     return { topics: topicsWithPartitionsToCommit }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async commitOffsets(offsets = {}) {
     const { groupId, generationId, memberId } = this
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'topics' does not exist on type '{}'.
@@ -342,7 +334,7 @@ export class OffsetManager {
       })
 
       this.lastCommit = Date.now()
-    } catch (e) {
+    } catch (e : any) {
       // metadata is stale, the coordinator has changed due to a restart or
       // broker reassignment
       if (e.type === 'NOT_COORDINATOR_FOR_GROUP') {
@@ -353,7 +345,6 @@ export class OffsetManager {
     }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async resolveOffsets() {
     const { groupId } = this
     const invalidOffset = (topic: any) => (partition: any) => {

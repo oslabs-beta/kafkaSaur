@@ -1,4 +1,4 @@
-import BrokerPool from './brokerPool.ts'
+import BrokerPool  from './brokerPool.ts'
 import Lock from '../utils/lock.ts'
 import createRetry from '../retry'
 import connectionBuilder from './connectionBuilder.ts'
@@ -71,7 +71,6 @@ export class Cluster {
     maxInFlightRequests,
     isolationLevel,
     instrumentationEmitter = null,
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
     offsets = new Map()
   }: any) {
     this.rootLogger = rootLogger
@@ -91,7 +90,6 @@ export class Cluster {
       maxInFlightRequests,
     })
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
     this.targetTopics = new Set()
     this.mutatingTargetTopics = new Lock({
       description: `updating target topics`,
@@ -147,9 +145,7 @@ export class Cluster {
    * @public
    * @returns {Promise<void>}
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async refreshMetadata() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
     await this.brokerPool.refreshMetadata(Array.from(this.targetTopics))
   }
 
@@ -158,7 +154,6 @@ export class Cluster {
    * @returns {Promise<void>}
    */
   async refreshMetadataIfNecessary() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
     await this.brokerPool.refreshMetadataIfNecessary(Array.from(this.targetTopics))
   }
 
@@ -173,7 +168,7 @@ export class Cluster {
         return this.brokerPool.withBroker(async ({
           broker
         }: any) => broker.metadata(topics));
-      } catch (e) {
+      } catch (e:any) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
           throw e
         }
@@ -197,13 +192,11 @@ export class Cluster {
    * @param {string[]} topics
    * @return {Promise}
    */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async addMultipleTargetTopics(topics: any) {
     await this.mutatingTargetTopics.acquire()
 
     try {
       const previousSize = this.targetTopics.size
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
       const previousTopics = new Set(this.targetTopics)
       for (const topic of topics) {
         this.targetTopics.add(topic)
@@ -214,7 +207,7 @@ export class Cluster {
       if (hasChanged) {
         try {
           await this.refreshMetadata()
-        } catch (e) {
+        } catch (e:any) {
           if (e.type === 'INVALID_TOPIC_EXCEPTION' || e.type === 'UNKNOWN_TOPIC_OR_PARTITION') {
             this.targetTopics = previousTopics
           }
@@ -238,7 +231,7 @@ export class Cluster {
   }: any) {
     try {
       return await this.brokerPool.findBroker({ nodeId })
-    } catch (e) {
+    } catch (e:any) {
       // The client probably has stale metadata
       if (
         e.name === 'KafkaJSBrokerNotFound' ||
@@ -260,7 +253,6 @@ export class Cluster {
     const { metadata } = this.brokerPool
 
     if (!metadata || metadata.controllerId == null) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSMetadataNotLoaded('Topic metadata not loaded')
     }
 
@@ -268,7 +260,6 @@ export class Cluster {
 
     if (!broker) {
       throw new KafkaJSBrokerNotFound(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `Controller broker with id ${metadata.controllerId} not found in the cached metadata`
       )

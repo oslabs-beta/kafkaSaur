@@ -136,9 +136,8 @@ class KafkaJSRequestTimeoutError extends KafkaJSError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMet... Remove this comment to see the full error message
 class KafkaJSMetadataNotLoaded extends KafkaJSError {
-  constructor() {
+  constructor(p1?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     super(...arguments)
     this.name = 'KafkaJSMetadataNotLoaded'
@@ -198,16 +197,15 @@ class KafkaJSServerDoesNotSupportApiKey extends KafkaJSNonRetriableError {
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSBro... Remove this comment to see the full error message
 class KafkaJSBrokerNotFound extends KafkaJSError {
-  constructor() {
+  constructor(p1?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     super(...arguments)
     this.name = 'KafkaJSBrokerNotFound'
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPar... Remove this comment to see the full error message
 class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
-  constructor() {
+  constructor(p1?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments)
     this.name = 'KafkaJSPartialMessageError'
@@ -345,7 +343,7 @@ class KafkaJSAggregateError extends Error {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+
 export {
   KafkaJSError,
   KafkaJSNonRetriableError,

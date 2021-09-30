@@ -1,5 +1,6 @@
 import sleep from './sleep'
-import { KafkaJSTimeout } from '../errors'
+
+import KafkaJSTimeout  from '../src/errors.ts'
 
 export default (
   fn: any,
@@ -29,6 +30,7 @@ export default (
     }
   }
 
+  
   return new Promise((resolve: any, reject: any) => {
     checkCondition(resolve, reject)
 
@@ -38,7 +40,7 @@ export default (
 
     timeoutId = setTimeout(() => {
       if (!fulfilled) {
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
+       
         return reject(new KafkaJSTimeout(timeoutMessage))
       }
     }, maxWait)

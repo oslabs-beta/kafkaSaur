@@ -1,5 +1,8 @@
-import Encoder from '../protocol/encoder.ts'
-import Decoder from '../protocol/decoder.ts'
+/** @format */
+
+import { Encoder } from '../protocol/encoder.ts';
+import { Decoder } from '../protocol/decoder.ts';
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 const MemberMetadata = {
   /**
@@ -10,16 +13,11 @@ const MemberMetadata = {
    *
    * @returns Buffer
    */
-  encode({
-    version,
-    topics,
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-    userData = Buffer.alloc(0)
-  }: any) {
+  encode({ version, topics, userData = Buffer.alloc(0) }: any) {
     return new Encoder()
       .writeInt16(version)
       .writeArray(topics)
-      .writeBytes(userData).buffer
+      .writeBytes(userData).buffer;
   },
 
   /**
@@ -27,14 +25,14 @@ const MemberMetadata = {
    * @returns {Object}
    */
   decode(buffer: any) {
-    const decoder = new Decoder(buffer)
+    const decoder = new Decoder(buffer);
     return {
       version: decoder.readInt16(),
       topics: decoder.readArray((d: any) => d.readString()),
       userData: decoder.readBytes(),
     };
   },
-}
+};
 
 const MemberAssignment = {
   /**
@@ -48,20 +46,15 @@ const MemberAssignment = {
    *
    * @returns Buffer
    */
-  encode({
-    version,
-    assignment,
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-    userData = Buffer.alloc(0)
-  }: any) {
+  encode({ version, assignment, userData = Buffer.alloc(0) }: any) {
     return new Encoder()
       .writeInt16(version)
       .writeArray(
-        Object.keys(assignment).map(topic =>
+        Object.keys(assignment).map((topic) =>
           new Encoder().writeString(topic).writeArray(assignment[topic])
         )
       )
-      .writeBytes(userData).buffer
+      .writeBytes(userData).buffer;
   },
 
   /**
@@ -69,32 +62,27 @@ const MemberAssignment = {
    * @returns {Object|null}
    */
   decode(buffer: any) {
-    const decoder = new Decoder(buffer)
-    const decodePartitions = (d: any) => d.readInt32()
+    const decoder = new Decoder(buffer);
+    const decodePartitions = (d: any) => d.readInt32();
     const decodeAssignment = (d: any) => ({
       topic: d.readString(),
-      partitions: d.readArray(decodePartitions)
-    })
-    const indexAssignment = (obj: any, {
-      topic,
-      partitions
-    }: any) =>
-      Object.assign(obj, { [topic]: partitions })
+      partitions: d.readArray(decodePartitions),
+    });
+    const indexAssignment = (obj: any, { topic, partitions }: any) =>
+      Object.assign(obj, { [topic]: partitions });
 
     if (!decoder.canReadInt16()) {
-      return null
+      return null;
     }
 
     return {
       version: decoder.readInt16(),
-      assignment: decoder.readArray(decodeAssignment).reduce(indexAssignment, {}),
+      assignment: decoder
+        .readArray(decodeAssignment)
+        .reduce(indexAssignment, {}),
       userData: decoder.readBytes(),
-    }
+    };
   },
-}
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  MemberMetadata,
-  MemberAssignment,
-}
+export { MemberMetadata, MemberAssignment };
