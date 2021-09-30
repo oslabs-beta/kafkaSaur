@@ -1,24 +1,37 @@
-//NEED DENO REPLACEMENTS
-//import fs from 'fs' - don't need 
-import execa from 'execa'
-import uuid from 'uuid/v4'
-import semver from 'semver'
-import crypto from 'crypto'
-import jwt from 'jsonwebtoken'
+//DENO REPLACEMENTS - commented out original imports
+//import fs from 'fs' - don't need - use Deno.readFileSync
+//import execa from 'execa' - replaced with Deno.run inside of addpartitions
+//import uuid from 'uuid/v4' - replaced with deno std below
+import { v4 } from "https://deno.land/std@0.95.0/uuid/mod.ts";
+//import semver from 'semver' - replaced w deno version of same package below
+import * as semver from "https://deno.land/x/semver/mod.ts";
+//import crypto from 'crypto' - importing the node compatability layer, and extracting crypto on next line, also importing process
+import * as node from "https://deno.land/std@0.109.0/node.ts";
+const crypto = node._crypto;
+const process = node._process;
+//import jwt from 'jsonwebtoken' - replaced with 3rd part djwt, modified below usage slightly
+import { create } from "https://deno.land/x/djwt@v2.4/mod.ts";
 //END NEED DENO REPLACEMENTS
+
 import { Cluster }  from '../src/cluster'
 import waitFor from '../src/utils/waitFor'
 import connectionBuilder from '../src/cluster/connectionBuilder'
 import { Connection } from '../src/network/connection'
-import { defaultSocketFactory } from '../src/network/socketFactory'
+import defaultSocketFactory from '../src/network/socketFactory'
 
 const socketFactory = defaultSocketFactory()
-//HOW DO I FIX THIS ONE?
+
+// const {
+//   createLogger,
+//   LEVELS: { NOTHING },
+// } = require('../src/loggers')
+
+import * as lg from '../src/loggers';
 const {
   createLogger,
   LEVELS: { NOTHING },
+} = lg
 
-} = require('../src/loggers')
 
 import LoggerConsole from '../src/loggers/console'
 import { Kafka } from '../index'
@@ -28,7 +41,7 @@ const newLogger = (opts = {}) =>
   createLogger(Object.assign({ level: NOTHING, logCreator: LoggerConsole }, opts))
 
 const getHost = () => 'localhost'
-const secureRandom = (length = 10) => `${(crypto as any).randomBytes(length).toString('hex')}-${process.pid}-${uuid()}`;
+const secureRandom = (length = 10) => `${(crypto as any).randomBytes(length).toString('hex')}-${process.pid}-${v4()}`;
 
 const plainTextBrokers = (host = getHost()) => [`${host}:9092`, `${host}:9095`, `${host}:9098`]
 const sslBrokers = (host = getHost()) => [`${host}:9093`, `${host}:9096`, `${host}:9099`]
@@ -44,21 +57,17 @@ const connectionOpts = (opts = {}) => ({
   ...opts,
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sslConnect... Remove this comment to see the full error message
 const sslConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(connectionOpts(), {
     port: 9093,
     ssl: {
       servername: 'localhost',
       rejectUnauthorized: false,
-      ca: [fs.readFileSync('./testHelpers/certs/cert-signed', 'utf-8')],
+      ca: [Deno.readFileSync('./testHelpers/certs/cert-signed', 'utf-8')],
     },
   })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'saslConnec... Remove this comment to see the full error message
 const saslConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -69,7 +78,6 @@ const saslConnectionOpts = () =>
   })
 
 const saslWrongConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -79,9 +87,7 @@ const saslWrongConnectionOpts = () =>
     },
   })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'saslSCRAM2... Remove this comment to see the full error message
 const saslSCRAM256ConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -92,7 +98,6 @@ const saslSCRAM256ConnectionOpts = () =>
   })
 
 const saslSCRAM256WrongConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -103,7 +108,6 @@ const saslSCRAM256WrongConnectionOpts = () =>
   })
 
 const saslSCRAM512ConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -114,7 +118,6 @@ const saslSCRAM512ConnectionOpts = () =>
   })
 
 const saslSCRAM512WrongConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
@@ -125,13 +128,13 @@ const saslSCRAM512WrongConnectionOpts = () =>
   })
 
 const saslOAuthBearerConnectionOpts = () =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(sslConnectionOpts(), {
     port: 9094,
     sasl: {
       mechanism: 'oauthbearer',
-      oauthBearerProvider: () => {
-        const token = jwt.sign({ sub: 'test' }, 'abc', { algorithm: 'none' })
+      oauthBearerProvider: async () => {
+        //const token = jwt.sign({ sub: 'test' }, 'abc', { algorithm: 'none' })
+        const token = await create({ alg: 'none' , typ: 'JWT'}, { sub: 'test' }, 'abc')
 
         return {
           value: token,
@@ -144,9 +147,7 @@ const saslOAuthBearerConnectionOpts = () =>
  * List of the possible SASL setups.
  * OAUTHBEARER must be enabled as a special case.
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'saslEntrie... Remove this comment to see the full error message
 const saslEntries = []
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 if (process.env['OAUTHBEARER_ENABLED'] !== '1') {
   saslEntries.push({
     name: 'PLAIN',
@@ -175,10 +176,8 @@ if (process.env['OAUTHBEARER_ENABLED'] !== '1') {
   })
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createConn... Remove this comment to see the full error message
 const createConnection = (opts = {}) => new Connection(Object.assign(connectionOpts(), opts))
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createConn... Remove this comment to see the full error message
 const createConnectionBuilder = (opts = {}, brokers = plainTextBrokers()) => {
   return connectionBuilder({
     socketFactory,
@@ -190,12 +189,9 @@ const createConnectionBuilder = (opts = {}, brokers = plainTextBrokers()) => {
   })
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createClus... Remove this comment to see the full error message
 const createCluster = (opts = {}, brokers = plainTextBrokers()) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   new Cluster(Object.assign(connectionOpts(), opts, { brokers }))
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createModP... Remove this comment to see the full error message
 const createModPartitioner = () => ({
   partitionMetadata,
   message
@@ -213,7 +209,6 @@ const testWaitFor = async (fn: any, opts = {}) => waitFor(fn, { ignoreTimeout: t
  * @returns {Promise<T>}
  * @template T
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'retryProto... Remove this comment to see the full error message
 const retryProtocol = (errorType: any, fn: any) =>
   waitFor(
     async () => {
@@ -229,13 +224,10 @@ const retryProtocol = (errorType: any, fn: any) =>
     { ignoreTimeout: true }
   )
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'waitForMes... Remove this comment to see the full error message
 const waitForMessages = (buffer: any, { number = 1, delay = 50 } = {}) =>
   waitFor(() => (buffer.length >= number ? buffer : false), { delay, ignoreTimeout: true })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'waitForNex... Remove this comment to see the full error message
 const waitForNextEvent = (consumer: any, eventName: any, { maxWait = 10000 } = {}) =>
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   new Promise((resolve: any, reject: any) => {
     const timeoutId = setTimeout(
       () => reject(new Error(`Timeout waiting for '${eventName}'`)),
@@ -251,9 +243,7 @@ const waitForNextEvent = (consumer: any, eventName: any, { maxWait = 10000 } = {
     })
   })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'waitForCon... Remove this comment to see the full error message
 const waitForConsumerToJoinGroup = (consumer: any, { maxWait = 10000, label = '' } = {}) =>
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   new Promise((resolve: any, reject: any) => {
     const timeoutId = setTimeout(() => {
       consumer.disconnect().then(() => {
@@ -272,7 +262,6 @@ const waitForConsumerToJoinGroup = (consumer: any, { maxWait = 10000, label = ''
     })
   })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createTopi... Remove this comment to see the full error message
 const createTopic = async ({
   topic,
   partitions = 1,
@@ -295,18 +284,18 @@ const createTopic = async ({
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'addPartiti... Remove this comment to see the full error message
 const addPartitions = async ({
   topic,
   partitions
 }: any) => {
-  const cmd = `TOPIC=${topic} PARTITIONS=${partitions} ./scripts/addPartitions.sh`
+  //const cmd = `TOPIC=${topic} PARTITIONS=${partitions} ./scripts/addPartitions.sh`
   const cluster = createCluster()
 
   await cluster.connect()
   await cluster.addTargetTopic(topic)
 
-  execa.commandSync(cmd, { shell: true })
+  //execa.commandSync(cmd, { shell: true })
+  Deno.run({cmd: [`TOPIC=${topic} PARTITIONS=${partitions} ./scripts/addPartitions.sh`]})
 
   waitFor(async () => {
     await cluster.refreshMetadata()
@@ -316,16 +305,12 @@ const addPartitions = async ({
 }
 
 const testIfKafkaVersion = (version: any, versionComparator: any) => {
-  // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   const scopedTest = (description: any, callback: any, testFn = test) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
     return versionComparator(semver.coerce(process.env.KAFKA_VERSION), semver.coerce(version))
       ? testFn(description, callback)
-      : // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
         test.skip(description, callback)
   }
 
-  // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   scopedTest.only = (description: any, callback: any) => scopedTest(description, callback, test.only)
 
   return scopedTest
@@ -334,35 +319,23 @@ const testIfKafkaVersion = (version: any, versionComparator: any) => {
 const testIfKafkaVersionLTE = (version: any) => testIfKafkaVersion(version, semver.lte)
 const testIfKafkaVersionGTE = (version: any) => testIfKafkaVersion(version, semver.gte)
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'testIfKafk... Remove this comment to see the full error message
 const testIfKafkaAtMost_0_10 = testIfKafkaVersionLTE('0.10')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'testIfKafk... Remove this comment to see the full error message
 const testIfKafkaAtLeast_0_11 = testIfKafkaVersionGTE('0.11')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'testIfKafk... Remove this comment to see the full error message
 const testIfKafkaAtLeast_1_1_0 = testIfKafkaVersionGTE('1.1')
 
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
 const flakyTest = (description: any, callback: any, testFn = test) =>
   testFn(`[flaky] ${description}`, callback)
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
 flakyTest.skip = (description: any, callback: any) => flakyTest(description, callback, test.skip)
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
 flakyTest.only = (description: any, callback: any) => flakyTest(description, callback, test.only)
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 const describeIfEnv = (key: any, value: any) => (description: any, callback: any, describeFn = describe) => {
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
   return value === process.env[key]
     ? describeFn(description, callback)
-    : // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
       describe.skip(description, callback)
 }
 
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 const describeIfNotEnv = (key: any, value: any) => (description: any, callback: any, describeFn = describe) => {
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
   return value !== process.env[key]
     ? describeFn(description, callback)
-    : // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
       describe.skip(description, callback)
 }
 
@@ -372,17 +345,14 @@ const describeIfNotEnv = (key: any, value: any) => (description: any, callback: 
  * doesn't allow it to be enabled aside of other SASL mechanisms.
  */
 const describeIfOauthbearerEnabled = describeIfEnv('OAUTHBEARER_ENABLED', '1')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'describeIf... Remove this comment to see the full error message
 const describeIfOauthbearerDisabled = describeIfNotEnv('OAUTHBEARER_ENABLED', '1')
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'unsupporte... Remove this comment to see the full error message
 const unsupportedVersionResponse = () => Buffer.from({ type: 'Buffer', data: [0, 35, 0, 0, 0, 0] })
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'unsupporte... Remove this comment to see the full error message
 const unsupportedVersionResponseWithTimeout = () =>
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
   Buffer.from({ type: 'Buffer', data: [0, 0, 0, 0, 0, 35] })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMe... Remove this comment to see the full error message
 const generateMessages = (options: any) => {
   const { prefix, number = 100 } = options || {}
   const prefixOrEmpty = prefix ? `-${prefix}` : ''
