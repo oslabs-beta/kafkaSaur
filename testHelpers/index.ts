@@ -11,6 +11,7 @@ const crypto = node._crypto;
 const process = node._process;
 //import jwt from 'jsonwebtoken' - replaced with 3rd part djwt, modified below usage slightly
 import { create } from "https://deno.land/x/djwt@v2.4/mod.ts";
+import Buffer from 'https://deno.land/std@0.109.0/node/buffer.ts'
 //END NEED DENO REPLACEMENTS
 
 import { Cluster }  from '../src/cluster'
@@ -347,10 +348,8 @@ const describeIfNotEnv = (key: any, value: any) => (description: any, callback: 
 const describeIfOauthbearerEnabled = describeIfEnv('OAUTHBEARER_ENABLED', '1')
 const describeIfOauthbearerDisabled = describeIfNotEnv('OAUTHBEARER_ENABLED', '1')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'unsupporte... Remove this comment to see the full error message
 const unsupportedVersionResponse = () => Buffer.from({ type: 'Buffer', data: [0, 35, 0, 0, 0, 0] })
 const unsupportedVersionResponseWithTimeout = () =>
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
   Buffer.from({ type: 'Buffer', data: [0, 0, 0, 0, 0, 35] })
 
 const generateMessages = (options: any) => {
@@ -358,8 +357,7 @@ const generateMessages = (options: any) => {
   const prefixOrEmpty = prefix ? `-${prefix}` : ''
 
   return Array(number)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
-    .fill()
+    .fill(undefined) //this was originally .fill(), typescript does not like but JS does
     .map((v: any, i: any) => {
       const value = secureRandom()
       return {
@@ -369,8 +367,7 @@ const generateMessages = (options: any) => {
     });
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   secureRandom,
   connectionOpts,
   sslConnectionOpts,
@@ -389,7 +386,8 @@ module.exports = {
   newLogger,
   retryProtocol,
   createTopic,
-  waitFor: testWaitFor,
+  //waitFor: testWaitFor,
+  testWaitFor,
   waitForMessages,
   waitForNextEvent,
   waitForConsumerToJoinGroup,
