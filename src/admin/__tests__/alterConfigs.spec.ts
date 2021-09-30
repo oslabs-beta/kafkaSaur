@@ -1,17 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createAdmi... Remove this comment to see the full error message
-const createAdmin = require('../index')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPro... Remove this comment to see the full error message
-const { KafkaJSProtocolError } = require('../../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createErro... Remove this comment to see the full error message
-const { createErrorFromCode } = require('../../protocol/error')
+import createAdmin from '../index'
+import  KafkaJSProtocolError  from '../../errors'
+import { createErrorFromCode } from '../../protocol/error'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'secureRand... Remove this comment to see the full error message
-const { secureRandom, createCluster, newLogger, createTopic } = require('testHelpers')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RESOURCE_T... Remove this comment to see the full error message
-const RESOURCE_TYPES = require('../../protocol/resourceTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONFIG_RES... Remove this comment to see the full error message
-const CONFIG_RESOURCE_TYPES = require('../../protocol/configResourceTypes')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'NOT_CONTRO... Remove this comment to see the full error message
+import { secureRandom, createCluster, newLogger, createTopic } from 'testHelpers'
+import RESOURCE_TYPES from '../../protocol/resourceTypes'
+import CONFIG_RESOURCE_TYPES from '../../protocol/configResourceTypes'
 const NOT_CONTROLLER = 41
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message

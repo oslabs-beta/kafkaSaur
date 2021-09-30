@@ -6,7 +6,6 @@ const REJECTED_ERROR = new KafkaJSNonRetriableError(
 )
 function NOOP() {}
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'concurrenc... Remove this comment to see the full error message
 const concurrency = ({
   limit,
   onChange = NOOP
@@ -62,9 +61,7 @@ const concurrency = ({
     }
   }
 
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   return (action: any) => new Promise((resolve: any, reject: any) => push(action, resolve, reject));
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export concurrency
+export default concurrency

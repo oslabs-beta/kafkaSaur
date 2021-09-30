@@ -83,7 +83,6 @@ export class ConsumerGroup {
         this.topicConfigurations = topicConfigurations;
         this.logger = logger.namespace('ConsumerGroup');
         this.instrumentationEmitter = instrumentationEmitter;
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
         this.retrier = createRetry(Object.assign({}, retry));
         this.assigners = assigners;
         this.sessionTimeout = sessionTimeout;
@@ -269,7 +268,6 @@ export class ConsumerGroup {
     }
     joinAndSync() {
         const startJoin = Date.now();
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         return this.retrier(async (bail: any) => {
             try {
                 // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message

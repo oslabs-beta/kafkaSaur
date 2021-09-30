@@ -331,8 +331,7 @@ export default ({
           partition,
           offset,
           high: offset,
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'lowPartition' implicitly has an '... Remove this comment to see the full error message
-          low: lowPartitions.find(({ partition: lowPartition }) => lowPartition === partition)
+          low: lowPartitions.find(({ partition: lowPartition }: any) => lowPartition === partition)
             .offset,
         }));
       } catch (e: any) {
@@ -364,7 +363,7 @@ export default ({
         await cluster.refreshMetadataIfNecessary()
 
         const metadata = cluster.findTopicPartitionMetadata(topic)
-        const partitions = metadata.map((p: any) => ({
+        const partitions: any = metadata.map((p: any) => ({
           partition: p.partitionId
         }))
 
@@ -375,7 +374,7 @@ export default ({
             partitions,
           },
         ])
-        const { partitions: highPartitions } : any = high.pop()
+        const { partitions: highPartitions } = high.pop()
 
         const offsets = await cluster.fetchTopicsOffset([
           {
@@ -393,11 +392,11 @@ export default ({
           partition,
           offset:
             parseInt(offset, 10) >= 0
-              ? offset
-                highPartitions.find(({ partition: highPartition }: any) => highPartition === partition)
+              ? offset 
+                : highPartitions.find(({ partition: highPartition }: any) => highPartition === partition)
                   .offset,
         }));
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'UNKNOWN_TOPIC_OR_PARTITION') {
           await cluster.refreshMetadata()
           throw e
@@ -1431,14 +1430,12 @@ export default ({
     }
 
     // Validate permissionType
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validPermissionTypes = Object.values(ACL_PERMISSION_TYPES)
     if (!validPermissionTypes.includes(permissionType)) {
       throw new KafkaJSNonRetriableError(`Invalid permission type ${permissionType}`)
     }
 
     // Validate resourceType
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourceTypes = Object.values(ACL_RESOURCE_TYPES)
     if (!validResourceTypes.includes(resourceType)) {
       throw new KafkaJSNonRetriableError(`Invalid resource type ${resourceType}`)
@@ -1460,7 +1457,7 @@ export default ({
           permissionType,
         })
         return { resources }
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not describe ACL', { error: e.message, retryCount, retryTime })
           throw e
@@ -1520,9 +1517,7 @@ export default ({
 
     let invalidType
     // Validate operation
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validOperationTypes = Object.values(ACL_OPERATION_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = filters.find((i: any) => !validOperationTypes.includes(i.operation))
 
     if (invalidType) {
@@ -1532,9 +1527,7 @@ export default ({
     }
 
     // Validate resourcePatternTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourcePatternTypes = Object.values(RESOURCE_PATTERN_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = filters.find((i: any) => !validResourcePatternTypes.includes(i.resourcePatternType))
 
     if (invalidType) {
@@ -1546,9 +1539,7 @@ export default ({
     }
 
     // Validate permissionTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validPermissionTypes = Object.values(ACL_PERMISSION_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = filters.find((i: any) => !validPermissionTypes.includes(i.permissionType))
 
     if (invalidType) {
@@ -1558,9 +1549,7 @@ export default ({
     }
 
     // Validate resourceTypes
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     const validResourceTypes = Object.values(ACL_RESOURCE_TYPES)
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'find' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
     invalidType = filters.find((i: any) => !validResourceTypes.includes(i.resourceType))
 
     if (invalidType) {
@@ -1577,7 +1566,7 @@ export default ({
         const broker = await cluster.findControllerBroker()
         const { filterResponses } = await broker.deleteAcls({ filters })
         return { filterResponses }
-      } catch (e) {
+      } catch (e: any) {
         if (e.type === 'NOT_CONTROLLER') {
           logger.warn('Could not delete ACL', { error: e.message, retryCount, retryTime })
           throw e

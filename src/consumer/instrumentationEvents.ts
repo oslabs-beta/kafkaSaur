@@ -23,21 +23,16 @@ const events = {
   REQUEST_QUEUE_SIZE: consumerType(networkEvents.NETWORK_REQUEST_QUEUE_SIZE),
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'wrappedEve... Remove this comment to see the full error message
 const wrappedEvents = {
   [events.REQUEST]: networkEvents.NETWORK_REQUEST,
   [events.REQUEST_TIMEOUT]: networkEvents.NETWORK_REQUEST_TIMEOUT,
   [events.REQUEST_QUEUE_SIZE]: networkEvents.NETWORK_REQUEST_QUEUE_SIZE,
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'reversedWr... Remove this comment to see the full error message
 const reversedWrappedEvents = swapObject(wrappedEvents)
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'unwrap'.
 const unwrap = (eventName: any) => wrappedEvents[eventName] || eventName
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'wrap'.
 const wrap = (eventName: any) => reversedWrappedEvents[eventName] || eventName
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export {
   events,
   wrap,

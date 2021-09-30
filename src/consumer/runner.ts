@@ -100,7 +100,6 @@ export class Runner extends EventEmitter {
     }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async join() {
     await this.consumerGroup.joinAndSync();
     this.running = true;
@@ -118,7 +117,6 @@ export class Runner extends EventEmitter {
     return this.join().catch(this.onCrash);
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async start() {
     if (this.running) {
       return;
@@ -135,7 +133,6 @@ export class Runner extends EventEmitter {
     }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async stop() {
     if (!this.running) {
       return;
@@ -155,7 +152,6 @@ export class Runner extends EventEmitter {
   }
 
   waitForConsumer() {
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise((resolve: any) => {
       if (!this.consuming) {
         return resolve();
@@ -170,7 +166,6 @@ export class Runner extends EventEmitter {
     });
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async processEachMessage(batch: any) {
     const { topic, partition } = batch;
 
@@ -184,7 +179,7 @@ export class Runner extends EventEmitter {
 
       try {
         await this.eachMessage({ topic, partition, message });
-      } catch (e) {
+      } catch (e: any) {
         if (!isKafkaJSError(e)) {
           this.logger.error(`Error when calling eachMessage`, {
             topic,
@@ -210,7 +205,6 @@ export class Runner extends EventEmitter {
     }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async processEachBatch(batch: any) {
     const { topic, partition } = batch;
     const lastFilteredMessage = batch.messages[batch.messages.length - 1];
@@ -244,7 +238,6 @@ export class Runner extends EventEmitter {
             offset: offsetToResolve,
           });
         },
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         heartbeat: async () => {
           await this.consumerGroup.heartbeat({
             interval: this.heartbeatInterval,
@@ -265,7 +258,7 @@ export class Runner extends EventEmitter {
         isRunning: () => this.running,
         isStale: () => this.consumerGroup.hasSeekOffset({ topic, partition }),
       });
-    } catch (e) {
+    } catch (e : any) {
       if (!isKafkaJSError(e)) {
         this.logger.error(`Error when calling eachBatch`, {
           topic,
@@ -293,7 +286,6 @@ export class Runner extends EventEmitter {
     }
   }
 
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async fetch() {
     const startFetch = Date.now();
 
@@ -314,7 +306,6 @@ export class Runner extends EventEmitter {
       duration: Date.now() - startFetch,
     });
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     const onBatch = async (batch: any) => {
       const startBatchProcess = Date.now();
       const payload = {
@@ -349,7 +340,7 @@ export class Runner extends EventEmitter {
       });
     };
 
-    const { lock, unlock, unlockWithError } = barrier();
+    const { lock, unlock, unlockWithError } : any = barrier();
     const concurrently = limitConcurrency({
       limit: this.partitionsConsumedConcurrently,
     });
@@ -380,12 +371,10 @@ export class Runner extends EventEmitter {
         continue;
       }
 
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       enqueuedTasks.push(async () => {
         const batches = await result.value;
         expectedNumberOfExecutions += batches.length;
 
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         batches.map((batch: any) =>
           concurrently(async () => {
             try {
@@ -401,7 +390,7 @@ export class Runner extends EventEmitter {
               await this.consumerGroup.heartbeat({
                 interval: this.heartbeatInterval,
               });
-            } catch (e) {
+            } catch (e:any) {
               unlockWithError(e);
             } finally {
               numberOfExecutions++;
@@ -417,7 +406,6 @@ export class Runner extends EventEmitter {
       });
     }
 
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     await Promise.all(enqueuedTasks.map((fn) => fn()));
     requestsCompleted = true;
 
@@ -454,7 +442,7 @@ export class Runner extends EventEmitter {
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
           setImmediate(() => this.scheduleFetch());
         }
-      } catch (e) {
+      } catch (e: any) {
         if (!this.running) {
           this.logger.debug('consumer not running, exiting', {
             error: e.message,
@@ -554,7 +542,7 @@ export class Runner extends EventEmitter {
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await this.consumerGroup.commitOffsets(offsets);
-      } catch (e) {
+      } catch (e:any) {
         if (!this.running) {
           this.logger.debug('consumer not running, exiting', {
             error: e.message,

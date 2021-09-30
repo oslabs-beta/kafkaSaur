@@ -15,8 +15,7 @@ const hasBrokerBeenReplaced = (broker: any, {
   broker.connection.port !== port ||
   broker.connection.rack !== rack
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export class BrokerPool {
+export default class BrokerPool {
   brokers: any;
   connectionBuilder: any;
   createBroker: any;
@@ -154,7 +153,7 @@ export class BrokerPool {
     host,
     port
   }: any) {
-    const removedBroker = values(this.brokers).find(
+    const removedBroker:any = values(this.brokers).find(
       (broker: any) => broker.connection.host === host && broker.connection.port === port
     )
 
@@ -237,7 +236,7 @@ export class BrokerPool {
 
         const replacedBrokersDisconnects = replacedBrokers.map((broker: any) => broker.disconnect())
         await Promise.all([...brokerDisconnects, ...replacedBrokersDisconnects])
-      } catch (e) {
+      } catch (e:any) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
           throw e
         }
