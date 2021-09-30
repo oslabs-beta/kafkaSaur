@@ -1,4 +1,6 @@
-import { LEVELS as logLevel } from './index.ts'
+//const { LEVELS: logLevel } = require('./index')
+import * as lvl from './index'
+const { LEVELS : logLevel } = lvl;
 
 export default () => ({
   namespace,
