@@ -1,29 +1,39 @@
-import Long from '../utils/long.ts'
-import createRetry from '../retry'
-import { initialRetryTime } from '../retry/defaults.ts'
-import { ConsumerGroup } from './consumerGroup.ts'
-import Runner from './runner.ts'
-import { events, wrap as wrapEvent, unwrap as unwrapEvent } from './instrumentationEvents.ts'
-import InstrumentationEventEmitter from '../instrumentation/emitter.ts'
-import { KafkaJSNonRetriableError } from '../errors.ts'
-import { roundRobin } from './assigners'
-import  Constants from '../constants.ts'
-import ISOLATION_LEVEL from '../protocol/isolationLevel.ts'
+/** @format */
 
-const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants
+import Long from '../utils/long.ts';
+import createRetry from '../retry';
+import * as default from '../retry/defaults.ts';
+import { ConsumerGroup } from './consumerGroup.ts';
+import Runner from './runner.ts';
+import {
+  events,
+  wrap as wrapEvent,
+  unwrap as unwrapEvent,
+} from './instrumentationEvents.ts';
+import InstrumentationEventEmitter from '../instrumentation/emitter.ts';
+import { KafkaJSNonRetriableError } from '../errors.ts';
+import { roundRobin } from './assigners';
+import Constants from '../constants.ts';
+import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
 
-const { keys, values } = Object
-const { CONNECT, DISCONNECT, STOP, CRASH } = events
+const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 
-const eventNames = values(events)
+
+const { initialRetryTime } = default.initialRetryTime
+
+
+const { keys, values } = Object;
+const { CONNECT, DISCONNECT, STOP, CRASH } = events;
+
+const eventNames = values(events);
 const eventKeys = keys(events)
-  .map(key => `consumer.events.${key}`)
-  .join(', ')
+  .map((key) => `consumer.events.${key}`)
+  .join(', ');
 
 const specialOffsets = [
   Long.fromValue(EARLIEST_OFFSET).toString(),
   Long.fromValue(LATEST_OFFSET).toString(),
-]
+];
 
 /**
  * @param {Object} params
@@ -46,8 +56,7 @@ const specialOffsets = [
  *
  * @returns {import("../../types").Consumer}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   cluster,
   groupId,
   retry,
@@ -69,33 +78,36 @@ export ({
   isolationLevel = ISOLATION_LEVEL.READ_COMMITTED,
   rackId = '',
   instrumentationEmitter: rootInstrumentationEmitter,
-  metadataMaxAge
+  metadataMaxAge,
 }: any) => {
   if (!groupId) {
-    throw new KafkaJSNonRetriableError('Consumer groupId must be a non-empty string.')
+    throw new KafkaJSNonRetriableError(
+      'Consumer groupId must be a non-empty string.'
+    );
   }
 
-  const logger = rootLogger.namespace('Consumer')
-  const instrumentationEmitter = rootInstrumentationEmitter || new InstrumentationEventEmitter()
+  const logger = rootLogger.namespace('Consumer');
+  const instrumentationEmitter =
+    rootInstrumentationEmitter || new InstrumentationEventEmitter();
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'createAssigner' implicitly has an 'any'... Remove this comment to see the full error message
-  const assigners = partitionAssigners.map(createAssigner =>
+  const assigners = partitionAssigners.map((createAssigner) =>
     createAssigner({ groupId, logger, cluster })
-  )
+  );
 
-  const topics = {}
-  let runner: any = null
-  let consumerGroup: any = null
+  const topics = {};
+  let runner: any = null;
+  let consumerGroup: any = null;
 
   if (heartbeatInterval >= sessionTimeout) {
     throw new KafkaJSNonRetriableError(
       `Consumer heartbeatInterval (${heartbeatInterval}) must be lower than sessionTimeout (${sessionTimeout}). It is recommended to set heartbeatInterval to approximately a third of the sessionTimeout.`
-    )
+    );
   }
 
   const createConsumerGroup = ({
     autoCommit,
     autoCommitInterval,
-    autoCommitThreshold
+    autoCommitThreshold,
   }: any) => {
     return new ConsumerGroup({
       logger: rootLogger,
@@ -118,8 +130,8 @@ export ({
       isolationLevel,
       rackId,
       metadataMaxAge,
-    })
-  }
+    });
+  };
 
   const createRunner = ({
     eachBatchAutoResolve,
@@ -127,7 +139,7 @@ export ({
     eachMessage,
     onCrash,
     autoCommit,
-    partitionsConsumedConcurrently
+    partitionsConsumedConcurrently,
   }: any) => {
     return new Runner({
       autoCommit,
@@ -141,93 +153,87 @@ export ({
       retry,
       onCrash,
       partitionsConsumedConcurrently,
-    })
-  }
+    });
+  };
 
   /** @type {import("../../types").Consumer["connect"]} */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const connect = async () => {
-    await cluster.connect()
-    instrumentationEmitter.emit(CONNECT)
-  }
+    await cluster.connect();
+    instrumentationEmitter.emit(CONNECT);
+  };
 
   /** @type {import("../../types").Consumer["disconnect"]} */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const disconnect = async () => {
     try {
-      await stop()
-      logger.debug('consumer has stopped, disconnecting', { groupId })
-      await cluster.disconnect()
-      instrumentationEmitter.emit(DISCONNECT)
+      await stop();
+      logger.debug('consumer has stopped, disconnecting', { groupId });
+      await cluster.disconnect();
+      instrumentationEmitter.emit(DISCONNECT);
     } catch (e) {}
-  }
+  };
 
   /** @type {import("../../types").Consumer["stop"]} */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const stop = async () => {
     try {
       if (runner) {
-        await runner.stop()
-        runner = null
-        consumerGroup = null
-        instrumentationEmitter.emit(STOP)
+        await runner.stop();
+        runner = null;
+        consumerGroup = null;
+        instrumentationEmitter.emit(STOP);
       }
 
-      logger.info('Stopped', { groupId })
+      logger.info('Stopped', { groupId });
     } catch (e) {}
-  }
+  };
 
   /** @type {import("../../types").Consumer["subscribe"]} */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-  const subscribe = async ({
-    topic,
-    fromBeginning = false
-  }: any) => {
+  const subscribe = async ({ topic, fromBeginning = false }: any) => {
     if (consumerGroup) {
-      throw new KafkaJSNonRetriableError('Cannot subscribe to topic while consumer is running')
+      throw new KafkaJSNonRetriableError(
+        'Cannot subscribe to topic while consumer is running'
+      );
     }
 
     if (!topic) {
-      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
     }
 
-    const isRegExp = topic instanceof RegExp
+    const isRegExp = topic instanceof RegExp;
     if (typeof topic !== 'string' && !isRegExp) {
       throw new KafkaJSNonRetriableError(
         `Invalid topic ${topic} (${typeof topic}), the topic name has to be a String or a RegExp`
-      )
+      );
     }
 
-    const topicsToSubscribe = []
+    const topicsToSubscribe = [];
     if (isRegExp) {
-      const topicRegExp = topic
-      const metadata = await cluster.metadata()
+      const topicRegExp = topic;
+      const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
         // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topicName' implicitly has an 'any... Remove this comment to see the full error message
         .map(({ topic: topicName }) => topicName)
-        .filter((topicName: any) => topicRegExp.test(topicName))
+        .filter((topicName: any) => topicRegExp.test(topicName));
 
       logger.debug('Subscription based on RegExp', {
         groupId,
         topicRegExp: topicRegExp.toString(),
         matchedTopics,
-      })
+      });
 
-      topicsToSubscribe.push(...matchedTopics)
+      topicsToSubscribe.push(...matchedTopics);
     } else {
-      topicsToSubscribe.push(topic)
+      topicsToSubscribe.push(topic);
     }
 
     for (const t of topicsToSubscribe) {
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      topics[t] = { fromBeginning }
+      topics[t] = { fromBeginning };
     }
 
-    await cluster.addMultipleTargetTopics(topicsToSubscribe)
-  }
+    await cluster.addMultipleTargetTopics(topicsToSubscribe);
+  };
 
   /** @type {import("../../types").Consumer["run"]} */
-  // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   const run = async ({
     autoCommit = true,
     autoCommitInterval = null,
@@ -238,19 +244,21 @@ export ({
     eachMessage = null,
   } = {}) => {
     if (consumerGroup) {
-      logger.warn('consumer#run was called, but the consumer is already running', { groupId })
-      return
+      logger.warn(
+        'consumer#run was called, but the consumer is already running',
+        { groupId }
+      );
+      return;
     }
 
     consumerGroup = createConsumerGroup({
       autoCommit,
       autoCommitInterval,
       autoCommitThreshold,
-    })
+    });
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     const start = async (onCrash: any) => {
-      logger.info('Starting', { groupId })
+      logger.info('Starting', { groupId });
       runner = createRunner({
         autoCommit,
         eachBatchAutoResolve,
@@ -258,35 +266,35 @@ export ({
         eachMessage,
         onCrash,
         partitionsConsumedConcurrently,
-      })
+      });
 
-      await runner.start()
-    }
+      await runner.start();
+    };
 
     const restart = (onCrash: any) => {
       consumerGroup = createConsumerGroup({
         autoCommitInterval,
         autoCommitThreshold,
-      })
+      });
 
-      start(onCrash)
-    }
+      start(onCrash);
+    };
 
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     const onCrash = async (e: any) => {
       logger.error(`Crash: ${e.name}: ${e.message}`, {
         groupId,
         retryCount: e.retryCount,
         stack: e.stack,
-      })
+      });
 
       if (e.name === 'KafkaJSConnectionClosedError') {
-        cluster.removeBroker({ host: e.host, port: e.port })
+        cluster.removeBroker({ host: e.host, port: e.port });
       }
 
-      await disconnect()
+      await disconnect();
 
-      const isErrorRetriable = e.name === 'KafkaJSNumberOfRetriesExceeded' || e.retriable === true
+      const isErrorRetriable =
+        e.name === 'KafkaJSNumberOfRetriesExceeded' || e.retriable === true;
       const shouldRestart =
         isErrorRetriable &&
         (!retry ||
@@ -299,49 +307,54 @@ export ({
                 originalError: e.message || e,
                 groupId,
               }
-            )
+            );
 
-            return true
-          })))
+            return true;
+          })));
 
       instrumentationEmitter.emit(CRASH, {
         error: e,
         groupId,
         restart: shouldRestart,
-      })
+      });
 
       if (shouldRestart) {
-        const retryTime = e.retryTime || (retry && retry.initialRetryTime) || initialRetryTime
+        const retryTime =
+          e.retryTime || (retry && retry.initialRetryTime) || initialRetryTime;
         logger.error(`Restarting the consumer in ${retryTime}ms`, {
           retryCount: e.retryCount,
           retryTime,
           groupId,
-        })
+        });
 
-        setTimeout(() => restart(onCrash), retryTime)
+        setTimeout(() => restart(onCrash), retryTime);
       }
-    }
+    };
 
-    await start(onCrash)
-  }
+    await start(onCrash);
+  };
 
   /** @type {import("../../types").Consumer["on"]} */
   const on = (eventName: any, listener: any) => {
     if (!eventNames.includes(eventName)) {
-      throw new KafkaJSNonRetriableError(`Event name should be one of ${eventKeys}`)
+      throw new KafkaJSNonRetriableError(
+        `Event name should be one of ${eventKeys}`
+      );
     }
 
-    return instrumentationEmitter.addListener(unwrapEvent(eventName), (event: any) => {
-      event.type = wrapEvent(event.type)
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
-      Promise.resolve(listener(event)).catch((e: any) => {
-        logger.error(`Failed to execute listener: ${e.message}`, {
-          eventName,
-          stack: e.stack,
-        })
-      })
-    });
-  }
+    return instrumentationEmitter.addListener(
+      unwrapEvent(eventName),
+      (event: any) => {
+        event.type = wrapEvent(event.type);
+        Promise.resolve(listener(event)).catch((e: any) => {
+          logger.error(`Failed to execute listener: ${e.message}`, {
+            eventName,
+            stack: e.stack,
+          });
+        });
+      }
+    );
+  };
 
   /**
    * @type {import("../../types").Consumer["commitOffsets"]}
@@ -352,108 +365,118 @@ export ({
     const commitsByTopic = topicPartitions.reduce(
       (payload, { topic, partition, offset, metadata = null }) => {
         if (!topic) {
-          throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+          throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
         }
 
         if (isNaN(partition)) {
           throw new KafkaJSNonRetriableError(
             `Invalid partition, expected a number received ${partition}`
-          )
+          );
         }
 
-        let commitOffset
+        let commitOffset;
         try {
-          commitOffset = Long.fromValue(offset)
+          commitOffset = Long.fromValue(offset);
         } catch (_) {
-          throw new KafkaJSNonRetriableError(`Invalid offset, expected a long received ${offset}`)
+          throw new KafkaJSNonRetriableError(
+            `Invalid offset, expected a long received ${offset}`
+          );
         }
 
         if (commitOffset.lessThan(0)) {
-          throw new KafkaJSNonRetriableError('Offset must not be a negative number')
+          throw new KafkaJSNonRetriableError(
+            'Offset must not be a negative number'
+          );
         }
 
         if (metadata !== null && typeof metadata !== 'string') {
           throw new KafkaJSNonRetriableError(
             `Invalid offset metadata, expected string or null, received ${metadata}`
-          )
+          );
         }
 
         // @ts-expect-error ts-migrate(7022) FIXME: 'topicCommits' implicitly has type 'any' because i... Remove this comment to see the full error message
-        const topicCommits = payload[topic] || []
+        const topicCommits =
+          payload[topic] ||
+          [](
+            // @ts-expect-error ts-migrate(2448) FIXME: Block-scoped variable 'topicCommits' used before i... Remove this comment to see the full error message
+            topicCommits as any
+          ).push({ partition, offset: commitOffset, metadata });
 
-        // @ts-expect-error ts-migrate(2448) FIXME: Block-scoped variable 'topicCommits' used before i... Remove this comment to see the full error message
-        (topicCommits as any).push({ partition, offset: commitOffset, metadata });
-
-        return { ...payload, [topic]: topicCommits }
+        return { ...payload, [topic]: topicCommits };
       },
       {}
-    )
+    );
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    const topics = Object.keys(commitsByTopic)
+    const topics = Object.keys(commitsByTopic);
 
     return runner.commitOffsets({
-      topics: topics.map(topic => {
+      topics: topics.map((topic) => {
         return {
           topic,
           // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           partitions: commitsByTopic[topic],
-        }
+        };
       }),
-    })
-  }
+    });
+  };
 
   /** @type {import("../../types").Consumer["seek"]} */
-  const seek = ({
-    topic,
-    partition,
-    offset
-  }: any) => {
+  const seek = ({ topic, partition, offset }: any) => {
     if (!topic) {
-      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`)
+      throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
     }
 
     if (isNaN(partition)) {
       throw new KafkaJSNonRetriableError(
         `Invalid partition, expected a number received ${partition}`
-      )
+      );
     }
 
-    let seekOffset
+    let seekOffset;
     try {
-      seekOffset = Long.fromValue(offset)
+      seekOffset = Long.fromValue(offset);
     } catch (_) {
-      throw new KafkaJSNonRetriableError(`Invalid offset, expected a long received ${offset}`)
+      throw new KafkaJSNonRetriableError(
+        `Invalid offset, expected a long received ${offset}`
+      );
     }
 
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'any[]'... Remove this comment to see the full error message
-    if (seekOffset.lessThan(0) && !specialOffsets.includes(seekOffset.toString())) {
-      throw new KafkaJSNonRetriableError('Offset must not be a negative number')
+    if (
+      seekOffset.lessThan(0) &&
+      !specialOffsets.includes(seekOffset.toString())
+    ) {
+      throw new KafkaJSNonRetriableError(
+        'Offset must not be a negative number'
+      );
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.seek({ topic, partition, offset: seekOffset.toString() })
-  }
+    consumerGroup.seek({ topic, partition, offset: seekOffset.toString() });
+  };
 
   /** @type {import("../../types").Consumer["describeGroup"]} */
   const describeGroup = async () => {
-    const coordinator = await cluster.findGroupCoordinator({ groupId })
-    const retrier = createRetry(retry)
+    const coordinator = await cluster.findGroupCoordinator({ groupId });
+    const retrier = createRetry(retry);
     return retrier(async () => {
-      const { groups } = await coordinator.describeGroups({ groupIds: [groupId] })
+      const { groups } = await coordinator.describeGroups({
+        groupIds: [groupId],
+      });
       return groups.find((group: any) => group.groupId === groupId);
     });
-  }
+  };
 
   /**
    * @type {import("../../types").Consumer["pause"]}
@@ -463,23 +486,32 @@ export ({
   const pause = (topicPartitions = []) => {
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !(topicPartition as any).topic) {
-        throw new KafkaJSNonRetriableError(`Invalid topic ${(topicPartition && (topicPartition as any).topic) || topicPartition}`);
+        throw new KafkaJSNonRetriableError(
+          `Invalid topic ${
+            (topicPartition && (topicPartition as any).topic) || topicPartition
+          }`
+        );
       } else if (
         typeof (topicPartition as any).partitions !== 'undefined' &&
-    (!Array.isArray((topicPartition as any).partitions) || (topicPartition as any).partitions.some(isNaN))
+        (!Array.isArray((topicPartition as any).partitions) ||
+          (topicPartition as any).partitions.some(isNaN))
       ) {
-        throw new KafkaJSNonRetriableError(`Array of valid partitions required to pause specific partitions instead of ${(topicPartition as any).partitions}`);
+        throw new KafkaJSNonRetriableError(
+          `Array of valid partitions required to pause specific partitions instead of ${
+            (topicPartition as any).partitions
+          }`
+        );
       }
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.pause(topicPartitions)
-  }
+    consumerGroup.pause(topicPartitions);
+  };
 
   /**
    * Returns the list of topic partitions paused on this consumer
@@ -488,11 +520,11 @@ export ({
    */
   const paused = () => {
     if (!consumerGroup) {
-      return []
+      return [];
     }
 
-    return consumerGroup.paused()
-  }
+    return consumerGroup.paused();
+  };
 
   /**
    * @type {import("../../types").Consumer["resume"]}
@@ -502,28 +534,37 @@ export ({
   const resume = (topicPartitions = []) => {
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !(topicPartition as any).topic) {
-        throw new KafkaJSNonRetriableError(`Invalid topic ${(topicPartition && (topicPartition as any).topic) || topicPartition}`);
+        throw new KafkaJSNonRetriableError(
+          `Invalid topic ${
+            (topicPartition && (topicPartition as any).topic) || topicPartition
+          }`
+        );
       } else if (
         typeof (topicPartition as any).partitions !== 'undefined' &&
-    (!Array.isArray((topicPartition as any).partitions) || (topicPartition as any).partitions.some(isNaN))
+        (!Array.isArray((topicPartition as any).partitions) ||
+          (topicPartition as any).partitions.some(isNaN))
       ) {
-        throw new KafkaJSNonRetriableError(`Array of valid partitions required to resume specific partitions instead of ${(topicPartition as any).partitions}`);
+        throw new KafkaJSNonRetriableError(
+          `Array of valid partitions required to resume specific partitions instead of ${
+            (topicPartition as any).partitions
+          }`
+        );
       }
     }
 
     if (!consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Consumer group was not initialized, consumer#run must be called first'
-      )
+      );
     }
 
-    consumerGroup.resume(topicPartitions)
-  }
+    consumerGroup.resume(topicPartitions);
+  };
 
   /**
    * @return {Object} logger
    */
-  const getLogger = () => logger
+  const getLogger = () => logger;
 
   return {
     connect,
@@ -540,5 +581,5 @@ export ({
     on,
     events,
     logger: getLogger,
-  }
-}
+  };
+};

@@ -1,23 +1,32 @@
+/** @format */
+
 //import { EventEmitter } from 'events'
 //Deno equivalent of Events...
-import Long from '../utils/long.ts'
-import createRetry from '../retry'
-import limitConcurrency from '../utils/concurrency.ts'
-import { KafkaJSError } from '../errors.ts'
-import barrier from './barrier.ts'
+import Long from '../utils/long.ts';
+import createRetry from '../retry';
+import limitConcurrency from '../utils/concurrency.ts';
+import { KafkaJSError } from '../errors.ts';
+import barrier from './barrier.ts';
 
 const {
-  events: { FETCH, FETCH_START, START_BATCH_PROCESS, END_BATCH_PROCESS, REBALANCING },
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('./instrumentationEvents')
+  events: {
+    FETCH,
+    FETCH_START,
+    START_BATCH_PROCESS,
+    END_BATCH_PROCESS,
+    REBALANCING,
+  },
+  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+} = require('./instrumentationEvents');
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'isRebalanc... Remove this comment to see the full error message
-const isRebalancing = (e: any) => e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP'
+const isRebalancing = (e: any) =>
+  e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
-const isKafkaJSError = (e: any) => e instanceof KafkaJSError
-const isSameOffset = (offsetA: any, offsetB: any) => Long.fromValue(offsetA).equals(Long.fromValue(offsetB))
-const CONSUMING_START = 'consuming-start'
-const CONSUMING_STOP = 'consuming-stop'
+const isKafkaJSError = (e: any) => e instanceof KafkaJSError;
+const isSameOffset = (offsetA: any, offsetB: any) =>
+  Long.fromValue(offsetA).equals(Long.fromValue(offsetB));
+const CONSUMING_START = 'consuming-start';
+const CONSUMING_STOP = 'consuming-stop';
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class Runner extends EventEmitter {
@@ -61,41 +70,40 @@ export class Runner extends EventEmitter {
     heartbeatInterval,
     onCrash,
     retry,
-    autoCommit = true
+    autoCommit = true,
   }: any) {
-    super()
-    this.logger = logger.namespace('Runner')
-    this.consumerGroup = consumerGroup
-    this.instrumentationEmitter = instrumentationEmitter
-    this.eachBatchAutoResolve = eachBatchAutoResolve
-    this.eachBatch = eachBatch
-    this.eachMessage = eachMessage
-    this.heartbeatInterval = heartbeatInterval
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
-    this.retrier = createRetry(Object.assign({}, retry))
-    this.onCrash = onCrash
-    this.autoCommit = autoCommit
-    this.partitionsConsumedConcurrently = partitionsConsumedConcurrently
+    super();
+    this.logger = logger.namespace('Runner');
+    this.consumerGroup = consumerGroup;
+    this.instrumentationEmitter = instrumentationEmitter;
+    this.eachBatchAutoResolve = eachBatchAutoResolve;
+    this.eachBatch = eachBatch;
+    this.eachMessage = eachMessage;
+    this.heartbeatInterval = heartbeatInterval;
+    this.retrier = createRetry(Object.assign({}, retry));
+    this.onCrash = onCrash;
+    this.autoCommit = autoCommit;
+    this.partitionsConsumedConcurrently = partitionsConsumedConcurrently;
 
-    this.running = false
-    this.consuming = false
+    this.running = false;
+    this.consuming = false;
   }
 
   get consuming() {
-    return this._consuming
+    return this._consuming;
   }
 
   set consuming(value) {
     if (this._consuming !== value) {
-      this._consuming = value
-      this.emit(value ? CONSUMING_START : CONSUMING_STOP)
+      this._consuming = value;
+      this.emit(value ? CONSUMING_START : CONSUMING_STOP);
     }
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async join() {
-    await this.consumerGroup.joinAndSync()
-    this.running = true
+    await this.consumerGroup.joinAndSync();
+    this.running = true;
   }
 
   async scheduleJoin() {
@@ -103,46 +111,46 @@ export class Runner extends EventEmitter {
       this.logger.debug('consumer not running, exiting', {
         groupId: this.consumerGroup.groupId,
         memberId: this.consumerGroup.memberId,
-      })
-      return
+      });
+      return;
     }
 
-    return this.join().catch(this.onCrash)
+    return this.join().catch(this.onCrash);
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async start() {
     if (this.running) {
-      return
+      return;
     }
 
     try {
-      await this.consumerGroup.connect()
-      await this.join()
+      await this.consumerGroup.connect();
+      await this.join();
 
-      this.running = true
-      this.scheduleFetch()
+      this.running = true;
+      this.scheduleFetch();
     } catch (e) {
-      this.onCrash(e)
+      this.onCrash(e);
     }
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async stop() {
     if (!this.running) {
-      return
+      return;
     }
 
     this.logger.debug('stop consumer group', {
       groupId: this.consumerGroup.groupId,
       memberId: this.consumerGroup.memberId,
-    })
+    });
 
-    this.running = false
+    this.running = false;
 
     try {
-      await this.waitForConsumer()
-      await this.consumerGroup.leave()
+      await this.waitForConsumer();
+      await this.consumerGroup.leave();
     } catch (e) {}
   }
 
@@ -150,29 +158,32 @@ export class Runner extends EventEmitter {
     // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise((resolve: any) => {
       if (!this.consuming) {
-        return resolve()
+        return resolve();
       }
 
       this.logger.debug('waiting for consumer to finish...', {
         groupId: this.consumerGroup.groupId,
         memberId: this.consumerGroup.memberId,
-      })
+      });
 
-      this.once(CONSUMING_STOP, () => resolve())
+      this.once(CONSUMING_STOP, () => resolve());
     });
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async processEachMessage(batch: any) {
-    const { topic, partition } = batch
+    const { topic, partition } = batch;
 
     for (const message of batch.messages) {
-      if (!this.running || this.consumerGroup.hasSeekOffset({ topic, partition })) {
-        break
+      if (
+        !this.running ||
+        this.consumerGroup.hasSeekOffset({ topic, partition })
+      ) {
+        break;
       }
 
       try {
-        await this.eachMessage({ topic, partition, message })
+        await this.eachMessage({ topic, partition, message });
       } catch (e) {
         if (!isKafkaJSError(e)) {
           this.logger.error(`Error when calling eachMessage`, {
@@ -181,24 +192,28 @@ export class Runner extends EventEmitter {
             offset: message.offset,
             stack: e.stack,
             error: e,
-          })
+          });
         }
 
         // In case of errors, commit the previously consumed offsets unless autoCommit is disabled
-        await this.autoCommitOffsets()
-        throw e
+        await this.autoCommitOffsets();
+        throw e;
       }
 
-      this.consumerGroup.resolveOffset({ topic, partition, offset: message.offset })
-      await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
-      await this.autoCommitOffsetsIfNecessary()
+      this.consumerGroup.resolveOffset({
+        topic,
+        partition,
+        offset: message.offset,
+      });
+      await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval });
+      await this.autoCommitOffsetsIfNecessary();
     }
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async processEachBatch(batch: any) {
-    const { topic, partition } = batch
-    const lastFilteredMessage = batch.messages[batch.messages.length - 1]
+    const { topic, partition } = batch;
+    const lastFilteredMessage = batch.messages[batch.messages.length - 1];
 
     try {
       await this.eachBatch({
@@ -218,15 +233,22 @@ export class Runner extends EventEmitter {
            * @see https://github.com/apache/kafka/blob/9aa660786e46c1efbf5605a6a69136a1dac6edb9/clients/src/main/java/org/apache/kafka/clients/consumer/internals/Fetcher.java#L1499-L1505
            */
           const offsetToResolve =
-            lastFilteredMessage && isSameOffset(offset, lastFilteredMessage.offset)
+            lastFilteredMessage &&
+            isSameOffset(offset, lastFilteredMessage.offset)
               ? batch.lastOffset()
-              : offset
+              : offset;
 
-          this.consumerGroup.resolveOffset({ topic, partition, offset: offsetToResolve })
+          this.consumerGroup.resolveOffset({
+            topic,
+            partition,
+            offset: offsetToResolve,
+          });
         },
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         heartbeat: async () => {
-          await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
+          await this.consumerGroup.heartbeat({
+            interval: this.heartbeatInterval,
+          });
         },
         /**
          * Commit offsets if provided. Otherwise commit most recent resolved offsets
@@ -237,12 +259,12 @@ export class Runner extends EventEmitter {
         commitOffsetsIfNecessary: async (offsets: any) => {
           return offsets
             ? this.consumerGroup.commitOffsets(offsets)
-            : this.consumerGroup.commitOffsetsIfNecessary()
+            : this.consumerGroup.commitOffsetsIfNecessary();
         },
         uncommittedOffsets: () => this.consumerGroup.uncommittedOffsets(),
         isRunning: () => this.running,
         isStale: () => this.consumerGroup.hasSeekOffset({ topic, partition }),
-      })
+      });
     } catch (e) {
       if (!isKafkaJSError(e)) {
         this.logger.error(`Error when calling eachBatch`, {
@@ -251,29 +273,33 @@ export class Runner extends EventEmitter {
           offset: batch.firstOffset(),
           stack: e.stack,
           error: e,
-        })
+        });
       }
 
       // eachBatch has a special resolveOffset which can be used
       // to keep track of the messages
-      await this.autoCommitOffsets()
-      throw e
+      await this.autoCommitOffsets();
+      throw e;
     }
 
     // resolveOffset for the last offset can be disabled to allow the users of eachBatch to
     // stop their consumers without resolving unprocessed offsets (issues/18)
     if (this.eachBatchAutoResolve) {
-      this.consumerGroup.resolveOffset({ topic, partition, offset: batch.lastOffset() })
+      this.consumerGroup.resolveOffset({
+        topic,
+        partition,
+        offset: batch.lastOffset(),
+      });
     }
   }
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   async fetch() {
-    const startFetch = Date.now()
+    const startFetch = Date.now();
 
-    this.instrumentationEmitter.emit(FETCH_START, {})
+    this.instrumentationEmitter.emit(FETCH_START, {});
 
-    const iterator = await this.consumerGroup.fetch()
+    const iterator = await this.consumerGroup.fetch();
 
     this.instrumentationEmitter.emit(FETCH, {
       /**
@@ -286,11 +312,11 @@ export class Runner extends EventEmitter {
        */
       numberOfBatches: 0,
       duration: Date.now() - startFetch,
-    })
+    });
 
     // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     const onBatch = async (batch: any) => {
-      const startBatchProcess = Date.now()
+      const startBatchProcess = Date.now();
       const payload = {
         topic: batch.topic,
         partition: batch.partition,
@@ -307,94 +333,105 @@ export class Runner extends EventEmitter {
         batchSize: batch.messages.length,
         firstOffset: batch.firstOffset(),
         lastOffset: batch.lastOffset(),
-      }
+      };
 
-      this.instrumentationEmitter.emit(START_BATCH_PROCESS, payload)
+      this.instrumentationEmitter.emit(START_BATCH_PROCESS, payload);
 
       if (this.eachMessage) {
-        await this.processEachMessage(batch)
+        await this.processEachMessage(batch);
       } else if (this.eachBatch) {
-        await this.processEachBatch(batch)
+        await this.processEachBatch(batch);
       }
 
       this.instrumentationEmitter.emit(END_BATCH_PROCESS, {
         ...payload,
         duration: Date.now() - startBatchProcess,
-      })
-    }
+      });
+    };
 
-    const { lock, unlock, unlockWithError } = barrier()
-    const concurrently = limitConcurrency({ limit: this.partitionsConsumedConcurrently })
+    const { lock, unlock, unlockWithError } = barrier();
+    const concurrently = limitConcurrency({
+      limit: this.partitionsConsumedConcurrently,
+    });
 
-    let requestsCompleted = false
-    let numberOfExecutions = 0
-    let expectedNumberOfExecutions = 0
-    const enqueuedTasks = []
+    let requestsCompleted = false;
+    let numberOfExecutions = 0;
+    let expectedNumberOfExecutions = 0;
+    const enqueuedTasks = [];
 
     while (true) {
-      const result = iterator.next()
+      const result = iterator.next();
 
       if (result.done) {
-        break
+        break;
       }
 
       if (!this.running) {
         result.value.catch((error: any) => {
-          this.logger.debug('Ignoring error in fetch request while stopping runner', {
-            error: error.message || error,
-            stack: error.stack,
-          })
-        })
+          this.logger.debug(
+            'Ignoring error in fetch request while stopping runner',
+            {
+              error: error.message || error,
+              stack: error.stack,
+            }
+          );
+        });
 
-        continue
+        continue;
       }
 
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       enqueuedTasks.push(async () => {
-        const batches = await result.value
-        expectedNumberOfExecutions += batches.length
+        const batches = await result.value;
+        expectedNumberOfExecutions += batches.length;
 
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-        batches.map((batch: any) => concurrently(async () => {
-          try {
-            if (!this.running) {
-              return
-            }
+        batches.map((batch: any) =>
+          concurrently(async () => {
+            try {
+              if (!this.running) {
+                return;
+              }
 
-            if (batch.isEmpty()) {
-              return
-            }
+              if (batch.isEmpty()) {
+                return;
+              }
 
-            await onBatch(batch)
-            await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
-          } catch (e) {
-            unlockWithError(e)
-          } finally {
-            numberOfExecutions++
-            if (requestsCompleted && numberOfExecutions === expectedNumberOfExecutions) {
-              unlock()
+              await onBatch(batch);
+              await this.consumerGroup.heartbeat({
+                interval: this.heartbeatInterval,
+              });
+            } catch (e) {
+              unlockWithError(e);
+            } finally {
+              numberOfExecutions++;
+              if (
+                requestsCompleted &&
+                numberOfExecutions === expectedNumberOfExecutions
+              ) {
+                unlock();
+              }
             }
-          }
-        }).catch(unlockWithError)
-        )
-      })
+          }).catch(unlockWithError)
+        );
+      });
     }
 
     // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
-    await Promise.all(enqueuedTasks.map(fn => fn()))
-    requestsCompleted = true
+    await Promise.all(enqueuedTasks.map((fn) => fn()));
+    requestsCompleted = true;
 
     if (expectedNumberOfExecutions === numberOfExecutions) {
-      unlock()
+      unlock();
     }
 
-    const error = await lock
+    const error = await lock;
     if (error) {
-      throw error
+      throw error;
     }
 
-    await this.autoCommitOffsets()
-    await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval })
+    await this.autoCommitOffsets();
+    await this.consumerGroup.heartbeat({ interval: this.heartbeatInterval });
   }
 
   async scheduleFetch() {
@@ -402,20 +439,20 @@ export class Runner extends EventEmitter {
       this.logger.debug('consumer not running, exiting', {
         groupId: this.consumerGroup.groupId,
         memberId: this.consumerGroup.memberId,
-      })
+      });
 
-      return
+      return;
     }
 
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        this.consuming = true
-        await this.fetch()
-        this.consuming = false
+        this.consuming = true;
+        await this.fetch();
+        this.consuming = false;
 
         if (this.running) {
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch())
+          setImmediate(() => this.scheduleFetch());
         }
       } catch (e) {
         if (!this.running) {
@@ -423,8 +460,8 @@ export class Runner extends EventEmitter {
             error: e.message,
             groupId: this.consumerGroup.groupId,
             memberId: this.consumerGroup.memberId,
-          })
-          return
+          });
+          return;
         }
 
         if (isRebalancing(e)) {
@@ -434,43 +471,46 @@ export class Runner extends EventEmitter {
             error: e.message,
             retryCount,
             retryTime,
-          })
+          });
 
           this.instrumentationEmitter.emit(REBALANCING, {
             groupId: this.consumerGroup.groupId,
             memberId: this.consumerGroup.memberId,
-          })
+          });
 
-          await this.join()
+          await this.join();
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch())
-          return
+          setImmediate(() => this.scheduleFetch());
+          return;
         }
 
         if (e.type === 'UNKNOWN_MEMBER_ID') {
-          this.logger.error('The coordinator is not aware of this member, re-joining the group', {
-            groupId: this.consumerGroup.groupId,
-            memberId: this.consumerGroup.memberId,
-            error: e.message,
-            retryCount,
-            retryTime,
-          })
+          this.logger.error(
+            'The coordinator is not aware of this member, re-joining the group',
+            {
+              groupId: this.consumerGroup.groupId,
+              memberId: this.consumerGroup.memberId,
+              error: e.message,
+              retryCount,
+              retryTime,
+            }
+          );
 
-          this.consumerGroup.memberId = null
-          await this.join()
+          this.consumerGroup.memberId = null;
+          await this.join();
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch())
-          return
+          setImmediate(() => this.scheduleFetch());
+          return;
         }
 
         if (e.name === 'KafkaJSOffsetOutOfRange') {
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch())
-          return
+          setImmediate(() => this.scheduleFetch());
+          return;
         }
 
         if (e.name === 'KafkaJSNotImplemented') {
-          return bail(e)
+          return bail(e);
         }
 
         this.logger.debug('Error while fetching data, trying again...', {
@@ -480,24 +520,24 @@ export class Runner extends EventEmitter {
           stack: e.stack,
           retryCount,
           retryTime,
-        })
+        });
 
-        throw e
+        throw e;
       } finally {
-        this.consuming = false
+        this.consuming = false;
       }
     }).catch(this.onCrash);
   }
 
   autoCommitOffsets() {
     if (this.autoCommit) {
-      return this.consumerGroup.commitOffsets()
+      return this.consumerGroup.commitOffsets();
     }
   }
 
   autoCommitOffsetsIfNecessary() {
     if (this.autoCommit) {
-      return this.consumerGroup.commitOffsetsIfNecessary()
+      return this.consumerGroup.commitOffsetsIfNecessary();
     }
   }
 
@@ -507,13 +547,13 @@ export class Runner extends EventEmitter {
         groupId: this.consumerGroup.groupId,
         memberId: this.consumerGroup.memberId,
         offsets,
-      })
-      return
+      });
+      return;
     }
 
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        await this.consumerGroup.commitOffsets(offsets)
+        await this.consumerGroup.commitOffsets(offsets);
       } catch (e) {
         if (!this.running) {
           this.logger.debug('consumer not running, exiting', {
@@ -521,8 +561,8 @@ export class Runner extends EventEmitter {
             groupId: this.consumerGroup.groupId,
             memberId: this.consumerGroup.memberId,
             offsets,
-          })
-          return
+          });
+          return;
         }
 
         if (isRebalancing(e)) {
@@ -532,37 +572,40 @@ export class Runner extends EventEmitter {
             error: e.message,
             retryCount,
             retryTime,
-          })
+          });
 
           this.instrumentationEmitter.emit(REBALANCING, {
             groupId: this.consumerGroup.groupId,
             memberId: this.consumerGroup.memberId,
-          })
+          });
 
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleJoin())
+          setImmediate(() => this.scheduleJoin());
 
-          bail(new KafkaJSError(e))
+          bail(new KafkaJSError(e));
         }
 
         if (e.type === 'UNKNOWN_MEMBER_ID') {
-          this.logger.error('The coordinator is not aware of this member, re-joining the group', {
-            groupId: this.consumerGroup.groupId,
-            memberId: this.consumerGroup.memberId,
-            error: e.message,
-            retryCount,
-            retryTime,
-          })
+          this.logger.error(
+            'The coordinator is not aware of this member, re-joining the group',
+            {
+              groupId: this.consumerGroup.groupId,
+              memberId: this.consumerGroup.memberId,
+              error: e.message,
+              retryCount,
+              retryTime,
+            }
+          );
 
-          this.consumerGroup.memberId = null
+          this.consumerGroup.memberId = null;
           // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleJoin())
+          setImmediate(() => this.scheduleJoin());
 
-          bail(new KafkaJSError(e))
+          bail(new KafkaJSError(e));
         }
 
         if (e.name === 'KafkaJSNotImplemented') {
-          return bail(e)
+          return bail(e);
         }
 
         this.logger.debug('Error while committing offsets, trying again...', {
@@ -573,9 +616,9 @@ export class Runner extends EventEmitter {
           retryCount,
           retryTime,
           offsets,
-        })
+        });
 
-        throw e
+        throw e;
       }
     });
   }
