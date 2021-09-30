@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../utils/flatten')
+import flatten from '../utils/flatten'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMet... Remove this comment to see the full error message
 const { KafkaJSMetadataNotLoaded } = require('../errors')
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'staleMetad... Remove this comment to see the full error message
@@ -11,7 +11,6 @@ const createTopicData = require('./createTopicData')
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const responseSerializer = require('./responseSerializer')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
 const { keys } = Object
 
 /**
@@ -22,8 +21,7 @@ const { keys } = Object
  * @param {import("./eosManager").EosManager} options.eosManager
  * @param {import("../retry").Retrier} options.retrier
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default({
   logger,
   cluster,
   partitioner,

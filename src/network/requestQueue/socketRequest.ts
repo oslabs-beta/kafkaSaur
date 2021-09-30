@@ -1,24 +1,15 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSReq... Remove this comment to see the full error message
-const { KafkaJSRequestTimeoutError, KafkaJSNonRetriableError } = require('../../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'events'.
-const events = require('../instrumentationEvents')
+import { KafkaJSRequestTimeoutError, KafkaJSNonRetriableError } from '../../errors.ts';
+import events from '../instrumentationEvents.ts';
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   STATE: Symbol('private:SocketRequest:state'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   EMIT_EVENT: Symbol('private:SocketRequest:emitEvent'),
 }
 
 const REQUEST_STATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   PENDING: Symbol('PENDING'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SENT: Symbol('SENT'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   COMPLETED: Symbol('COMPLETED'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   REJECTED: Symbol('REJECTED'),
 }
 
@@ -47,20 +38,8 @@ const REQUEST_STATE = {
  * @property {Function} resolve
  * @property {Function} reject
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class SocketRequest {
-  broker: any;
-  clientId: any;
-  correlationId: any;
-  createdAt: any;
-  duration: any;
-  entry: any;
-  expectResponse: any;
-  pendingDuration: any;
-  requestTimeout: any;
-  sendRequest: any;
-  sentAt: any;
-  timeoutHandler: any;
+  [key: symbol | string | number]: any;
   /**
    * @param {Object} options
    * @param {number} options.requestTimeout
@@ -96,9 +75,7 @@ export class SocketRequest {
     this.duration = null
     this.pendingDuration = null
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).STATE] = REQUEST_STATE.PENDING;
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).EMIT_EVENT] = (eventName: any, payload: any) => instrumentationEmitter && instrumentationEmitter.emit(eventName, payload);
   }
 
@@ -111,7 +88,6 @@ export class SocketRequest {
     this.sendRequest()
     this.sentAt = Date.now()
     this.pendingDuration = this.sentAt - this.createdAt
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).STATE] = REQUEST_STATE.SENT;
   }
 
@@ -129,7 +105,6 @@ export class SocketRequest {
 
     this.timeoutHandler()
     this.rejected(new KafkaJSRequestTimeoutError(`Request ${requestInfo} timed out`, eventData))
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).EMIT_EVENT](events.NETWORK_REQUEST_TIMEOUT, {
     ...eventData,
     apiName,
@@ -149,12 +124,10 @@ export class SocketRequest {
 
     const { entry, correlationId, broker, clientId, createdAt, sentAt, pendingDuration } = this
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).STATE] = REQUEST_STATE.COMPLETED;
     this.duration = Date.now() - this.sentAt
     entry.resolve({ correlationId, entry, size, payload })
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).EMIT_EVENT](events.NETWORK_REQUEST, {
     broker,
     clientId,
@@ -176,7 +149,6 @@ export class SocketRequest {
       next: REQUEST_STATE.REJECTED,
     })
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[(PRIVATE as any).STATE] = REQUEST_STATE.REJECTED;
     this.duration = Date.now() - this.sentAt
     this.entry.reject(error)
@@ -189,12 +161,10 @@ export class SocketRequest {
     accepted,
     next
   }: any) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (accepted.includes(this[(PRIVATE as any).STATE])) {
       return
     }
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const current = this[(PRIVATE as any).STATE].toString();
 
     throw new KafkaJSNonRetriableError(

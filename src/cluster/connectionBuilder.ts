@@ -23,7 +23,7 @@ import { KafkaJSConnectionError, KafkaJSNonRetriableError } from '../errors.ts'
  * @returns {ConnectionBuilder}
  */
 
-export ({
+export default({
 
   socketFactory,
   brokers,
@@ -56,7 +56,7 @@ export ({
     let list
     try {
       list = await brokers()
-    } catch (e) {
+    } catch (e:any) {
       const wrappedError = new KafkaJSConnectionError(
         `Failed to connect: "config.brokers" threw: ${e.message}`
       )

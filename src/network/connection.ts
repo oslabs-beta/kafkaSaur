@@ -1,19 +1,12 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const createSocket = require('./socket')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const createRequest = require('../protocol/request')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../protocol/decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSCon... Remove this comment to see the full error message
-const { KafkaJSConnectionError, KafkaJSConnectionClosedError } = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT_32_MAX... Remove this comment to see the full error message
-const { INT_32_MAX_VALUE } = require('../constants')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const getEnv = require('../env')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RequestQue... Remove this comment to see the full error message
-const RequestQueue = require('./requestQueue')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONNECTION... Remove this comment to see the full error message
-const { CONNECTION_STATUS, CONNECTED_STATUS } = require('./connectionStatus')
+import { Buffer } from 'https://deno.land/std@0.109.0/node/buffer.ts'
+import createSocket from './socket.ts'
+import createRequest from '../protocol/request.ts'
+import {Decoder} from '../protocol/decoder.ts'
+import { KafkaJSConnectionError, KafkaJSConnectionClosedError } from '../errors.ts'
+import INT_32_MAX_VALUE from '../constants.ts'
+import getEnv from '../env.ts'
+import RequestQueue from './requestQueue'
+import { CONNECTION_STATUS, CONNECTED_STATUS } from './connectionStatus.ts'
 
 const requestInfo = ({
   apiName,
@@ -22,8 +15,7 @@ const requestInfo = ({
 }: any) =>
   `${apiName}(key: ${apiKey}, version: ${apiVersion})`
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export class Connection {
+export default class Connection {
   authExpectResponse: any;
   authHandlers: any;
   broker: any;
@@ -134,7 +126,6 @@ export class Connection {
   }
 
   get connected() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'any[]'... Remove this comment to see the full error message
     return CONNECTED_STATUS.includes(this.connectionStatus)
   }
 
@@ -143,7 +134,6 @@ export class Connection {
    * @returns {Promise}
    */
   connect() {
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise((resolve: any, reject: any) => {
       if (this.connected) {
         return resolve(true)
@@ -162,7 +152,6 @@ export class Connection {
         this.processData(data)
       }
 
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       const onEnd = async () => {
         clearTimeout(timeoutId)
 
@@ -183,7 +172,6 @@ export class Connection {
         await this.disconnect()
       }
 
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       const onError = async (e: any) => {
         clearTimeout(timeoutId)
 
@@ -199,7 +187,6 @@ export class Connection {
         reject(error)
       }
 
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       const onTimeout = async () => {
         const error = new KafkaJSConnectionError('Connection timeout', {
           broker: `${this.host}:${this.port}`,
@@ -229,7 +216,7 @@ export class Connection {
           onError,
           onTimeout,
         })
-      } catch (e) {
+      } catch (e: any) {
         clearTimeout(timeoutId)
         reject(
           new KafkaJSConnectionError(`Failed to connect: ${e.message}`, {
@@ -277,7 +264,6 @@ export class Connection {
      */
 
     /* eslint-disable no-async-promise-executor */
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise(async (resolve: any, reject: any) => {
       this.authHandlers = {
         onSuccess: (rawData: any) => {
@@ -345,11 +331,9 @@ export class Connection {
       this.logDebug(`Request ${requestInfo(request)}`, {
         correlationId,
         expectResponse,
-        // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
         size: Buffer.byteLength(requestPayload.buffer),
       })
 
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       return new Promise((resolve: any, reject: any) => {
         try {
           this.failIfNotConnected()
@@ -369,7 +353,7 @@ export class Connection {
       });
     }
 
-    const { correlationId, size, entry, payload } = await sendRequest()
+    const { correlationId, size, entry, payload }: any = await sendRequest()
 
     if (!expectResponse) {
       return
@@ -393,7 +377,7 @@ export class Connection {
       })
 
       return data
-    } catch (e) {
+    } catch (e: any) {
       if (logResponseError) {
         this.logError(`Response ${requestInfo(entry)}`, {
           error: e.message,
@@ -402,7 +386,6 @@ export class Connection {
         })
       }
 
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       const isBuffer = Buffer.isBuffer(payload)
       this.logDebug(`Response ${requestInfo(entry)}`, {
         error: e.message,
@@ -447,13 +430,11 @@ export class Connection {
 
     // Accumulate the new chunk
     this.chunks.push(rawData)
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     this.bytesBuffered += Buffer.byteLength(rawData)
 
     // Process data if there are enough bytes to read the expected response size,
     // otherwise keep buffering
     while (this.bytesNeeded <= this.bytesBuffered) {
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       const buffer = this.chunks.length > 1 ? Buffer.concat(this.chunks) : this.chunks[0]
       const decoder = new Decoder(buffer)
       const expectedResponseSize = decoder.readInt32()
@@ -461,7 +442,6 @@ export class Connection {
       // Return early if not enough bytes to read the full response
       if (!decoder.canReadBytes(expectedResponseSize)) {
         this.chunks = [buffer]
-        // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
         this.bytesBuffered = Buffer.byteLength(buffer)
         this.bytesNeeded = Decoder.int32Size() + expectedResponseSize
         return
@@ -472,7 +452,6 @@ export class Connection {
       // Reset the buffered chunks as the rest of the bytes
       const remainderBuffer = decoder.readAll()
       this.chunks = [remainderBuffer]
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       this.bytesBuffered = Buffer.byteLength(remainderBuffer)
       this.bytesNeeded = Decoder.int32Size()
 
