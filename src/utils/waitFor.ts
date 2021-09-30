@@ -1,10 +1,9 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
-const sleep = require('./sleep')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSTim... Remove this comment to see the full error message
-const { KafkaJSTimeout } = require('../errors')
+import sleep from './sleep'
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = (
+import KafkaJSTimeout  from '../src/errors.ts'
+
+export default (
   fn: any,
   { delay = 50, maxWait = 10000, timeoutMessage = 'Timeout', ignoreTimeout = false } = {}
 ) => {
@@ -32,7 +31,7 @@ module.exports = (
     }
   }
 
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
+  
   return new Promise((resolve: any, reject: any) => {
     checkCondition(resolve, reject)
 
@@ -42,7 +41,7 @@ module.exports = (
 
     timeoutId = setTimeout(() => {
       if (!fulfilled) {
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
+       
         return reject(new KafkaJSTimeout(timeoutMessage))
       }
     }, maxWait)

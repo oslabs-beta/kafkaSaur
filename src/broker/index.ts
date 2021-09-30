@@ -1,25 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Lock'.
-const Lock = require('../utils/lock')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Compressio... Remove this comment to see the full error message
-const { Types: Compression } = require('../protocol/message/compression')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requests'.
-const { requests, lookup } = require('../protocol/requests')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
-const apiKeys = require('../protocol/requests/apiKeys')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const SASLAuthenticator = require('./saslAuthenticator')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'shuffle'.
-const shuffle = require('../utils/shuffle')
+import Long from '../utils/long.ts'
+import {Lock} from '../utils/lock.ts'
+import { Types as Compression } from '../protocol/message/compression'
+import { requests, lookup } from '../protocol/requests'
+import { KafkaJSNonRetriableError } from '../errors.ts'
+import apiKeys from '../protocol/requests/apiKeys.ts'
+import SASLAuthenticator from './saslAuthenticator'
+import shuffle from '../utils/shuffle.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SHOULD_REAUTHENTICATE: Symbol('private:Broker:shouldReauthenticate'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   SEND_REQUEST: Symbol('private:Broker:sendRequest'),
 }
 
@@ -34,8 +23,9 @@ const notInitializedLookup = () => {
  *
  * @type {import("../../types").Broker}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Broker {
+
+export class Broker {
+
     allowAutoTopicCreation: any;
     authenticatedAt: any;
     authenticationTimeout: any;
@@ -100,7 +90,6 @@ module.exports = class Broker {
      * @public
      * @returns {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     async connect() {
         try {
             await this.lock.acquire();
@@ -142,7 +131,6 @@ module.exports = class Broker {
      * @public
      * @returns {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     async disconnect() {
         this.authenticatedAt = null;
         await this.connection.disconnect();
@@ -177,7 +165,6 @@ module.exports = class Broker {
         if (!response) {
             throw new KafkaJSNonRetriableError('API Versions not supported');
         }
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
         return response.apiVersions.reduce((obj: any, version: any) => Object.assign(obj, {
             [version.apiKey]: {
                 minVersion: version.minVersion,
@@ -374,7 +361,7 @@ module.exports = class Broker {
         try {
             return await makeRequest();
         }
-        catch (error) {
+        catch (error : any) {
             if (error.name === 'KafkaJSMemberIdRequired') {
                 return makeRequest(error.memberId);
             }
@@ -384,7 +371,7 @@ module.exports = class Broker {
     /**
      * @public
      * @param {object} request
-     * @param {string} request.groupId
+     * @param {string} request.groupId 
      * @param {string} request.memberId
      * @returns {Promise}
      */

@@ -1,5 +1,5 @@
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { promisify } = require('util')
+import { promisify } from 'util'
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
 const zlib = require('zlib')
 
@@ -7,7 +7,7 @@ const gzip = promisify(zlib.gzip)
 const unzip = promisify(zlib.unzip)
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   /**
    * @param {Encoder} encoder
    * @returns {Promise}

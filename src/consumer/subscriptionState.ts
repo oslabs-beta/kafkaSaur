@@ -1,14 +1,12 @@
 const createState = (topic: any) => ({
   topic,
-  // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
   paused: new Set(),
   pauseAll: false,
-  // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Set'. Do you need to change your... Remove this comment to see the full error message
   resumed: new Set()
 })
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class SubscriptionState {
+export class SubscriptionState {
   assignedPartitionsByTopic: any;
   subscriptionStatesByTopic: any;
   constructor() {

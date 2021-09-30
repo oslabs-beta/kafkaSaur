@@ -1,44 +1,33 @@
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createLogg... Remove this comment to see the full error message
-  createLogger,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INFO'.
-  LEVELS: { INFO },
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('./loggers')
+const {createLogger,LEVELS: { INFO },} = require('./loggers')
+
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-const InstrumentationEventEmitter = require('./instrumentation/emitter')
+import InstrumentationEventEmitter from './instrumentation/emitter'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'LoggerCons... Remove this comment to see the full error message
-const LoggerConsole = require('./loggers/console')
+import LoggerConsole from './loggers/console'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Cluster'.
-const Cluster = require('./cluster')
+import Cluster from './cluster'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createProd... Remove this comment to see the full error message
-const createProducer = require('./producer')
+import createProducer from './producer'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createCons... Remove this comment to see the full error message
-const createConsumer = require('./consumer')
+import createConsumer from './consumer'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createAdmi... Remove this comment to see the full error message
-const createAdmin = require('./admin')
+import createAdmin from './admin'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('./protocol/isolationLevel')
+import ISOLATION_LEVEL from './protocol/isolationLevel'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'defaultSoc... Remove this comment to see the full error message
-const defaultSocketFactory = require('./network/socketFactory')
+import defaultSocketFactory from './network/socketFactory'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'PRIVATE'.
 const PRIVATE = {
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   CREATE_CLUSTER: Symbol('private:Kafka:createCluster'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   CLUSTER_RETRY: Symbol('private:Kafka:clusterRetry'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   LOGGER: Symbol('private:Kafka:logger'),
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Symbol' only refers to a type, but is being used ... Remove this comment to see the full error message
   OFFSETS: Symbol('private:Kafka:offsets'),
 }
 
 const DEFAULT_METADATA_MAX_AGE = 300000
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Client {
+export class Client {
   /**
    * @param {Object} options
    * @param {Array<string>} options.brokers example: ['127.0.0.1:9092', '127.0.0.1:9094']

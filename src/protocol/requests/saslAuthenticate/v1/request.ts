@@ -10,7 +10,7 @@ const requestV0 = require('../v0/request')
  * @param {Buffer} authBytes - SASL authentication bytes from client as defined by the SASL mechanism
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
  authBytes
 // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
 }: any) => Object.assign(requestV0({ authBytes }), { apiVersion: 1 })

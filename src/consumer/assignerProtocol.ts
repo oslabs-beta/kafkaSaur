@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../protocol/encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../protocol/decoder')
+import Encoder from '../protocol/encoder.ts'
+import Decoder from '../protocol/decoder.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MemberMeta... Remove this comment to see the full error message
 const MemberMetadata = {
   /**
    * @param {Object} metadata
@@ -39,7 +36,6 @@ const MemberMetadata = {
   },
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MemberAssi... Remove this comment to see the full error message
 const MemberAssignment = {
   /**
    * @param {number} version
@@ -83,7 +79,6 @@ const MemberAssignment = {
       topic,
       partitions
     }: any) =>
-      // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
       Object.assign(obj, { [topic]: partitions })
 
     if (!decoder.canReadInt16()) {
@@ -99,7 +94,7 @@ const MemberAssignment = {
 }
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export {
   MemberMetadata,
   MemberAssignment,
 }

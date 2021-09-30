@@ -1,15 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'EventEmitt... Remove this comment to see the full error message
-const { EventEmitter } = require('events')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const limitConcurrency = require('../utils/concurrency')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSErr... Remove this comment to see the full error message
-const { KafkaJSError } = require('../errors')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const barrier = require('./barrier')
+//import { EventEmitter } from 'events'
+//Deno equivalent of Events...
+import Long from '../utils/long.ts'
+import createRetry from '../retry'
+import limitConcurrency from '../utils/concurrency.ts'
+import { KafkaJSError } from '../errors.ts'
+import barrier from './barrier.ts'
 
 const {
   events: { FETCH, FETCH_START, START_BATCH_PROCESS, END_BATCH_PROCESS, REBALANCING },
@@ -25,7 +20,7 @@ const CONSUMING_START = 'consuming-start'
 const CONSUMING_STOP = 'consuming-stop'
 
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = class Runner extends EventEmitter {
+export class Runner extends EventEmitter {
   _consuming: any;
   autoCommit: any;
   consumerGroup: any;

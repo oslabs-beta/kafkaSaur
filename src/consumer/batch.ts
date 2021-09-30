@@ -1,7 +1,6 @@
 /** @format */
 
-import { KafkaMessage } from '../../types/index.d.ts';
-import { Long } from '../utils/long.ts';
+import Long from '../utils/long.ts';
 import filterAbortedMessages from './filterAbortedMessages.ts';
 
 /**
@@ -10,7 +9,7 @@ import filterAbortedMessages from './filterAbortedMessages.ts';
  * A batch could contain _multiple_ Kafka RecordBatches.
  */
 
-export class Batch {
+export default class Batch {
   fetchedOffset: any;
   highWatermark: any;
   messages: any;

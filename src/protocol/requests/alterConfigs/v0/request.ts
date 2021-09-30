@@ -1,7 +1,7 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
+import Encoder from '../../../encoder'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { AlterConfigs: apiKey } = require('../../apiKeys')
+import { AlterConfigs as apiKey } from '../../apiKeys'
 
 /**
  * AlterConfigs Request (Version: 0) => [resources] validate_only
@@ -19,7 +19,7 @@ const { AlterConfigs: apiKey } = require('../../apiKeys')
  * @param {boolean} [validateOnly=false]
  */
 // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = ({
+export ({
   resources,
   validateOnly = false
 }: any) => ({
