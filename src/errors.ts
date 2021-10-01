@@ -44,7 +44,6 @@ class KafkaJSOffsetOutOfRange extends KafkaJSProtocolError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMem... Remove this comment to see the full error message
 class KafkaJSMemberIdRequired extends KafkaJSProtocolError {
   memberId: any;
   constructor(e: any, { memberId }: any) {
@@ -54,7 +53,6 @@ class KafkaJSMemberIdRequired extends KafkaJSProtocolError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNum... Remove this comment to see the full error message
 class KafkaJSNumberOfRetriesExceeded extends KafkaJSNonRetriableError {
   originalError: any;
   retryCount: any;
@@ -69,7 +67,6 @@ class KafkaJSNumberOfRetriesExceeded extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSCon... Remove this comment to see the full error message
 class KafkaJSConnectionError extends KafkaJSError {
   broker: any;
   code: any;
@@ -81,7 +78,6 @@ class KafkaJSConnectionError extends KafkaJSError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSCon... Remove this comment to see the full error message
 class KafkaJSConnectionClosedError extends KafkaJSConnectionError {
   host: any;
   port: any;
@@ -93,7 +89,6 @@ class KafkaJSConnectionClosedError extends KafkaJSConnectionError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSReq... Remove this comment to see the full error message
 class KafkaJSRequestTimeoutError extends KafkaJSError {
   broker: any;
   correlationId: any;
@@ -121,17 +116,14 @@ class KafkaJSMetadataNotLoaded extends KafkaJSError {
     this.name = 'KafkaJSMetadataNotLoaded';
   }
 }
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSTop... Remove this comment to see the full error message
 class KafkaJSTopicMetadataNotLoaded extends KafkaJSMetadataNotLoaded {
   topic: any;
   constructor(e: any, { topic }: any = {}) {
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     super(e);
     this.topic = topic;
     this.name = 'KafkaJSTopicMetadataNotLoaded';
   }
 }
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSta... Remove this comment to see the full error message
 class KafkaJSStaleTopicMetadataAssignment extends KafkaJSError {
   topic: any;
   unknownPartitions: any;
@@ -143,7 +135,6 @@ class KafkaJSStaleTopicMetadataAssignment extends KafkaJSError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSDel... Remove this comment to see the full error message
 class KafkaJSDeleteGroupsError extends KafkaJSError {
   groups: any;
   constructor(e: any, groups = []) {
@@ -153,7 +144,6 @@ class KafkaJSDeleteGroupsError extends KafkaJSError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSer... Remove this comment to see the full error message
 class KafkaJSServerDoesNotSupportApiKey extends KafkaJSNonRetriableError {
   apiKey: any;
   apiName: any;
@@ -165,7 +155,6 @@ class KafkaJSServerDoesNotSupportApiKey extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSBro... Remove this comment to see the full error message
 class KafkaJSBrokerNotFound extends KafkaJSError {
   constructor(p1?: any, p2?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
@@ -182,7 +171,6 @@ class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
 class KafkaJSSASLAuthenticationError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
@@ -191,7 +179,6 @@ class KafkaJSSASLAuthenticationError extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSGro... Remove this comment to see the full error message
 class KafkaJSGroupCoordinatorNotFound extends KafkaJSNonRetriableError {
   constructor() {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
@@ -200,7 +187,6 @@ class KafkaJSGroupCoordinatorNotFound extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNot... Remove this comment to see the full error message
 class KafkaJSNotImplemented extends KafkaJSNonRetriableError {
   constructor() {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
@@ -209,7 +195,6 @@ class KafkaJSNotImplemented extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSTim... Remove this comment to see the full error message
 class KafkaJSTimeout extends KafkaJSNonRetriableError {
   constructor() {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
@@ -218,7 +203,6 @@ class KafkaJSTimeout extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSLoc... Remove this comment to see the full error message
 class KafkaJSLockTimeout extends KafkaJSTimeout {
   constructor() {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 0 arguments, but got 1 or more.
@@ -227,7 +211,6 @@ class KafkaJSLockTimeout extends KafkaJSTimeout {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSUns... Remove this comment to see the full error message
 class KafkaJSUnsupportedMagicByteInMessageSet extends KafkaJSNonRetriableError {
   constructor() {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
@@ -236,7 +219,6 @@ class KafkaJSUnsupportedMagicByteInMessageSet extends KafkaJSNonRetriableError {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSDel... Remove this comment to see the full error message
 class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
   partitions: any;
   constructor({ partitions }: any) {
@@ -255,7 +237,6 @@ class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
 
 const issueUrl = bugs ? bugs.url : null;
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSInv... Remove this comment to see the full error message
 class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
   helpUrl: any;
   constructor(e: any) {

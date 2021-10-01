@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-import { failure, createErrorFromCode } from '../../../error'
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import { failure, createErrorFromCode } from '../../../error.ts';
 
 /**
  * AlterConfigs Response (Version: 0) => throttle_time_ms [resources]
@@ -13,40 +13,33 @@ import { failure, createErrorFromCode } from '../../../error'
  *     resource_name => STRING
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeReso... Remove this comment to see the full error message
 const decodeResources = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
   resourceType: decoder.readInt8(),
-  resourceName: decoder.readString()
-})
+  resourceName: decoder.readString(),
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const resources = decoder.readArray(decodeResources)
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const resources = decoder.readArray(decodeResources);
 
   return {
     throttleTime,
     resources,
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
-  const resourcesWithError = data.resources.filter(({
-    errorCode
-  }: any) => failure(errorCode))
+  const resourcesWithError = data.resources.filter(({ errorCode }: any) =>
+    failure(errorCode)
+  );
   if (resourcesWithError.length > 0) {
-    throw createErrorFromCode(resourcesWithError[0].errorCode)
+    throw createErrorFromCode(resourcesWithError[0].errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse,
-}
+export { decode, parse };
