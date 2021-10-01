@@ -1,17 +1,18 @@
+/** @format */
+
 const createState = (topic: any) => ({
   topic,
   paused: new Set(),
   pauseAll: false,
-  resumed: new Set()
-})
+  resumed: new Set(),
+});
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class SubscriptionState {
   assignedPartitionsByTopic: any;
   subscriptionStatesByTopic: any;
   constructor() {
-    this.assignedPartitionsByTopic = {}
-    this.subscriptionStatesByTopic = {}
+    this.assignedPartitionsByTopic = {};
+    this.subscriptionStatesByTopic = {};
   }
 
   /**
@@ -22,10 +23,10 @@ export class SubscriptionState {
   assign(topicPartitions = []) {
     this.assignedPartitionsByTopic = topicPartitions.reduce(
       (assigned, { topic, partitions = [] }) => {
-        return { ...assigned, [topic]: { topic, partitions } }
+        return { ...assigned, [topic]: { topic, partitions } };
       },
       {}
-    )
+    );
   }
 
   /**
@@ -33,22 +34,22 @@ export class SubscriptionState {
    */
   pause(topicPartitions = []) {
     topicPartitions.forEach(({ topic, partitions }) => {
-      const state = this.subscriptionStatesByTopic[topic] || createState(topic)
+      const state = this.subscriptionStatesByTopic[topic] || createState(topic);
 
       if (typeof partitions === 'undefined') {
-        state.paused.clear()
-        state.resumed.clear()
-        state.pauseAll = true
+        state.paused.clear();
+        state.resumed.clear();
+        state.pauseAll = true;
       } else if (Array.isArray(partitions)) {
         (partitions as any).forEach((partition: any) => {
-    state.paused.add(partition);
-    state.resumed.delete(partition);
-});
-        state.pauseAll = false
+          state.paused.add(partition);
+          state.resumed.delete(partition);
+        });
+        state.pauseAll = false;
       }
 
-      this.subscriptionStatesByTopic[topic] = state
-    })
+      this.subscriptionStatesByTopic[topic] = state;
+    });
   }
 
   /**
@@ -56,23 +57,23 @@ export class SubscriptionState {
    */
   resume(topicPartitions = []) {
     topicPartitions.forEach(({ topic, partitions }) => {
-      const state = this.subscriptionStatesByTopic[topic] || createState(topic)
+      const state = this.subscriptionStatesByTopic[topic] || createState(topic);
 
       if (typeof partitions === 'undefined') {
-        state.paused.clear()
-        state.resumed.clear()
-        state.pauseAll = false
+        state.paused.clear();
+        state.resumed.clear();
+        state.pauseAll = false;
       } else if (Array.isArray(partitions)) {
         (partitions as any).forEach((partition: any) => {
-    state.paused.delete(partition);
-    if (state.pauseAll) {
-        state.resumed.add(partition);
-    }
-});
+          state.paused.delete(partition);
+          if (state.pauseAll) {
+            state.resumed.add(partition);
+          }
+        });
       }
 
-      this.subscriptionStatesByTopic[topic] = state
-    })
+      this.subscriptionStatesByTopic[topic] = state;
+    });
   }
 
   /**
@@ -80,14 +81,12 @@ export class SubscriptionState {
    * Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
   assigned() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
-    return Object.values(this.assignedPartitionsByTopic).map(({
-      topic,
-      partitions
-    }: any) => ({
-      topic,
-      partitions: partitions.sort(),
-    }));
+    return Object.values(this.assignedPartitionsByTopic).map(
+      ({ topic, partitions }: any) => ({
+        topic,
+        partitions: partitions.sort(),
+      })
+    );
   }
 
   /**
@@ -95,14 +94,14 @@ export class SubscriptionState {
    * Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
   active() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
-    return Object.values(this.assignedPartitionsByTopic).map(({
-      topic,
-      partitions
-    }: any) => ({
-      topic,
-      partitions: partitions.filter((partition: any) => !this.isPaused(topic, partition)).sort(),
-    }));
+    return Object.values(this.assignedPartitionsByTopic).map(
+      ({ topic, partitions }: any) => ({
+        topic,
+        partitions: partitions
+          .filter((partition: any) => !this.isPaused(topic, partition))
+          .sort(),
+      })
+    );
   }
 
   /**
@@ -110,30 +109,26 @@ export class SubscriptionState {
    * Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
   paused() {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
     return Object.values(this.assignedPartitionsByTopic)
-      .map(({
-      topic,
-      partitions
-    }: any) => ({
+      .map(({ topic, partitions }: any) => ({
         topic,
-        partitions: partitions.filter((partition: any) => this.isPaused(topic, partition)).sort(),
+        partitions: partitions
+          .filter((partition: any) => this.isPaused(topic, partition))
+          .sort(),
       }))
-      .filter(({
-      partitions
-    }: any) => partitions.length !== 0);
+      .filter(({ partitions }: any) => partitions.length !== 0);
   }
 
   isPaused(topic: any, partition: any) {
-    const state = this.subscriptionStatesByTopic[topic]
+    const state = this.subscriptionStatesByTopic[topic];
 
     if (!state) {
-      return false
+      return false;
     }
 
-    const partitionResumed = state.resumed.has(partition)
-    const partitionPaused = state.paused.has(partition)
+    const partitionResumed = state.resumed.has(partition);
+    const partitionPaused = state.paused.has(partition);
 
-    return (state.pauseAll && !partitionResumed) || partitionPaused
+    return (state.pauseAll && !partitionResumed) || partitionPaused;
   }
 }
