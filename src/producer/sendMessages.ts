@@ -1,15 +1,10 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
 import flatten from '../utils/flatten'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMet... Remove this comment to see the full error message
-const { KafkaJSMetadataNotLoaded } = require('../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'staleMetad... Remove this comment to see the full error message
-const { staleMetadata } = require('../protocol/error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'groupMessa... Remove this comment to see the full error message
-const groupMessagesPerPartition = require('./groupMessagesPerPartition')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createTopi... Remove this comment to see the full error message
-const createTopicData = require('./createTopicData')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const responseSerializer = require('./responseSerializer')
+import { KafkaJSMetadataNotLoaded } from '../errors.ts'
+import { staleMetadata }  from '../protocol/error.ts'
+import groupMessagesPerPartition from './groupMessagesPerPartition.ts'
+import createTopicData from './createTopicData.ts'
+import responseSerializer from './responseSerializer.ts'
 
 const { keys } = Object
 
@@ -35,12 +30,10 @@ export default({
     topicMessages
   }: any) => {
     /** @type {Map<import("../../types").Broker, any[]>} */
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
     const responsePerBroker = new Map()
 
     /** @param {Map<import("../../types").Broker, any[]>} responsePerBroker */
     const createProducerRequests = async (responsePerBroker: any) => {
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'Map'. Do you need to change your... Remove this comment to see the full error message
       const topicMetadata = new Map()
 
       await cluster.refreshMetadataIfNecessary()
@@ -51,11 +44,9 @@ export default({
         if (partitionMetadata.length === 0) {
           logger.debug('Producing to topic without metadata', {
             topic,
-            // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
             targetTopics: Array.from(cluster.targetTopics),
           })
 
-          // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
           throw new KafkaJSMetadataNotLoaded('Producing to topic without metadata')
         }
 
@@ -90,28 +81,17 @@ export default({
         }
       }
 
-      // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
       const brokers = Array.from(responsePerBroker.keys())
       const brokersWithoutResponse = brokers.filter((broker: any) => !responsePerBroker.get(broker))
-
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       return brokersWithoutResponse.map(async (broker: any) => {
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
         const entries = Array.from(topicMetadata.entries())
         const topicDataForBroker = entries
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element '_' implicitly has an 'any' type.
           .filter(([_, {
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'partitionsPerLeader' implicitly h... Remove this comment to see the full error message
           partitionsPerLeader
-        // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'any' implicitly has an 'any' type... Remove this comment to see the full error message
         }: any]) => !!partitionsPerLeader[broker.nodeId])
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topic' implicitly has an 'any' ty... Remove this comment to see the full error message
           .map(([topic, {
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'partitionsPerLeader' implicitly h... Remove this comment to see the full error message
           partitionsPerLeader,
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'messagesPerPartition' implicitly ... Remove this comment to see the full error message
           messagesPerPartition,
-          // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'sequencePerPartition' implicitly ... Remove this comment to see the full error message
           sequencePerPartition
         // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'any' implicitly has an 'any' type... Remove this comment to see the full error message
         }: any]) => ({
