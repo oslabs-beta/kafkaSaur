@@ -1,5 +1,6 @@
+/** @format */
 
-import { parse, decode as decodeV0 } from '../v0/response'
+import { parse, decode as decodeV0 } from '../v0/response.ts';
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
@@ -12,19 +13,14 @@ import { parse, decode as decodeV0 } from '../v0/response'
  *     error_message => NULLABLE_STRING
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoded = await decodeV0(rawData)
+  const decoded = await decodeV0(rawData);
 
   return {
     ...decoded,
     throttleTime: 0,
     clientSideThrottleTime: decoded.throttleTime,
-  }
-}
+  };
+};
 
-
-export {
-  decode,
-  parse,
-}
+export { decode, parse };

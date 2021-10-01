@@ -1,7 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
+/** @format */
 
-import { failure, createErrorFromCode } from '../../../error'
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
+import Decoder from '../../../decoder.ts';
+
+import { failure, createErrorFromCode } from '../../../error.ts';
 
 /**
  * AddPartitionsToTxn Response (Version: 0) => throttle_time_ms [errors]
@@ -12,51 +14,43 @@ import { failure, createErrorFromCode } from '../../../error'
  *       partition => INT32
  *       error_code => INT16
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const errors = await decoder.readArrayAsync(decodeError)
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const errors = await decoder.readArrayAsync(decodeError);
 
   return {
     throttleTime,
     errors,
-  }
-}
+  };
+};
 
 const decodeError = async (decoder: any) => ({
   topic: decoder.readString(),
-  partitionErrors: await decoder.readArrayAsync(decodePartitionError)
-})
+  partitionErrors: await decoder.readArrayAsync(decodePartitionError),
+});
 
 const decodePartitionError = (decoder: any) => ({
   partition: decoder.readInt32(),
-  errorCode: decoder.readInt16()
-})
+  errorCode: decoder.readInt16(),
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const topicsWithErrors = data.errors
-    .map(({
-    partitionErrors
-  }: any) => ({
-      partitionsWithErrors: partitionErrors.filter(({
-        errorCode
-      }: any) => failure(errorCode)),
+    .map(({ partitionErrors }: any) => ({
+      partitionsWithErrors: partitionErrors.filter(({ errorCode }: any) =>
+        failure(errorCode)
+      ),
     }))
-    .filter(({
-    partitionsWithErrors
-  }: any) => partitionsWithErrors.length)
+    .filter(({ partitionsWithErrors }: any) => partitionsWithErrors.length);
 
   if (topicsWithErrors.length > 0) {
-    throw createErrorFromCode(topicsWithErrors[0].partitionsWithErrors[0].errorCode)
+    throw createErrorFromCode(
+      topicsWithErrors[0].partitionsWithErrors[0].errorCode
+    );
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse,
-}
+export { decode, parse };

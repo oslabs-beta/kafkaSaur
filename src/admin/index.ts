@@ -1073,7 +1073,7 @@ export default ({
       ) as Object
     );
 
-    const responses = await Promise.all(
+    const responses: any = await Promise.all(
       groupsByCoordinator.map(async ({ coordinator, groupIds }: any) => {
         const retrier = createRetry(retry);
         const { groups: any } = (await retrier(() =>
@@ -1202,7 +1202,7 @@ export default ({
     );
 
     const partitionsFound = flatten(values(partitionsByBroker));
-    const topicOffsets = await fetchTopicOffsets(topic);
+    const topicOffsets: any = await fetchTopicOffsets(topic);
 
     const leaderNotFoundErrors: any = [];
     partitions.forEach(({ partition, offset }: any) => {

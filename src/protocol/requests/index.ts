@@ -1,8 +1,12 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
-const apiKeys = require('./apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSer... Remove this comment to see the full error message
-const { KafkaJSServerDoesNotSupportApiKey, KafkaJSNotImplemented } = require('../../errors')
+/** @format */
 
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
+const apiKeys = require('./apiKeys');
+
+import {
+  KafkaJSServerDoesNotSupportApiKey,
+  KafkaJSNotImplemented,
+} from '../../errors.ts';
 /**
  * @typedef {(options?: Object) => { request: any, response: any, logResponseErrors?: boolean }} Request
  */
@@ -21,14 +25,13 @@ const { KafkaJSServerDoesNotSupportApiKey, KafkaJSNotImplemented } = require('..
 const noImplementedRequestDefinitions = {
   versions: [],
   protocol: () => {
-    throw new KafkaJSNotImplemented()
+    throw new KafkaJSNotImplemented();
   },
-}
+};
 
 /**
  * @type {{[apiName: string]: RequestDefinitions}}
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requests'.
 const requests = {
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
   Produce: require('./produce'),
@@ -104,37 +107,33 @@ const requests = {
   DescribeDelegationToken: noImplementedRequestDefinitions,
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
   DeleteGroups: require('./deleteGroups'),
-}
+};
 
-const names = Object.keys(apiKeys)
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'keys'.
-const keys = Object.values(apiKeys)
+const names = Object.keys(apiKeys);
+const keys = Object.values(apiKeys);
 const findApiName = (apiKey: any) => names[(keys as any).indexOf(apiKey)];
 
 /**
  * @param {import("../../../types").ApiVersions} versions
  * @returns {Lookup}
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookup'.
 const lookup = (versions: any) => (apiKey: any, definition: any) => {
-  const version = versions[apiKey]
-  const availableVersions = definition.versions.map(Number)
-  // @ts-expect-error ts-migrate(7041) FIXME: The containing arrow function captures the global ... Remove this comment to see the full error message
-  const bestImplementedVersion = Math.max.apply(this, availableVersions)
+  const version = versions[apiKey];
+  const availableVersions = definition.versions.map(Number);
+  const bestImplementedVersion = Math.max.apply(this, availableVersions);
 
   if (!version || version.maxVersion == null) {
     throw new KafkaJSServerDoesNotSupportApiKey(
       `The Kafka server does not support the requested API version`,
       { apiKey, apiName: findApiName(apiKey) }
-    )
+    );
   }
 
-  const bestSupportedVersion = Math.min(bestImplementedVersion, version.maxVersion)
-  return definition.protocol({ version: bestSupportedVersion })
-}
+  const bestSupportedVersion = Math.min(
+    bestImplementedVersion,
+    version.maxVersion
+  );
+  return definition.protocol({ version: bestSupportedVersion });
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  requests,
-  lookup,
-}
+export { requests, lookup };
