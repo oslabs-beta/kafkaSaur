@@ -14,7 +14,7 @@ import { v4 } from "https://deno.land/std@0.95.0/uuid/mod.ts";
 //import semver from 'semver' - replaced w deno version of same package below
 import * as semver from "https://deno.land/x/semver/mod.ts";
 //import crypto from 'crypto' - importing the node compatability layer, and extracting crypto on next line, also importing process
-import * as node from "https://deno.land/std@0.109.0/node.ts";
+import * as node from "https://deno.land/std@0.109.0/node";
 const crypto = node._crypto;
 const process = node._process;
 //import jwt from 'jsonwebtoken' - replaced with 3rd part djwt, modified below usage slightly
@@ -22,11 +22,11 @@ import { create } from "https://deno.land/x/djwt@v2.4/mod.ts";
 import Buffer from 'https://deno.land/std@0.109.0/node/buffer.ts'
 //END NEED DENO REPLACEMENTS
 
-import { Cluster }  from '../src/cluster'
-import waitFor from '../src/utils/waitFor'
-import connectionBuilder from '../src/cluster/connectionBuilder'
-import Connection from '../src/network/connection'
-import defaultSocketFactory from '../src/network/socketFactory'
+import { Cluster }  from '../src/cluster/index.ts'
+import waitFor from '../src/utils/waitFor.ts'
+import connectionBuilder from '../src/cluster/connectionBuilder.ts'
+import Connection from '../src/network/connection.ts'
+import defaultSocketFactory from '../src/network/socketFactory.ts'
 
 const socketFactory = defaultSocketFactory()
 
@@ -35,15 +35,15 @@ const socketFactory = defaultSocketFactory()
 //   LEVELS: { NOTHING },
 // } = require('../src/loggers')
 
-import * as lg from '../src/loggers';
+import * as lg from '../src/loggers/index.ts';
 const {
   createLogger,
   LEVELS: { NOTHING },
 } = lg
 
 
-import LoggerConsole from '../src/loggers/console'
-import { Kafka } from '../index'
+import LoggerConsole from '../src/loggers/console.ts'
+import { Kafka } from '../index.ts'
 
 
 const newLogger = (opts = {}) =>

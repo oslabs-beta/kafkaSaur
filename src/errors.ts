@@ -214,7 +214,7 @@ class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
 class KafkaJSSASLAuthenticationError extends KafkaJSNonRetriableError {
-  constructor() {
+  constructor(p1?: any) {
     // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments)
     this.name = 'KafkaJSSASLAuthenticationError'

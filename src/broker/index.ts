@@ -1,10 +1,10 @@
 import Long from '../utils/long.ts'
 import Lock from '../utils/lock.ts'
-import { Types as Compression } from '../protocol/message/compression'
-import { requests, lookup } from '../protocol/requests'
+import { Types as Compression } from '../protocol/message/compression/index.ts'
+import { requests, lookup } from '../protocol/requests/index.ts'
 import { KafkaJSNonRetriableError } from '../errors.ts'
 import apiKeys from '../protocol/requests/apiKeys.ts'
-import SASLAuthenticator from './saslAuthenticator'
+import { SASLAuthenticator } from './saslAuthenticator/index.ts'
 import shuffle from '../utils/shuffle.ts'
 import process from 'https://deno.land/std@0.109.0/node/process.ts'
 

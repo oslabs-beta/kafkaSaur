@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const plain = require('../../protocol/sasl/plain')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
-const { KafkaJSSASLAuthenticationError } = require('../../errors')
+import plain from '../../protocol/sasl/plain/index.ts';
+import { KafkaJSSASLAuthenticationError } from '../../errors.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class PlainAuthenticator {
   connection: any;
   logger: any;
@@ -17,7 +14,6 @@ export class PlainAuthenticator {
   async authenticate() {
     const { sasl } = this.connection
     if (sasl.username == null || sasl.password == null) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError('SASL Plain: Invalid username or password')
     }
 
@@ -32,7 +28,6 @@ export class PlainAuthenticator {
       this.logger.debug('SASL PLAIN authentication successful', { broker })
     } catch (e) {
       const error = new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `SASL PLAIN authentication failed: ${e.message}`
       )

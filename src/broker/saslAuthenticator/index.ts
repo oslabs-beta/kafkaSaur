@@ -1,19 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requests'.
-const { requests, lookup } = require('../../protocol/requests')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
-const apiKeys = require('../../protocol/requests/apiKeys')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const PlainAuthenticator = require('./plain')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const SCRAM256Authenticator = require('./scram256')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const SCRAM512Authenticator = require('./scram512')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const AWSIAMAuthenticator = require('./awsIam')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const OAuthBearerAuthenticator = require('./oauthBearer')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
-const { KafkaJSSASLAuthenticationError } = require('../../errors')
+import { requests,lookup } from '../../protocol/requests/index.ts';
+import apiKeys from '../../protocol/requests/apiKeys.ts';
+import { PlainAuthenticator } from './plain.ts';
+import { SCRAM256Authenticator } from './scram256.ts';
+import { SCRAM512Authenticator } from './scram512.ts';
+import { AWSIAMAuthenticator } from './awsIam.ts';
+import { OAuthBearerAuthenticator } from './oauthBearer.ts';
+import { KafkaJSSASLAuthenticationError } from '../../errors.ts';
 
 const AUTHENTICATORS = {
   PLAIN: PlainAuthenticator,
@@ -26,7 +18,6 @@ const AUTHENTICATORS = {
 const SUPPORTED_MECHANISMS = Object.keys(AUTHENTICATORS)
 const UNLIMITED_SESSION_LIFETIME = '0'
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class SASLAuthenticator {
   connection: any;
   logger: any;
@@ -47,10 +38,8 @@ export class SASLAuthenticator {
 
   async authenticate() {
     const mechanism = this.connection.sasl.mechanism.toUpperCase()
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
     if (!SUPPORTED_MECHANISMS.includes(mechanism)) {
       throw new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `SASL ${mechanism} mechanism is not supported by the client`
       )
@@ -59,7 +48,6 @@ export class SASLAuthenticator {
     const handshake = await this.connection.send(this.saslHandshake({ mechanism }))
     if (!handshake.enabledMechanisms.includes(mechanism)) {
       throw new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `SASL ${mechanism} mechanism is not supported by the server`
       )
