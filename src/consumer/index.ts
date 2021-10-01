@@ -242,7 +242,7 @@ export default ({
     partitionsConsumedConcurrently = 1,
     eachBatch = null,
     eachMessage = null,
-  } = {}) => {
+  }: any = {}) => {
     if (consumerGroup) {
       logger.warn(
         'consumer#run was called, but the consumer is already running',
@@ -479,7 +479,7 @@ export default ({
    * @param topicPartitions
    *   Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
-  const pause = (topicPartitions = []) => {
+  const pause = (topicPartitions: any = []) => {
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !(topicPartition as any).topic) {
         throw new KafkaJSNonRetriableError(
