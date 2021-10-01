@@ -1,9 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'crypto'.
-const crypto = require('crypto')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const scram = require('../../protocol/sasl/scram')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
-const { KafkaJSSASLAuthenticationError, KafkaJSNonRetriableError } = require('../../errors')
+import * as node from "https://deno.land/std@0.109.0/node";
+const crypto = node._crypto;
+import scram from '../../protocol/sasl/scram/index.ts';
+import { Buffer } from 'https://deno.land/std@0.109.0/node/buffer.ts'
+import { KafkaJSSASLAuthenticationError,KafkaJSNonRetriableError } from '../../errors.ts';
 
 const GS2_HEADER = 'n,,'
 
@@ -17,7 +16,6 @@ const URLSAFE_BASE64_TRAILING_EQUAL_REGEX = /=+$/
 const HMAC_CLIENT_KEY = 'Client Key'
 const HMAC_SERVER_KEY = 'Server Key'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'DIGESTS'.
 const DIGESTS = {
   SHA256: {
     length: 32,
@@ -31,10 +29,8 @@ const DIGESTS = {
   },
 }
 
-// @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
 const encode64 = (str: any) => Buffer.from(str).toString('base64')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'SCRAM'.
 class SCRAM {
   PREFIX: any;
   connection: any;
@@ -81,7 +77,6 @@ class SCRAM {
    * @returns {Promise<Buffer>}
    */
   static hi(password: any, salt: any, iterations: any, digestDefinition: any) {
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     return new Promise((resolve: any, reject: any) => {
       (crypto as any).pbkdf2(password, salt, iterations, digestDefinition.length, digestDefinition.type, (err: any, derivedKey: any) => (err ? reject(err) : resolve(derivedKey)));
     });
@@ -96,14 +91,10 @@ class SCRAM {
    * @returns {Buffer}
    */
   static xor(left: any, right: any) {
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'bufferA'?
     const bufferA = Buffer.from(left)
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'bufferA'?
     const bufferB = Buffer.from(right)
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'bufferA'?
     const length = Buffer.byteLength(bufferA)
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'bufferA'?
     if (length !== Buffer.byteLength(bufferB)) {
       throw new KafkaJSNonRetriableError('Buffers must be of the same length')
     }
@@ -113,7 +104,6 @@ class SCRAM {
       result.push(bufferA[i] ^ bufferB[i])
     }
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'bufferA'?
     return Buffer.from(result)
   }
 
@@ -141,7 +131,6 @@ class SCRAM {
     const broker = `${host}:${port}`
 
     if (sasl.username == null || sasl.password == null) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError(`${this.PREFIX}: Invalid username or password`)
     }
 
@@ -165,7 +154,6 @@ class SCRAM {
 
       this.logger.debug(`${PREFIX} successful`, { broker })
     } catch (e) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       const error = new KafkaJSSASLAuthenticationError(`${PREFIX} failed: ${e.message}`)
       this.logger.error(error.message, { broker })
       throw error
@@ -197,7 +185,6 @@ class SCRAM {
 
     if (!clientMessageResponse.r.startsWith(this.currentNonce)) {
       throw new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `${PREFIX} failed: Invalid server nonce, it does not start with the client nonce`
       )
@@ -205,7 +192,6 @@ class SCRAM {
 
     if (iterations < minIterations) {
       throw new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `${PREFIX} failed: Requested iterations ${iterations} is less than the minimum ${minIterations}`
       )
@@ -279,7 +265,6 @@ class SCRAM {
    * @private
    */
   async saltPassword(clientMessageResponse: any) {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     const salt = Buffer.from(clientMessageResponse.s, 'base64')
     const iterations = parseInt(clientMessageResponse.i, 10)
     return SCRAM.hi(this.encodedPassword(), salt, iterations, this.digestDefinition)
@@ -335,7 +320,6 @@ class SCRAM {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export {
   DIGESTS,
   SCRAM,

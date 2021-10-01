@@ -10,12 +10,9 @@
  * reused and refreshed when appropriate.
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const oauthBearer = require('../../protocol/sasl/oauthBearer')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
-const { KafkaJSSASLAuthenticationError } = require('../../errors')
+import { oauthBearer } from '../../protocol/sasl/oauthBearer/index.ts';
+import { KafkaJSSASLAuthenticationError } from '../../errors.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class OAuthBearerAuthenticator {
   connection: any;
   logger: any;
@@ -30,7 +27,6 @@ export class OAuthBearerAuthenticator {
     const { sasl } = this.connection
     if (sasl.oauthBearerProvider == null) {
       throw new KafkaJSSASLAuthenticationError(
-        // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
         'SASL OAUTHBEARER: Missing OAuth bearer token provider'
       )
     }
@@ -40,7 +36,6 @@ export class OAuthBearerAuthenticator {
     const oauthBearerToken = await oauthBearerProvider()
 
     if (oauthBearerToken.value == null) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError('SASL OAUTHBEARER: Invalid OAuth bearer token')
     }
 
@@ -55,7 +50,6 @@ export class OAuthBearerAuthenticator {
       this.logger.debug('SASL OAUTHBEARER authentication successful', { broker })
     } catch (e) {
       const error = new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `SASL OAUTHBEARER authentication failed: ${e.message}`
       )

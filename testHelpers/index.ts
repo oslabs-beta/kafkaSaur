@@ -1,3 +1,11 @@
+//TINCAN - JEST REPLACEMENT
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  run,
+} from "https://deno.land/x/tincan/mod.ts";
 //DENO REPLACEMENTS - commented out original imports
 //import fs from 'fs' - don't need - use Deno.readFileSync
 //import execa from 'execa' - replaced with Deno.run inside of addpartitions
@@ -6,7 +14,7 @@ import { v4 } from "https://deno.land/std@0.95.0/uuid/mod.ts";
 //import semver from 'semver' - replaced w deno version of same package below
 import * as semver from "https://deno.land/x/semver/mod.ts";
 //import crypto from 'crypto' - importing the node compatability layer, and extracting crypto on next line, also importing process
-import * as node from "https://deno.land/std@0.109.0/node.ts";
+import * as node from "https://deno.land/std@0.109.0/node";
 const crypto = node._crypto;
 const process = node._process;
 //import jwt from 'jsonwebtoken' - replaced with 3rd part djwt, modified below usage slightly
@@ -14,11 +22,11 @@ import { create } from "https://deno.land/x/djwt@v2.4/mod.ts";
 import Buffer from 'https://deno.land/std@0.109.0/node/buffer.ts'
 //END NEED DENO REPLACEMENTS
 
-import { Cluster }  from '../src/cluster'
-import waitFor from '../src/utils/waitFor'
-import connectionBuilder from '../src/cluster/connectionBuilder'
-import { Connection } from '../src/network/connection'
-import defaultSocketFactory from '../src/network/socketFactory'
+import { Cluster }  from '../src/cluster/index.ts'
+import waitFor from '../src/utils/waitFor.ts'
+import connectionBuilder from '../src/cluster/connectionBuilder.ts'
+import Connection from '../src/network/connection.ts'
+import defaultSocketFactory from '../src/network/socketFactory.ts'
 
 const socketFactory = defaultSocketFactory()
 
@@ -27,15 +35,15 @@ const socketFactory = defaultSocketFactory()
 //   LEVELS: { NOTHING },
 // } = require('../src/loggers')
 
-import * as lg from '../src/loggers';
+import * as lg from '../src/loggers/index.ts';
 const {
   createLogger,
   LEVELS: { NOTHING },
 } = lg
 
 
-import LoggerConsole from '../src/loggers/console'
-import { Kafka } from '../index'
+import LoggerConsole from '../src/loggers/console.ts'
+import { Kafka } from '../index.ts'
 
 
 const newLogger = (opts = {}) =>
@@ -306,13 +314,13 @@ const addPartitions = async ({
 }
 
 const testIfKafkaVersion = (version: any, versionComparator: any) => {
-  const scopedTest = (description: any, callback: any, testFn = test) => {
+  const scopedTest = (description: any, callback: any, testFn = it) => {
     return versionComparator(semver.coerce(process.env.KAFKA_VERSION), semver.coerce(version))
       ? testFn(description, callback)
-        test.skip(description, callback)
+      : it.skip(description, callback)
   }
 
-  scopedTest.only = (description: any, callback: any) => scopedTest(description, callback, test.only)
+  scopedTest.only = (description: any, callback: any) => scopedTest(description, callback, it.only)
 
   return scopedTest
 }
@@ -324,20 +332,20 @@ const testIfKafkaAtMost_0_10 = testIfKafkaVersionLTE('0.10')
 const testIfKafkaAtLeast_0_11 = testIfKafkaVersionGTE('0.11')
 const testIfKafkaAtLeast_1_1_0 = testIfKafkaVersionGTE('1.1')
 
-const flakyTest = (description: any, callback: any, testFn = test) =>
+const flakyTest = (description: any, callback: any, testFn = it) =>
   testFn(`[flaky] ${description}`, callback)
-flakyTest.skip = (description: any, callback: any) => flakyTest(description, callback, test.skip)
-flakyTest.only = (description: any, callback: any) => flakyTest(description, callback, test.only)
+flakyTest.skip = (description: any, callback: any) => flakyTest(description, callback, it.skip)
+flakyTest.only = (description: any, callback: any) => flakyTest(description, callback, it.only)
 const describeIfEnv = (key: any, value: any) => (description: any, callback: any, describeFn = describe) => {
   return value === process.env[key]
     ? describeFn(description, callback)
-      describe.skip(description, callback)
+    : it.skip(description, callback)
 }
 
 const describeIfNotEnv = (key: any, value: any) => (description: any, callback: any, describeFn = describe) => {
   return value !== process.env[key]
     ? describeFn(description, callback)
-      describe.skip(description, callback)
+    : describe.skip(description, callback)
 }
 
 /**
