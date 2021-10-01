@@ -1,25 +1,29 @@
-import flatten from '../utils/flatten.ts'
-import sleep from '../utils/sleep.ts'
-import BufferedAsyncIterator from '../utils/bufferedAsyncIterator.ts'
-import websiteUrl from '../utils/websiteUrl.ts'
-import arrayDiff from '../utils/arrayDiff.ts'
-import createRetry from '../retry'
-import sharedPromiseTo from '../utils/sharedPromiseTo.ts'
+/** @format */
 
-import OffsetManager from './offsetManager'
-import Batch from './batch.ts'
-import {SeekOffsets} from './seekOffsets.ts'
-import {SubscriptionState} from './subscriptionState.ts'
-import {events} from './instrumentationEvents.ts'
-import { MemberAssignment } from './assignerProtocol.ts'
+import flatten from '../utils/flatten.ts';
+import sleep from '../utils/sleep.ts';
+import BufferedAsyncIterator from '../utils/bufferedAsyncIterator.ts';
+import websiteUrl from '../utils/websiteUrl.ts';
+import arrayDiff from '../utils/arrayDiff.ts';
+import createRetry from '../retry/index.ts';
+import sharedPromiseTo from '../utils/sharedPromiseTo.ts';
+
+import { OffsetManager } from './offsetManager/index.ts';
+import Batch from './batch.ts';
+import { SeekOffsets } from './seekOffsets.ts';
+import { SubscriptionState } from './subscriptionState.ts';
+import { events } from './instrumentationEvents.ts';
+
+import { MemberAssignment } from './assignerProtocol.ts';
+
 import {
   KafkaJSError,
   KafkaJSNonRetriableError,
-  KafkaJSStaleTopicMetadataAssignment
-} from '../errors.ts'
+  KafkaJSStaleTopicMetadataAssignment,
+} from '../errors.ts';
 
-const  { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS } = events;
-const { keys } = Object
+const { keys } = Object;
+const { GROUP_JOIN, HEARTBEAT, CONNECT, RECEIVED_UNSUBSCRIBED_TOPICS } = events;
 
 const STALE_METADATA_ERRORS = [
   'LEADER_NOT_AVAILABLE',
@@ -31,7 +35,8 @@ const STALE_METADATA_ERRORS = [
   'UNKNOWN_TOPIC_OR_PARTITION',
 ];
 
-const isRebalancing = (e: any) => e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP'
+const isRebalancing = (e: any) =>
+  e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
 const PRIVATE = {
   JOIN: Symbol('private:ConsumerGroup:join'),
@@ -41,280 +46,99 @@ const PRIVATE = {
 };
 
 export class ConsumerGroup {
-    assigners: any;
-    autoCommit: any;
-    autoCommitInterval: any;
-    autoCommitThreshold: any;
-    cluster: any;
-    coordinator: any;
-    generationId: any;
-    groupId: any;
-    groupProtocol: any;
-    instrumentationEmitter: any;
-    isolationLevel: any;
-    lastRequest: any;
-    leaderId: any;
-    logger: any;
-    maxBytes: any;
-    maxBytesPerPartition: any;
-    maxWaitTime: any;
-    memberId: any;
-    members: any;
-    metadataMaxAge: any;
-    minBytes: any;
-    offsetManager: any;
-    partitionsPerSubscribedTopic: any;
-    preferredReadReplicasPerTopicPartition: any;
-    rackId: any;
-    rebalanceTimeout: any;
-    retrier: any;
-    seekOffset: any;
-    sessionTimeout: any;
-    subscriptionState: any;
-    topicConfigurations: any;
-    topics: any;
-    topicsSubscribed: any;
-    constructor({ retry, cluster, groupId, topics, topicConfigurations, logger, instrumentationEmitter, assigners, sessionTimeout, rebalanceTimeout, maxBytesPerPartition, minBytes, maxBytes, maxWaitTimeInMs, autoCommit, autoCommitInterval, autoCommitThreshold, isolationLevel, rackId, metadataMaxAge }: any) {
-        /** @type {import("../../types").Cluster} */
-        this.cluster = cluster;
-        this.groupId = groupId;
-        this.topics = topics;
-        this.topicsSubscribed = topics;
-        this.topicConfigurations = topicConfigurations;
-        this.logger = logger.namespace('ConsumerGroup');
-        this.instrumentationEmitter = instrumentationEmitter;
-        this.retrier = createRetry(Object.assign({}, retry));
-        this.assigners = assigners;
-        this.sessionTimeout = sessionTimeout;
-        this.rebalanceTimeout = rebalanceTimeout;
-        this.maxBytesPerPartition = maxBytesPerPartition;
-        this.minBytes = minBytes;
-        this.maxBytes = maxBytes;
-        this.maxWaitTime = maxWaitTimeInMs;
-        this.autoCommit = autoCommit;
-        this.autoCommitInterval = autoCommitInterval;
-        this.autoCommitThreshold = autoCommitThreshold;
-        this.isolationLevel = isolationLevel;
-        this.rackId = rackId;
-        this.metadataMaxAge = metadataMaxAge;
-        this.seekOffset = new SeekOffsets();
-        this.coordinator = null;
-        this.generationId = null;
-        this.leaderId = null;
-        this.memberId = null;
-        this.members = null;
-        this.groupProtocol = null;
-        this.partitionsPerSubscribedTopic = null;
-        /**
-         * Preferred read replica per topic and partition
-         *
-         * Each of the partitions tracks the preferred read replica (`nodeId`) and a timestamp
-         * until when that preference is valid.
-         *
-         * @type {{[topicName: string]: {[partition: number]: {nodeId: number, expireAt: number}}}}
-         */
-        this.preferredReadReplicasPerTopicPartition = {};
-        this.offsetManager = null;
-        this.subscriptionState = new SubscriptionState();
-        this.lastRequest = Date.now();
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        this[PRIVATE.SHAREDHEARTBEAT] = sharedPromiseTo(async ({ interval }: any) => {
-            const { groupId, generationId, memberId } = this;
-            const now = Date.now();
-            if (memberId && now >= this.lastRequest + interval) {
-                const payload = {
-                    groupId,
-                    memberId,
-                    groupGenerationId: generationId,
-                };
-                await this.coordinator.heartbeat(payload);
-                this.instrumentationEmitter.emit(HEARTBEAT, payload);
-                this.lastRequest = Date.now();
-            }
-        });
-    }
-    isLeader() {
-        return this.leaderId && this.memberId === this.leaderId;
-    }
-    async connect() {
-        await this.cluster.connect();
-        this.instrumentationEmitter.emit(CONNECT);
-        await this.cluster.refreshMetadataIfNecessary();
-    }
-    async [(PRIVATE as any).JOIN]() {
-        const { groupId, sessionTimeout, rebalanceTimeout } = this;
-        this.coordinator = await this.cluster.findGroupCoordinator({ groupId });
-        const groupData = await this.coordinator.joinGroup({
-            groupId,
-            sessionTimeout,
-            rebalanceTimeout,
-            memberId: this.memberId || '',
-            groupProtocols: this.assigners.map((assigner: any) => assigner.protocol({
-                topics: this.topicsSubscribed,
-            })),
-        });
-        this.generationId = groupData.generationId;
-        this.leaderId = groupData.leaderId;
-        this.memberId = groupData.memberId;
-        this.members = groupData.members;
-        this.groupProtocol = groupData.groupProtocol;
-    }
-    async leave() {
-        const { groupId, memberId } = this;
-        if (memberId) {
-            await this.coordinator.leaveGroup({ groupId, memberId });
-            this.memberId = null;
-        }
-    }
-    async [(PRIVATE as any).SYNC]() {
-        let assignment = [];
-        const { groupId, generationId, memberId, members, groupProtocol, topics, topicsSubscribed, coordinator, } = this;
-        if (this.isLeader()) {
-            this.logger.debug('Chosen as group leader', { groupId, generationId, memberId, topics });
-            const assigner = this.assigners.find(({ name }: any) => name === groupProtocol);
-            if (!assigner) {
-                throw new KafkaJSNonRetriableError(`Unsupported partition assigner "${groupProtocol}", the assigner wasn't found in the assigners list`);
-            }
-            await this.cluster.refreshMetadata();
-            assignment = await assigner.assign({ members, topics: topicsSubscribed });
-            this.logger.debug('Group assignment', {
-                groupId,
-                generationId,
-                groupProtocol,
-                assignment,
-                topics: topicsSubscribed,
-            });
-        }
-        // Keep track of the partitions for the subscribed topics
-        this.partitionsPerSubscribedTopic = this.generatePartitionsPerSubscribedTopic();
-        const { memberAssignment } = await this.coordinator.syncGroup({
-            groupId,
-            generationId,
-            memberId,
-            groupAssignment: assignment,
-        });
-        const decodedMemberAssignment = MemberAssignment.decode(memberAssignment);
-        const decodedAssignment = decodedMemberAssignment != null ? decodedMemberAssignment.assignment : {};
-        this.logger.debug('Received assignment', {
-            groupId,
-            generationId,
-            memberId,
-            memberAssignment: decodedAssignment,
-        });
-        const assignedTopics = keys(decodedAssignment);
-        const topicsNotSubscribed = arrayDiff(assignedTopics, topicsSubscribed);
-        if (topicsNotSubscribed.length > 0) {
-            const payload = {
-                groupId,
-                generationId,
-                memberId,
-                assignedTopics,
-                topicsSubscribed,
-                topicsNotSubscribed,
-            };
-            this.instrumentationEmitter.emit(RECEIVED_UNSUBSCRIBED_TOPICS, payload);
-            this.logger.warn('Consumer group received unsubscribed topics', {
-                ...payload,
-                helpUrl: websiteUrl('docs/faq', 'why-am-i-receiving-messages-for-topics-i-m-not-subscribed-to'),
-            });
-        }
-        // Remove unsubscribed topics from the list
-        const safeAssignment = arrayDiff(assignedTopics, topicsNotSubscribed);
-        const currentMemberAssignment = safeAssignment.map((topic: any) => ({
-            topic,
-            partitions: decodedAssignment[topic]
-        }));
-        // Check if the consumer is aware of all assigned partitions
-        for (const assignment of currentMemberAssignment) {
-            const { topic, partitions: assignedPartitions } = assignment;
-            const knownPartitions = this.partitionsPerSubscribedTopic.get(topic);
-            const isAwareOfAllAssignedPartitions = assignedPartitions.every((partition: any) => knownPartitions.includes(partition));
-            if (!isAwareOfAllAssignedPartitions) {
-                this.logger.warn('Consumer is not aware of all assigned partitions, refreshing metadata', {
-                    groupId,
-                    generationId,
-                    memberId,
-                    topic,
-                    knownPartitions,
-                    assignedPartitions,
-                });
-                // If the consumer is not aware of all assigned partitions, refresh metadata
-                // and update the list of partitions per subscribed topic. It's enough to perform
-                // this operation once since refresh metadata will update metadata for all topics
-                await this.cluster.refreshMetadata();
-                this.partitionsPerSubscribedTopic = this.generatePartitionsPerSubscribedTopic();
-                break;
-            }
-        }
-        this.topics = currentMemberAssignment.map(({ topic }: any) => topic);
-        this.subscriptionState.assign(currentMemberAssignment);
-        this.offsetManager = new OffsetManager({
-            cluster: this.cluster,
-            topicConfigurations: this.topicConfigurations,
-            instrumentationEmitter: this.instrumentationEmitter,
-            // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'partitionsByTopic' implicitly has an 'a... Remove this comment to see the full error message
-            memberAssignment: currentMemberAssignment.reduce((partitionsByTopic, { topic, partitions }: any) => ({
-                ...partitionsByTopic,
-                [topic]: partitions
-            }), {}),
-            autoCommit: this.autoCommit,
-            autoCommitInterval: this.autoCommitInterval,
-            autoCommitThreshold: this.autoCommitThreshold,
-            coordinator,
-            groupId,
-            generationId,
-            memberId,
-        });
-    }
-    joinAndSync() {
-        const startJoin = Date.now();
-        return this.retrier(async (bail: any) => {
-            try {
-                // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-                await this[PRIVATE.JOIN]();
-                // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-                await this[PRIVATE.SYNC]();
-                // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'result' implicitly has an 'any' type.
-                const memberAssignment = this.assigned().reduce((result, { topic, partitions }: any) => ({
-                    ...result,
-                    [topic]: partitions
-                }), {});
-                const payload = {
-                    groupId: this.groupId,
-                    memberId: this.memberId,
-                    leaderId: this.leaderId,
-                    isLeader: this.isLeader(),
-                    memberAssignment,
-                    groupProtocol: this.groupProtocol,
-                    duration: Date.now() - startJoin,
-                };
-                this.instrumentationEmitter.emit(GROUP_JOIN, payload);
-                this.logger.info('Consumer has joined the group', payload);
-            }
-            catch (e) {
-                if (isRebalancing(e)) {
-                    // Rebalance in progress isn't a retriable protocol error since the consumer
-                    // has to go through find coordinator and join again before it can
-                    // actually retry the operation. We wrap the original error in a retriable error
-                    // here instead in order to restart the join + sync sequence using the retrier.
-                    throw new KafkaJSError(e);
-                }
-                bail(e);
-            }
-        });
-    }
-    /**
-     * @param {import("../../types").TopicPartition} topicPartition
-     */
-    resetOffset({ topic, partition }: any) {
-        this.offsetManager.resetOffset({ topic, partition });
-    }
-    /**
-     * @param {import("../../types").TopicPartitionOffset} topicPartitionOffset
-     */
-    resolveOffset({ topic, partition, offset }: any) {
-        this.offsetManager.resolveOffset({ topic, partition, offset });
-    }
+  [key: symbol | number | string]: any;
+  // [key: string]: any;
+  // [key: number]: any;
+
+  // cluster: any;
+  // groupId: any;
+  topics: any;
+  // topicsSubscribed: any;
+  // topicConfigurations: any;
+  // logger: any;
+  // instrumentationEmitter: any;
+  // retrier: any;
+  // assigners: any;
+  // sessionTimeout: any;
+  // rebalanceTimeout: any;
+  // maxBytesPerPartition: any;
+  // minBytes: any;
+  // maxBytes: any;
+  // maxWaitTimeInMs: any;
+  // autoCommit: any;
+  // autoCommitInterval: any;
+  // autoCommitThreshold: any;
+  // isolationLevel: any;
+  // rackId: any;
+  // metadataMaxAge: any;
+  // maxWaitTime: any;
+  // seekOffset: any;
+  // coordinator: any;
+  // generationId: any;
+  // leaderId: any;
+  // memberId: any;
+  // members: any;
+  // groupProtocol: any;
+  // partitionsPerSubscribedTopic: any;
+  // offsetManager: any;
+  // subscriptionState: any;
+
+  // preferredReadReplicasPerTopicPartition: any;
+  // lastRequest: any;
+
+  constructor({
+    retry,
+    cluster,
+    groupId,
+    topics,
+    topicConfigurations,
+    logger,
+    instrumentationEmitter,
+    assigners,
+    sessionTimeout,
+    rebalanceTimeout,
+    maxBytesPerPartition,
+    minBytes,
+    maxBytes,
+    maxWaitTimeInMs,
+    autoCommit,
+    autoCommitInterval,
+    autoCommitThreshold,
+    isolationLevel,
+    rackId,
+    metadataMaxAge,
+  }: any) {
+    /** @type {import("../../types").Cluster} */
+    this.cluster = cluster;
+    this.groupId = groupId;
+    this.topics = topics;
+    this.topicsSubscribed = topics;
+    this.topicConfigurations = topicConfigurations;
+    this.logger = logger.namespace('ConsumerGroup');
+    this.instrumentationEmitter = instrumentationEmitter;
+    this.retrier = createRetry(Object.assign({}, retry));
+    this.assigners = assigners;
+    this.sessionTimeout = sessionTimeout;
+    this.rebalanceTimeout = rebalanceTimeout;
+    this.maxBytesPerPartition = maxBytesPerPartition;
+    this.minBytes = minBytes;
+    this.maxBytes = maxBytes;
+    this.maxWaitTime = maxWaitTimeInMs;
+    this.autoCommit = autoCommit;
+    this.autoCommitInterval = autoCommitInterval;
+    this.autoCommitThreshold = autoCommitThreshold;
+    this.isolationLevel = isolationLevel;
+    this.rackId = rackId;
+    this.metadataMaxAge = metadataMaxAge;
+    this.seekOffset = new SeekOffsets();
+    this.coordinator = null;
+    this.generationId = null;
+    this.leaderId = null;
+    this.memberId = null;
+    this.members = null;
+    this.groupProtocol = null;
+
+    this.partitionsPerSubscribedTopic = null;
     /**
      * Preferred read replica per topic and partition
      *

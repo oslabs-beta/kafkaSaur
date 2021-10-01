@@ -1,28 +1,26 @@
 /** @format */
 
 import Long from '../utils/long.ts';
-import createRetry from '../retry';
+import createRetry from '../retry/index.ts';
 
 import * as Default from '../retry/defaults.ts';
 
 import { ConsumerGroup } from './consumerGroup.ts';
-import {Runner} from './runner.ts';
+import { Runner } from './runner.ts';
 import {
   events,
   wrap as wrapEvent,
   unwrap as unwrapEvent,
 } from './instrumentationEvents.ts';
-import {InstrumentationEventEmitter} from '../instrumentation/emitter.ts';
+import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts';
 import { KafkaJSNonRetriableError } from '../errors.ts';
-import { roundRobin } from './assigners';
+import { roundRobin } from './assigners/index.ts';
 import Constants from '../constants.ts';
 import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 
-
-const { initialRetryTime } = Default.initialRetryTime
-
+const { initialRetryTime } = Default.initialRetryTime;
 
 const { keys, values } = Object;
 const { CONNECT, DISCONNECT, STOP, CRASH } = events;
@@ -397,8 +395,8 @@ export default ({
           );
         }
 
-        const topicCommits : any = payload[topic] || []
-        
+        const topicCommits: any = payload[topic] || [];
+
         topicCommits.push({ partition, offset: commitOffset, metadata });
 
         return { ...payload, [topic]: topicCommits };
