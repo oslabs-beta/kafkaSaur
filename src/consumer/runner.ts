@@ -3,7 +3,7 @@
 //import { EventEmitter } from 'events'
 //Deno equivalent of Events...
 import Long from '../utils/long.ts';
-import createRetry from '../retry';
+import createRetry from '../retry/index.ts';
 import limitConcurrency from '../utils/concurrency.ts';
 import { KafkaJSError } from '../errors.ts';
 import barrier from './barrier.ts';
@@ -258,7 +258,7 @@ export class Runner extends EventEmitter {
         isRunning: () => this.running,
         isStale: () => this.consumerGroup.hasSeekOffset({ topic, partition }),
       });
-    } catch (e : any) {
+    } catch (e: any) {
       if (!isKafkaJSError(e)) {
         this.logger.error(`Error when calling eachBatch`, {
           topic,
@@ -340,7 +340,7 @@ export class Runner extends EventEmitter {
       });
     };
 
-    const { lock, unlock, unlockWithError } : any = barrier();
+    const { lock, unlock, unlockWithError }: any = barrier();
     const concurrently = limitConcurrency({
       limit: this.partitionsConsumedConcurrently,
     });
@@ -390,7 +390,7 @@ export class Runner extends EventEmitter {
               await this.consumerGroup.heartbeat({
                 interval: this.heartbeatInterval,
               });
-            } catch (e:any) {
+            } catch (e: any) {
               unlockWithError(e);
             } finally {
               numberOfExecutions++;
@@ -542,7 +542,7 @@ export class Runner extends EventEmitter {
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         await this.consumerGroup.commitOffsets(offsets);
-      } catch (e:any) {
+      } catch (e: any) {
         if (!this.running) {
           this.logger.debug('consumer not running, exiting', {
             error: e.message,
