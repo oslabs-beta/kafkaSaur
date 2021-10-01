@@ -1,21 +1,23 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPro... Remove this comment to see the full error message
-import { KafkaJSProtocolError } from '../errors'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'websiteUrl... Remove this comment to see the full error message
-import websiteUrl from '../utils/websiteUrl'
+/** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'errorCodes... Remove this comment to see the full error message
+import { KafkaJSProtocolError } from '../errors.ts';
+// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'websiteUrl... Remove this comment to see the full error message
+import websiteUrl from '../utils/websiteUrl.ts';
+
 const errorCodes = [
   {
     type: 'UNKNOWN',
     code: -1,
     retriable: false,
-    message: 'The server experienced an unexpected error when processing the request',
+    message:
+      'The server experienced an unexpected error when processing the request',
   },
   {
     type: 'OFFSET_OUT_OF_RANGE',
     code: 1,
     retriable: false,
-    message: 'The requested offset is not within the range of offsets maintained by the server',
+    message:
+      'The requested offset is not within the range of offsets maintained by the server',
   },
   {
     type: 'CORRUPT_MESSAGE',
@@ -96,7 +98,8 @@ const errorCodes = [
     type: 'GROUP_LOAD_IN_PROGRESS',
     code: 14,
     retriable: true,
-    message: "The coordinator is loading and hence can't process requests for this group",
+    message:
+      "The coordinator is loading and hence can't process requests for this group",
   },
   {
     type: 'GROUP_COORDINATOR_NOT_AVAILABLE',
@@ -114,7 +117,8 @@ const errorCodes = [
     type: 'INVALID_TOPIC_EXCEPTION',
     code: 17,
     retriable: false,
-    message: 'The request attempted to perform an operation on an invalid topic',
+    message:
+      'The request attempted to perform an operation on an invalid topic',
   },
   {
     type: 'RECORD_LIST_TOO_LARGE',
@@ -127,13 +131,15 @@ const errorCodes = [
     type: 'NOT_ENOUGH_REPLICAS',
     code: 19,
     retriable: true,
-    message: 'Messages are rejected since there are fewer in-sync replicas than required',
+    message:
+      'Messages are rejected since there are fewer in-sync replicas than required',
   },
   {
     type: 'NOT_ENOUGH_REPLICAS_AFTER_APPEND',
     code: 20,
     retriable: true,
-    message: 'Messages are written to the log, but to fewer in-sync replicas than required',
+    message:
+      'Messages are written to the log, but to fewer in-sync replicas than required',
   },
   {
     type: 'INVALID_REQUIRED_ACKS',
@@ -178,7 +184,10 @@ const errorCodes = [
     code: 27,
     retriable: false,
     message: 'The group is rebalancing, so a rejoin is needed',
-    helpUrl: websiteUrl('docs/faq', 'what-does-it-mean-to-get-rebalance-in-progress-errors'),
+    helpUrl: websiteUrl(
+      'docs/faq',
+      'what-does-it-mean-to-get-rebalance-in-progress-errors'
+    ),
   },
   {
     type: 'INVALID_COMMIT_OFFSET_SIZE',
@@ -275,7 +284,8 @@ const errorCodes = [
     type: 'UNSUPPORTED_FOR_MESSAGE_FORMAT',
     code: 43,
     retriable: false,
-    message: 'The message format version on the broker does not support the request',
+    message:
+      'The message format version on the broker does not support the request',
   },
   {
     type: 'POLICY_VIOLATION',
@@ -306,7 +316,8 @@ const errorCodes = [
     type: 'INVALID_TXN_STATE',
     code: 48,
     retriable: false,
-    message: 'The producer attempted a transactional operation in an invalid state',
+    message:
+      'The producer attempted a transactional operation in an invalid state',
   },
   {
     type: 'INVALID_PRODUCER_ID_MAPPING',
@@ -370,7 +381,8 @@ const errorCodes = [
     type: 'LOG_DIR_NOT_FOUND',
     code: 57,
     retriable: false,
-    message: 'The user-specified log directory is not found in the broker config',
+    message:
+      'The user-specified log directory is not found in the broker config',
   },
   {
     type: 'SASL_AUTHENTICATION_FAILED',
@@ -476,19 +488,22 @@ const errorCodes = [
     type: 'FENCED_LEADER_EPOCH',
     code: 74,
     retriable: true,
-    message: 'The leader epoch in the request is older than the epoch on the broker',
+    message:
+      'The leader epoch in the request is older than the epoch on the broker',
   },
   {
     type: 'UNKNOWN_LEADER_EPOCH',
     code: 75,
     retriable: true,
-    message: 'The leader epoch in the request is newer than the epoch on the broker',
+    message:
+      'The leader epoch in the request is newer than the epoch on the broker',
   },
   {
     type: 'UNSUPPORTED_COMPRESSION_TYPE',
     code: 76,
     retriable: false,
-    message: 'The requesting client does not support the compression type of given partition',
+    message:
+      'The requesting client does not support the compression type of given partition',
   },
   {
     type: 'STALE_BROKER_EPOCH',
@@ -559,7 +574,8 @@ const errorCodes = [
     type: 'INVALID_RECORD',
     code: 87,
     retriable: false,
-    message: 'This record has failed the validation on broker and hence be rejected',
+    message:
+      'This record has failed the validation on broker and hence be rejected',
   },
   {
     type: 'UNSTABLE_OFFSET_COMMIT',
@@ -567,43 +583,42 @@ const errorCodes = [
     retriable: true,
     message: 'There are unstable offsets that need to be cleared',
   },
-]
+];
 
 const unknownErrorCode = (errorCode: any) => ({
   type: 'KAFKAJS_UNKNOWN_ERROR_CODE',
   code: -99,
   retriable: false,
-  message: `Unknown error code ${errorCode}`
-})
+  message: `Unknown error code ${errorCode}`,
+});
 
-const SUCCESS_CODE = 0
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'UNSUPPORTE... Remove this comment to see the full error message
-const UNSUPPORTED_VERSION_CODE = 35
+const SUCCESS_CODE = 0;
+const UNSUPPORTED_VERSION_CODE = 35;
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const failure = (code: any) => code !== SUCCESS_CODE
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createErro... Remove this comment to see the full error message
+const failure = (code: any) => code !== SUCCESS_CODE;
 const createErrorFromCode = (code: any) => {
-  return new KafkaJSProtocolError(errorCodes.find((e: any) => e.code === code) || unknownErrorCode(code));
-}
+  return new KafkaJSProtocolError(
+    errorCodes.find((e: any) => e.code === code) || unknownErrorCode(code)
+  );
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
 const failIfVersionNotSupported = (code: any) => {
   if (code === UNSUPPORTED_VERSION_CODE) {
-    throw createErrorFromCode(UNSUPPORTED_VERSION_CODE)
+    throw createErrorFromCode(UNSUPPORTED_VERSION_CODE);
   }
-}
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'staleMetad... Remove this comment to see the full error message
-const staleMetadata = (e: any) => ['UNKNOWN_TOPIC_OR_PARTITION', 'LEADER_NOT_AVAILABLE', 'NOT_LEADER_FOR_PARTITION'].includes(
-  e.type
-)
+const staleMetadata = (e: any) =>
+  [
+    'UNKNOWN_TOPIC_OR_PARTITION',
+    'LEADER_NOT_AVAILABLE',
+    'NOT_LEADER_FOR_PARTITION',
+  ].includes(e.type);
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export {
   failure,
   errorCodes,
   createErrorFromCode,
   failIfVersionNotSupported,
   staleMetadata,
-}
+};

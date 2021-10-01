@@ -1,28 +1,17 @@
 /** @format */
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-import { Long } from '../utils/long';
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT8_SIZE'... Remove this comment to see the full error message
+import { Long } from '../utils/long.ts';
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 const INT8_SIZE = 1;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT16_SIZE... Remove this comment to see the full error message
 const INT16_SIZE = 2;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT32_SIZE... Remove this comment to see the full error message
 const INT32_SIZE = 4;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT64_SIZE... Remove this comment to see the full error message
 const INT64_SIZE = 8;
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'DOUBLE_SIZ... Remove this comment to see the full error message
 const DOUBLE_SIZE = 8;
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MOST_SIGNI... Remove this comment to see the full error message
-const MOST_SIGNIFICANT_BIT = 0x80; // 128
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'OTHER_BITS... Remove this comment to see the full error message
-const OTHER_BITS = 0x7f; // 127
+const MOST_SIGNIFICANT_BIT = 0x80; // 128const OTHER_BITS = 0x7f; // 127
 const UNSIGNED_INT32_MAX_NUMBER = 0xffffff80;
-// @ts-expect-error ts-migrate(2737) FIXME: BigInt literals are not available when targeting l... Remove this comment to see the full error message
 const UNSIGNED_INT64_MAX_NUMBER = 0xffffffffffffff80n;
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class Encoder {
   buf: any;
   offset: any;
@@ -62,7 +51,6 @@ export class Encoder {
   }
 
   static sizeOfVarIntBytes(value: any) {
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     const size = value == null ? -1 : Buffer.byteLength(value);
 
     if (size < 0) {
@@ -73,7 +61,6 @@ export class Encoder {
   }
 
   static nextPowerOfTwo(value: any) {
-    // @ts-expect-error ts-migrate(2550) FIXME: Property 'clz32' does not exist on type 'Math'. Do... Remove this comment to see the full error message
     return 1 << (31 - Math.clz32(value) + 1);
   }
 
@@ -83,7 +70,6 @@ export class Encoder {
    * @param {number} [initialSize] initial size
    */
   constructor(initialSize = 511) {
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     this.buf = Buffer.alloc(Encoder.nextPowerOfTwo(initialSize));
     this.offset = 0;
   }
@@ -101,7 +87,6 @@ export class Encoder {
   ensureAvailable(length: any) {
     if (this.offset + length > this.buf.length) {
       const newLength = Encoder.nextPowerOfTwo(this.offset + length);
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       const newBuffer = Buffer.alloc(newLength);
       this.buf.copy(newBuffer, 0, 0, this.offset);
       this.buf = newBuffer;
@@ -167,7 +152,6 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.ensureAvailable(INT16_SIZE + byteLength);
     this.writeInt16(byteLength);
@@ -182,7 +166,6 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.writeVarInt(byteLength);
     this.ensureAvailable(byteLength);
@@ -197,7 +180,6 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.writeUVarInt(byteLength + 1);
     this.ensureAvailable(byteLength);
@@ -212,7 +194,6 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
     if (Buffer.isBuffer(value)) {
       // raw bytes
       this.ensureAvailable(INT32_SIZE + value.length);
@@ -220,7 +201,6 @@ export class Encoder {
       this.writeBufferInternal(value);
     } else {
       const valueToWrite = String(value);
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.ensureAvailable(INT32_SIZE + byteLength);
       this.writeInt32(byteLength);
@@ -237,14 +217,12 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     if (Buffer.isBuffer(value)) {
       // raw bytes
       this.writeVarInt(value.length);
       this.writeBufferInternal(value);
     } else {
       const valueToWrite = String(value);
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.writeVarInt(byteLength);
       this.ensureAvailable(byteLength);
@@ -261,14 +239,12 @@ export class Encoder {
       return this;
     }
 
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     if (Buffer.isBuffer(value)) {
       // raw bytes
       this.writeUVarInt(value.length + 1);
       this.writeBufferInternal(value);
     } else {
       const valueToWrite = String(value);
-      // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.writeUVarInt(byteLength + 1);
       this.ensureAvailable(byteLength);
@@ -280,7 +256,6 @@ export class Encoder {
   }
 
   writeEncoder(value: any) {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     if (value == null || !Buffer.isBuffer(value.buf)) {
       throw new Error('value should be an instance of Encoder');
     }
@@ -290,7 +265,6 @@ export class Encoder {
   }
 
   writeEncoderArray(value: any) {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     if (
       !Array.isArray(value) ||
       value.some((v) => v == null || !Buffer.isBuffer(v.buf))
@@ -305,7 +279,6 @@ export class Encoder {
   }
 
   writeBuffer(value: any) {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     if (!Buffer.isBuffer(value)) {
       throw new Error('value should be an instance of Buffer');
     }
@@ -403,7 +376,6 @@ export class Encoder {
       value >>>= 7;
     }
     byteArray.push(value & OTHER_BITS);
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     this.writeBufferInternal(Buffer.from(byteArray));
     return this;
   }
@@ -423,7 +395,6 @@ export class Encoder {
 
     byteArray.push(longValue.toInt());
 
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
     this.writeBufferInternal(Buffer.from(byteArray));
     return this;
   }
