@@ -1,5 +1,5 @@
 /** @format */
-
+import { Encoder } from './encoder.ts'
 // Based on https://github.com/brianloveswords/buffer-crc32/blob/master/index.js
 
 var CRC_TABLE = new Int32Array([
@@ -48,7 +48,7 @@ var CRC_TABLE = new Int32Array([
   0xb40bbe37, 0xc30c8ea1, 0x5a05df1b, 0x2d02ef8d,
 ]);
 
-export default (encoder: any) => {
+export default (encoder: Encoder) => {
   const { buffer } = encoder;
   const l = buffer.length;
   let crc = -1;

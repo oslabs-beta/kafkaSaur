@@ -1,7 +1,6 @@
 /** @format */
 
-import { KafkaJSProtocolError } from '../errors.ts';
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'websiteUrl... Remove this comment to see the full error message
+import { KafkaJSProtocolError} from '../errors.ts';
 import websiteUrl from '../utils/websiteUrl.ts';
 
 const errorCodes = [
@@ -585,7 +584,7 @@ const errorCodes = [
   },
 ];
 
-const unknownErrorCode = (errorCode: any) => ({
+const unknownErrorCode = (errorCode: number) => ({
   type: 'KAFKAJS_UNKNOWN_ERROR_CODE',
   code: -99,
   retriable: false,
@@ -595,20 +594,20 @@ const unknownErrorCode = (errorCode: any) => ({
 const SUCCESS_CODE = 0;
 const UNSUPPORTED_VERSION_CODE = 35;
 
-const failure = (code: any) => code !== SUCCESS_CODE;
-const createErrorFromCode = (code: any) => {
+const failure = (code: number) => code !== SUCCESS_CODE;
+const createErrorFromCode = (code: number) => {
   return new KafkaJSProtocolError(
-    errorCodes.find((e: any) => e.code === code) || unknownErrorCode(code)
+    errorCodes.find((e) => e.code === code) || unknownErrorCode(code)
   );
 };
 
-const failIfVersionNotSupported = (code: any) => {
+const failIfVersionNotSupported = (code: number) => {
   if (code === UNSUPPORTED_VERSION_CODE) {
     throw createErrorFromCode(UNSUPPORTED_VERSION_CODE);
   }
 };
 
-const staleMetadata = (e: any) =>
+const staleMetadata = (e: {type: string; code: number; retriable: boolean; message: string}) =>
   [
     'UNKNOWN_TOPIC_OR_PARTITION',
     'LEADER_NOT_AVAILABLE',

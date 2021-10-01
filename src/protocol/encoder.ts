@@ -13,6 +13,7 @@ const OTHER_BITS = 0x7f; // 127
 const UNSIGNED_INT32_MAX_NUMBER = 0xffffff80;
 const UNSIGNED_INT64_MAX_NUMBER = 0xffffffffffffff80n;
 
+
 export class Encoder {
   buf: Buffer;
   offset: number;

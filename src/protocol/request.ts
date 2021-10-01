@@ -1,13 +1,12 @@
 /** @format */
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from './encoder.ts';
+// deno-lint-ignore-file no-explicit-any
+import { Encoder }  from './encoder.ts';
 
 export default async ({
   correlationId,
   clientId,
   request: { apiKey, apiVersion, encode },
-}: any) => {
+}: {correlationId: number; clientId: string; request: Record<string, any>}) => {
   const payload = await encode();
   const requestPayload = new Encoder()
     .writeInt16(apiKey)
