@@ -1,30 +1,31 @@
 /** @format */
+// deno-lint-ignore-file no-explicit-any
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-import { Long } from '../utils/long.ts';
+import Long from '../utils/long.ts';
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 const INT8_SIZE = 1;
 const INT16_SIZE = 2;
 const INT32_SIZE = 4;
 const INT64_SIZE = 8;
 const DOUBLE_SIZE = 8;
-const MOST_SIGNIFICANT_BIT = 0x80; // 128const OTHER_BITS = 0x7f; // 127
+const MOST_SIGNIFICANT_BIT = 0x80; // 128
+const OTHER_BITS = 0x7f; // 127
 const UNSIGNED_INT32_MAX_NUMBER = 0xffffff80;
 const UNSIGNED_INT64_MAX_NUMBER = 0xffffffffffffff80n;
 
 export class Encoder {
-  buf: any;
-  offset: any;
-  static encodeZigZag(value: any) {
+  buf: Buffer;
+  offset: number;
+  static encodeZigZag(value: number) {
     return (value << 1) ^ (value >> 31);
   }
 
-  static encodeZigZag64(value: any) {
+  static encodeZigZag64(value: number) {
     const longValue = Long.fromValue(value);
     return longValue.shiftLeft(1).xor(longValue.shiftRight(63));
   }
 
-  static sizeOfVarInt(value: any) {
+  static sizeOfVarInt(value: number) {
     let encodedValue = this.encodeZigZag(value);
     let bytes = 1;
 
@@ -36,7 +37,7 @@ export class Encoder {
     return bytes;
   }
 
-  static sizeOfVarLong(value: any) {
+  static sizeOfVarLong(value: number) {
     let longValue = Encoder.encodeZigZag64(value);
     let bytes = 1;
 
@@ -50,7 +51,7 @@ export class Encoder {
     return bytes;
   }
 
-  static sizeOfVarIntBytes(value: any) {
+  static sizeOfVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
     const size = value == null ? -1 : Buffer.byteLength(value);
 
     if (size < 0) {
@@ -60,7 +61,7 @@ export class Encoder {
     return Encoder.sizeOfVarInt(size) + size;
   }
 
-  static nextPowerOfTwo(value: any) {
+  static nextPowerOfTwo(value: number) {
     return 1 << (31 - Math.clz32(value) + 1);
   }
 
@@ -77,14 +78,14 @@ export class Encoder {
   /**
    * @param {Buffer} buffer
    */
-  writeBufferInternal(buffer: any) {
+  writeBufferInternal(buffer: Buffer) {
     const bufferLength = buffer.length;
     this.ensureAvailable(bufferLength);
     buffer.copy(this.buf, this.offset, 0);
     this.offset += bufferLength;
   }
 
-  ensureAvailable(length: any) {
+  ensureAvailable(length: number) {
     if (this.offset + length > this.buf.length) {
       const newLength = Encoder.nextPowerOfTwo(this.offset + length);
       const newBuffer = Buffer.alloc(newLength);
@@ -97,35 +98,35 @@ export class Encoder {
     return this.buf.slice(0, this.offset);
   }
 
-  writeInt8(value: any) {
+  writeInt8(value: number) {
     this.ensureAvailable(INT8_SIZE);
     this.buf.writeInt8(value, this.offset);
     this.offset += INT8_SIZE;
     return this;
   }
 
-  writeInt16(value: any) {
+  writeInt16(value: number) {
     this.ensureAvailable(INT16_SIZE);
     this.buf.writeInt16BE(value, this.offset);
     this.offset += INT16_SIZE;
     return this;
   }
 
-  writeInt32(value: any) {
+  writeInt32(value: number) {
     this.ensureAvailable(INT32_SIZE);
     this.buf.writeInt32BE(value, this.offset);
     this.offset += INT32_SIZE;
     return this;
   }
 
-  writeUInt32(value: any) {
+  writeUInt32(value: number) {
     this.ensureAvailable(INT32_SIZE);
     this.buf.writeUInt32BE(value, this.offset);
     this.offset += INT32_SIZE;
     return this;
   }
 
-  writeInt64(value: any) {
+  writeInt64(value: number) {
     this.ensureAvailable(INT64_SIZE);
     const longValue = Long.fromValue(value);
     this.buf.writeInt32BE(longValue.getHighBits(), this.offset);
@@ -134,19 +135,19 @@ export class Encoder {
     return this;
   }
 
-  writeDouble(value: any) {
+  writeDouble(value: number) {
     this.ensureAvailable(DOUBLE_SIZE);
     this.buf.writeDoubleBE(value, this.offset);
     this.offset += DOUBLE_SIZE;
     return this;
   }
 
-  writeBoolean(value: any) {
+  writeBoolean(value: boolean) {
     value ? this.writeInt8(1) : this.writeInt8(0);
     return this;
   }
 
-  writeString(value: any) {
+  writeString(value: string) {
     if (value == null) {
       this.writeInt16(-1);
       return this;
@@ -155,12 +156,12 @@ export class Encoder {
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.ensureAvailable(INT16_SIZE + byteLength);
     this.writeInt16(byteLength);
-    this.buf.write(value, this.offset, byteLength, 'utf8');
+    this.buf.write(value, this.offset, byteLength);
     this.offset += byteLength;
     return this;
   }
 
-  writeVarIntString(value: any) {
+  writeVarIntString(value: string) {
     if (value == null) {
       this.writeVarInt(-1);
       return this;
@@ -169,12 +170,12 @@ export class Encoder {
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.writeVarInt(byteLength);
     this.ensureAvailable(byteLength);
-    this.buf.write(value, this.offset, byteLength, 'utf8');
+    this.buf.write(value, this.offset, byteLength);
     this.offset += byteLength;
     return this;
   }
 
-  writeUVarIntString(value: any) {
+  writeUVarIntString(value: string) {
     if (value == null) {
       this.writeUVarInt(0);
       return this;
@@ -183,12 +184,12 @@ export class Encoder {
     const byteLength = Buffer.byteLength(value, 'utf8');
     this.writeUVarInt(byteLength + 1);
     this.ensureAvailable(byteLength);
-    this.buf.write(value, this.offset, byteLength, 'utf8');
+    this.buf.write(value, this.offset, byteLength);
     this.offset += byteLength;
     return this;
   }
 
-  writeBytes(value: any) {
+  writeBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
     if (value == null) {
       this.writeInt32(-1);
       return this;
@@ -204,14 +205,14 @@ export class Encoder {
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.ensureAvailable(INT32_SIZE + byteLength);
       this.writeInt32(byteLength);
-      this.buf.write(valueToWrite, this.offset, byteLength, 'utf8');
+      this.buf.write(valueToWrite, this.offset, byteLength);
       this.offset += byteLength;
     }
 
     return this;
   }
 
-  writeVarIntBytes(value: any) {
+  writeVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
     if (value == null) {
       this.writeVarInt(-1);
       return this;
@@ -226,14 +227,14 @@ export class Encoder {
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.writeVarInt(byteLength);
       this.ensureAvailable(byteLength);
-      this.buf.write(valueToWrite, this.offset, byteLength, 'utf8');
+      this.buf.write(valueToWrite, this.offset, byteLength);
       this.offset += byteLength;
     }
 
     return this;
   }
 
-  writeUVarIntBytes(value: any) {
+  writeUVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
     if (value == null) {
       this.writeVarInt(0);
       return this;
@@ -248,14 +249,14 @@ export class Encoder {
       const byteLength = Buffer.byteLength(valueToWrite, 'utf8');
       this.writeUVarInt(byteLength + 1);
       this.ensureAvailable(byteLength);
-      this.buf.write(valueToWrite, this.offset, byteLength, 'utf8');
+      this.buf.write(valueToWrite, this.offset, byteLength);
       this.offset += byteLength;
     }
 
     return this;
   }
 
-  writeEncoder(value: any) {
+  writeEncoder(value: Encoder) {
     if (value == null || !Buffer.isBuffer(value.buf)) {
       throw new Error('value should be an instance of Encoder');
     }
@@ -264,7 +265,7 @@ export class Encoder {
     return this;
   }
 
-  writeEncoderArray(value: any) {
+  writeEncoderArray(value: Encoder[]) {
     if (
       !Array.isArray(value) ||
       value.some((v) => v == null || !Buffer.isBuffer(v.buf))
@@ -278,7 +279,7 @@ export class Encoder {
     return this;
   }
 
-  writeBuffer(value: any) {
+  writeBuffer(value: Buffer) {
     if (!Buffer.isBuffer(value)) {
       throw new Error('value should be an instance of Buffer');
     }
@@ -291,7 +292,7 @@ export class Encoder {
    * @param {any[]} array
    * @param {'int32'|'number'|'string'|'object'} [type]
    */
-  writeNullableArray(array: any, type: any) {
+  writeNullableArray(array: [], type: number|string|Record<string, unknown>) {
     // A null value is encoded with length of -1 and there are no following bytes
     // On the context of this library, empty array and null are the same thing
     const length = array.length !== 0 ? array.length : -1;
@@ -304,17 +305,17 @@ export class Encoder {
    * @param {'int32'|'number'|'string'|'object'} [type]
    * @param {number} [length]
    */
-  writeArray(array: any, type?: any, length?: any) {
+  writeArray(array: any[], type?: number | string | Record<string, unknown>, length?: number) {
     const arrayLength = length == null ? array.length : length;
     this.writeInt32(arrayLength);
     if (type !== undefined) {
       switch (type) {
         case 'int32':
         case 'number':
-          array.forEach((value: any) => this.writeInt32(value));
+          array.forEach((value: number) => this.writeInt32(value));
           break;
         case 'string':
-          array.forEach((value: any) => this.writeString(value));
+          array.forEach((value: string) => this.writeString(value));
           break;
         case 'object':
           this.writeEncoderArray(array);
@@ -338,19 +339,19 @@ export class Encoder {
     return this;
   }
 
-  writeVarIntArray(array: any, type: any) {
+  writeVarIntArray(array: any[], type: number | string | Record<string, unknown>) {
     if (type === 'object') {
       this.writeVarInt(array.length);
       this.writeEncoderArray(array);
     } else {
-      const objectArray = array.filter((v: any) => typeof v === 'object');
+      const objectArray = array.filter((v: number | string | Record<string, unknown>) => typeof v === 'object');
       this.writeVarInt(objectArray.length);
       this.writeEncoderArray(objectArray);
     }
     return this;
   }
 
-  writeUVarIntArray(array: any, type: any) {
+  writeUVarIntArray(array: any[], type: number | string | Record<string, unknown>) {
     if (type === 'object') {
       this.writeUVarInt(array.length + 1);
       this.writeEncoderArray(array);
