@@ -1,4 +1,5 @@
 /** @format */
+// deno-lint-ignore-file no-explicit-any
 import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 import {
   KafkaJSInvalidVarIntError,
@@ -16,13 +17,13 @@ const MOST_SIGNIFICANT_BIT = 0x80; // 128
 const OTHER_BITS = 0x7f; // 127
 
 export class Decoder {
-  buffer: any;
-  offset: any;
+  buffer: Buffer;
+  offset: number;
   static int32Size() {
     return INT32_SIZE;
   }
 
-  static decodeZigZag(value: any) {
+  static decodeZigZag(value: number) {
     return (value >>> 1) ^ -(value & 1);
   }
 
@@ -32,7 +33,7 @@ export class Decoder {
       .xor(longValue.and(Long.fromInt(1)).negate());
   }
 
-  constructor(buffer: any) {
+  constructor(buffer: Buffer) {
     this.buffer = buffer;
     this.offset = 0;
   }

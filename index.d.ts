@@ -1,5 +1,5 @@
 /// <reference types="node" />
-
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 import * as tls from 'tls'
 import * as net from 'net'
 
@@ -13,6 +13,7 @@ export class Kafka {
   admin(config?: AdminConfig): Admin
   logger(): Logger
 }
+
 
 export type BrokersFunction = () => string[] | Promise<string[]>
 
