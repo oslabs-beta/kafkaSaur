@@ -1,9 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
-const { failIfVersionNotSupported } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
+/** @format */
+
+import Decoder from '../../../decoder.ts';
+import { failIfVersionNotSupported } from '../../../error.ts';
+import { parse as parseV0 } from '../v0/response.ts';
 
 /**
  * Heartbeat Response (Version: 1) => throttle_time_ms error_code
@@ -11,19 +10,14 @@ const { parse: parseV0 } = require('../v0/response')
  *   error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
-  return { throttleTime, errorCode }
-}
+  return { throttleTime, errorCode };
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse: parseV0,
-}
+export default { decode, parse };

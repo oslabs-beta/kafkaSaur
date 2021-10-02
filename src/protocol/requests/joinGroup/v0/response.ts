@@ -1,7 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode, failIfVersionNotSupported } = require('../../../error')
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import {
+  failure,
+  createErrorFromCode,
+  failIfVersionNotSupported,
+} from '../../../error.ts';
 
 /**
  * JoinGroup Response (Version: 0) => error_code generation_id group_protocol leader_id member_id [members]
@@ -15,12 +19,11 @@ const { failure, createErrorFromCode, failIfVersionNotSupported } = require('../
  *     member_metadata => BYTES
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
   return {
     errorCode,
@@ -30,22 +33,17 @@ const decode = async (rawData: any) => {
     memberId: decoder.readString(),
     members: decoder.readArray((decoder: any) => ({
       memberId: decoder.readString(),
-      memberMetadata: decoder.readBytes()
+      memberMetadata: decoder.readBytes(),
     })),
   };
-}
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse,
-}
+export default { decode, parse };

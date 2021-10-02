@@ -1,5 +1,7 @@
-import {Decoder} from '../../../decoder.ts'
-import response from '../v0/response.ts'
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import response from '../v0/response.ts';
 
 const parse = response.parse;
 
@@ -28,35 +30,35 @@ const broker = (decoder: any) => ({
   nodeId: decoder.readInt32(),
   host: decoder.readString(),
   port: decoder.readInt32(),
-  rack: decoder.readString()
-})
+  rack: decoder.readString(),
+});
 
 const topicMetadata = (decoder: any) => ({
   topicErrorCode: decoder.readInt16(),
   topic: decoder.readString(),
   isInternal: decoder.readBoolean(),
-  partitionMetadata: decoder.readArray(partitionMetadata)
-})
+  partitionMetadata: decoder.readArray(partitionMetadata),
+});
 
 const partitionMetadata = (decoder: any) => ({
   partitionErrorCode: decoder.readInt16(),
   partitionId: decoder.readInt32(),
   leader: decoder.readInt32(),
   replicas: decoder.readArray((d: any) => d.readInt32()),
-  isr: decoder.readArray((d: any) => d.readInt32())
-})
+  isr: decoder.readArray((d: any) => d.readInt32()),
+});
 
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
+  const decoder = new Decoder(rawData);
   return {
     brokers: decoder.readArray(broker),
     clusterId: decoder.readString(),
     controllerId: decoder.readInt32(),
     topicMetadata: decoder.readArray(topicMetadata),
-  }
-}
+  };
+};
 
-export {
+export default {
   decode,
-  parse
-}
+  parse,
+};
