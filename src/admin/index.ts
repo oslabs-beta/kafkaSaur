@@ -1201,7 +1201,7 @@ export default ({
       partitions.map((p: any) => p.partition)
     );
 
-    const partitionsFound = flatten(values(partitionsByBroker));
+    const partitionsFound : any = flatten(values(partitionsByBroker));
     const topicOffsets: any = await fetchTopicOffsets(topic);
 
     const leaderNotFoundErrors: any = [];

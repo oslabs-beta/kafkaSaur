@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
 // Based on the kafka client 0.10.2 murmur2 implementation
 // https://github.com/apache/kafka/blob/0.10.2/clients/src/main/java/org/apache/kafka/common/utils/Utils.java#L364
@@ -11,7 +12,6 @@ const M = 0x5bd1e995
 const R = 24
 
 export default (key: any) => {
-  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
   const data = Buffer.isBuffer(key) ? key : Buffer.from(String(key))
   const length = data.length
 

@@ -1,5 +1,5 @@
 import util from 'https://deno.land/std@0.109.0/node/util.ts'
-import  * as KafkaJSLockTimeout  from '../errors.ts'
+import {KafkaJSLockTimeout} from '../errors.ts'
 
 const {format} = util; 
 

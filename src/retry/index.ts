@@ -1,9 +1,8 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNum... Remove this comment to see the full error message
-import { KafkaJSNumberOfRetriesExceeded } from '../errors';
+import { KafkaJSNumberOfRetriesExceeded } from '../errors.ts';
+import process from 'https://deno.land/std@0.109.0/node/process.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'process'. Do you need to install... Remove this comment to see the full error message
 const isTestMode = process.env.NODE_ENV === 'test';
 //const RETRY_DEFAULT = isTestMode ? import * from  : import * from './defaults'
 

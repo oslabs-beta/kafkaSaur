@@ -7,7 +7,7 @@ class KafkaJSError extends Error {
   //[key: string | number | symbol]: any;
   helpUrl: any;
   retriable?: Boolean;
-  constructor(e: any, { retriable = true } = {}) {
+  constructor( e: any, { retriable = true } = {}, ...args: any[]) {
     const superObj: any = super(e) 
     superObj.captureStackTrace(this, this.constructor);
     this.message = e.message || e; 
@@ -157,58 +157,60 @@ class KafkaJSServerDoesNotSupportApiKey extends KafkaJSNonRetriableError {
   }
 }
 
-class KafkaJSBrokerNotFound extends KafkaJSError {
-  constructor(p1?: any, p2?: any) {
-    super(...arguments);
+class KafkaJSBrokerNotFound  extends KafkaJSError {
+   constructor (p1?:any, p2?:any, p3?:any)  {
+   // constructor ()  {
+      
+    super(p1,p2,p3);
     this.name = 'KafkaJSBrokerNotFound';
   }
 }
 
 class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
-  constructor(p1?: any) {
-    super(...arguments);
+  constructor(p1?:any, p2?:any, p3?:any) {
+    super(p1);
     this.name = 'KafkaJSPartialMessageError';
   }
 }
 
 class KafkaJSSASLAuthenticationError extends KafkaJSNonRetriableError {
-  constructor(p1?: any) {
-    super(...arguments);
+  constructor(p1?:any, p2?:any, p3?:any) {
+    super(p1);
     this.name = 'KafkaJSSASLAuthenticationError';
   }
 }
 
 class KafkaJSGroupCoordinatorNotFound extends KafkaJSNonRetriableError {
-  constructor(p1?:any, p2?:any, p3?:any) {
-    super(...arguments);
+  constructor(p1?:any) {
+    super(p1);
     this.name = 'KafkaJSGroupCoordinatorNotFound';
   }
 }
 
 class KafkaJSNotImplemented extends KafkaJSNonRetriableError {
-  constructor() {
-    super(...arguments);
+  constructor(p1?: any) {
+    super(p1);
     this.name = 'KafkaJSNotImplemented';
   }
 }
 
 class KafkaJSTimeout extends KafkaJSNonRetriableError {
-  constructor() {
-    super(...arguments);
+  constructor(p1?:any, p2?:any) {
+    super(p1);
     this.name = 'KafkaJSTimeout';
   }
 }
 
 class KafkaJSLockTimeout extends KafkaJSTimeout {
-  constructor() {
-    super(...arguments);
+  constructor(p1?:any, p2?:any, p3?:any) {
+    super(p1,p2);
     this.name = 'KafkaJSLockTimeout';
   }
 }
 
 class KafkaJSUnsupportedMagicByteInMessageSet extends KafkaJSNonRetriableError {
-  constructor() {
-    super(...arguments);
+  constructor(p1: any,p2: any,p3: any) {
+    super(p1);
     this.name = 'KafkaJSUnsupportedMagicByteInMessageSet';
   }
 }
@@ -232,7 +234,6 @@ class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
 const issueUrl = bugs ? bugs.url : null;
 
 class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
-  helpUrl
   constructor(e: any) {
     const message = e.message || e;
     super(
@@ -249,14 +250,14 @@ class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
 
 class KafkaJSInvalidVarIntError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    super(...arguments);
+    super(p1);
     this.name = 'KafkaJSNonRetriableError';
   }
 }
 
 class KafkaJSInvalidLongError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    super(...arguments);
+    super(p1);
     this.name = 'KafkaJSNonRetriableError';
   }
 }
