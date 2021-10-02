@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import {Decoder} from '../../../decoder.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
 
 /**
  * DescribeGroups Response (Version: 0) => [groups]
@@ -19,7 +17,6 @@ const { failure, createErrorFromCode } = require('../../../error')
  *       member_assignment => BYTES
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decoderMem... Remove this comment to see the full error message
 const decoderMember = (decoder: any) => ({
   memberId: decoder.readString(),
   clientId: decoder.readString(),
@@ -28,7 +25,6 @@ const decoderMember = (decoder: any) => ({
   memberAssignment: decoder.readBytes()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeGrou... Remove this comment to see the full error message
 const decodeGroup = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   groupId: decoder.readString(),
@@ -38,7 +34,6 @@ const decodeGroup = (decoder: any) => ({
   members: decoder.readArray(decoderMember)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const groups = decoder.readArray(decodeGroup)
@@ -48,7 +43,6 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const groupsWithError = data.groups.filter(({
     errorCode
@@ -60,8 +54,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../../utils/flatten')
+import {Decoder} from '../../../decoder.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
+import flatten from '../../../../utils/flatten.ts'
 
 /**
  * Produce Response (Version: 3) => [responses] throttle_time_ms
@@ -17,7 +14,6 @@ const flatten = require('../../../../utils/flatten')
  *   throttle_time_ms => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partition'... Remove this comment to see the full error message
 const partition = (decoder: any) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
@@ -25,7 +21,6 @@ const partition = (decoder: any) => ({
   logAppendTime: decoder.readInt64().toString()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const topics = decoder.readArray((decoder: any) => ({
@@ -41,7 +36,6 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const partitionsWithError = data.topics.map((response: any) => {
     return response.partitions.filter((partition: any) => failure(partition.errorCode));
@@ -56,8 +50,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default{
   decode,
   parse,
 }

@@ -28,7 +28,6 @@ const decode = async (rawData: any) => {
   };
 };
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode);
@@ -37,4 +36,4 @@ const parse = async (data: any) => {
   return data;
 };
 
-export { decode, parse };
+export default { decode, parse };

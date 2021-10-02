@@ -11,7 +11,7 @@ const decodeMessage = (decoder: Decoder, magicByte: number) => {
     case 1:
       return V1Decoder(decoder)
     default:
-      throw new KafkaJSUnsupportedMagicByteInMessageSet()
+      throw new KafkaJSUnsupportedMagicByteInMessageSet(null, null, null)
   }
 }
 

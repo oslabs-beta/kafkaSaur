@@ -1,21 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
+import {Decoder} from '../../../decoder.ts'
+import {Encoder} from '../../../encoder.ts'
+import {
   failure,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createErro... Remove this comment to see the full error message
   createErrorFromCode,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
   failIfVersionNotSupported,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'errorCodes... Remove this comment to see the full error message
-  errorCodes,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../../../error')
+  errorCodes
+} from '../../../error.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPro... Remove this comment to see the full error message
-const { KafkaJSProtocolError } = require('../../../../errors')
+import { KafkaJSProtocolError } from '../../../../errors.ts'
+
 const SASL_AUTHENTICATION_FAILED = 58
 const protocolAuthError = errorCodes.find((e: any) => e.code === SASL_AUTHENTICATION_FAILED)
 
@@ -26,7 +19,6 @@ const protocolAuthError = errorCodes.find((e: any) => e.code === SASL_AUTHENTICA
  *   sasl_auth_bytes => BYTES
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const errorCode = decoder.readInt16()
@@ -47,7 +39,6 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   if (data.errorCode === SASL_AUTHENTICATION_FAILED && data.errorMessage) {
     throw new KafkaJSProtocolError({
@@ -63,8 +54,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

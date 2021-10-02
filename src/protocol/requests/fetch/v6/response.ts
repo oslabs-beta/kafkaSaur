@@ -1,5 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const { decode, parse } = require('../v5/response')
+import response from '../v5/response.ts'
+const parse = response.parse
+const decode = response.decode
 
 /**
  * Fetch Response (Version: 6) => throttle_time_ms [responses]
@@ -19,8 +20,7 @@ const { decode, parse } = require('../v5/response')
  *       record_set => RECORDS
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default{
   decode,
   parse,
 }

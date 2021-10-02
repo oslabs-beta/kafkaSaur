@@ -1,9 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Fetch: apiKey } = require('../../apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('../../../isolationLevel')
+import {Encoder} from '../../../encoder.ts'
+import  apiKeys  from '../../apiKeys.ts'
+const apiKey = apiKeys.Fetch
+import ISOLATION_LEVEL from '../../../isolationLevel.ts'
 
 /**
  * Sessions are only used by followers
@@ -31,8 +29,7 @@ const ISOLATION_LEVEL = require('../../../isolationLevel')
  *     partitions => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   replicaId,
   maxWaitTime,
   minBytes,
@@ -62,7 +59,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeForg... Remove this comment to see the full error message
 const encodeForgottenTopics = ({
   topic,
   partitions
@@ -70,7 +66,6 @@ const encodeForgottenTopics = ({
   return new Encoder().writeString(topic).writeArray(partitions)
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
 const encodeTopic = ({
   topic,
   partitions
@@ -78,7 +73,6 @@ const encodeTopic = ({
   return new Encoder().writeString(topic).writeArray(partitions.map(encodePartition))
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodePart... Remove this comment to see the full error message
 const encodePartition = ({
   partition,
   fetchOffset,

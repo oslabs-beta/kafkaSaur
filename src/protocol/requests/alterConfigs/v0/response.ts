@@ -42,4 +42,4 @@ const parse = async (data: any) => {
   return data;
 };
 
-export { decode, parse };
+export default { decode, parse };

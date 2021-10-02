@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-import Long from '../../../../utils/long'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import HeaderDecoder from '../../header/v0/decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'TimestampT... Remove this comment to see the full error message
-import TimestampTypes from '../../../timestampTypes'
+import Long from '../../../../utils/long.ts'
+import HeaderDecoder from '../../header/v0/decoder.ts'
+import TimestampTypes from '../../../timestampTypes.ts'
 
 /**
  * v0
@@ -19,7 +16,6 @@ import TimestampTypes from '../../../timestampTypes'
  *     HeaderValue => VarInt|Bytes
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export default(decoder: any, batchContext = {}) => {
   const {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'firstOffset' does not exist on type '{}'... Remove this comment to see the full error message

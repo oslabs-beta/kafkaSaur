@@ -1,8 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { DeleteGroups: apiKey } = require('../../apiKeys')
-
+import {Encoder} from '../../../encoder.ts' 
+import apiKeys from '../../apiKeys.ts'
+const apiKey = apiKeys.DeleteGroups
 /**
  * DeleteGroups Request (Version: 0) => [groups_names]
  *   groups_names => STRING
@@ -10,8 +8,7 @@ const { DeleteGroups: apiKey } = require('../../apiKeys')
 
 /**
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export (groupIds: any) => ({
+export default (groupIds: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'DeleteGroups',

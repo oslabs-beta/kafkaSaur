@@ -1,5 +1,8 @@
-const Encoder = require('../../../encoder')
-const { CreateAcls: apiKey } = require('../../apiKeys')
+import { Encoder } from '../../../encoder.ts'
+
+
+import apiKeys from '../../apiKeys.ts'
+
 //steph
 /**
  * CreateAcls Request (Version: 1) => [creations]
@@ -12,6 +15,8 @@ const { CreateAcls: apiKey } = require('../../apiKeys')
  *     operation => INT8
  *     permission_type => INT8
  */
+
+const apiKey = apiKeys.CreateAcls
 
 const encodeCreations = ({
   resourceType,
@@ -32,8 +37,7 @@ const encodeCreations = ({
     .writeInt8(permissionType)
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   creations
 }: any) => ({
   apiKey,

@@ -1,7 +1,6 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKeys'.
-const apiKeys = require('./apiKeys');
+import apiKeys from './apiKeys.ts';
 
 import {
   KafkaJSServerDoesNotSupportApiKey,

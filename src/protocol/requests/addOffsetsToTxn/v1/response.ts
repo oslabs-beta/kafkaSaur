@@ -1,10 +1,10 @@
 /** @format */
 
-import { parse, decode as decodeV0 } from '../v0/response.ts';
-//stephanie
-//if error try bellow
-//import { decodeV0 } from '../v0/response'
-//const {parse, decode } =decodeV0
+import response from '../v0/response.ts'
+
+const decodeV0 = response.decode
+const parse = response.parse
+
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
@@ -24,8 +24,7 @@ const decode = async (rawData: any) => {
   };
 };
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-module.exports = {
+export default {
   decode,
   parse,
 };

@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-import { failure, createErrorFromCode } from '../../../error'
+import { Decoder }from '../../../decoder.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
 
 /**
  * TxnOffsetCommit Response (Version: 0) => throttle_time_ms [topics]
@@ -12,8 +10,7 @@ import { failure, createErrorFromCode } from '../../../error'
  *       partition => INT32
  *       error_code => INT16
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const decode = async (rawData: any) => {
+const decode = async (rawData: number[]) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
   const topics = await decoder.readArrayAsync(decodeTopic)
@@ -29,13 +26,11 @@ const decodeTopic = async (decoder: any) => ({
   partitions: await decoder.readArrayAsync(decodePartition)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
-const decodePartition = (decoder: any) => ({
+const decodePartition = (decoder: Decoder) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const topicsWithErrors = data.topics
     .map(({
@@ -56,8 +51,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

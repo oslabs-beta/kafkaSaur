@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../../utils/flatten')
+import { Decoder } from '../../../decoder.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
+import flatten from '../../../../utils/flatten.ts'
 
 /**
  * OffsetFetch Response (Version: 1) => [responses]
@@ -16,7 +13,6 @@ const flatten = require('../../../../utils/flatten')
  *       error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -24,13 +20,11 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeResp... Remove this comment to see the full error message
 const decodeResponses = (decoder: any) => ({
   topic: decoder.readString(),
   partitions: decoder.readArray(decodePartitions)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
 const decodePartitions = (decoder: any) => ({
   partition: decoder.readInt32(),
   offset: decoder.readInt64().toString(),
@@ -38,11 +32,10 @@ const decodePartitions = (decoder: any) => ({
   errorCode: decoder.readInt16()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const partitionsWithError = data.responses.map((response: any) => response.partitions.filter((partition: any) => failure(partition.errorCode))
   )
-  const partitionWithError = flatten(partitionsWithError)[0]
+  const partitionWithError: any = flatten(partitionsWithError)[0]
   if (partitionWithError) {
     throw createErrorFromCode(partitionWithError.errorCode)
   }
@@ -50,8 +43,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default{
   decode,
   parse,
 }

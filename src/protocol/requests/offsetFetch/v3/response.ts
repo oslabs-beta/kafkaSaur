@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV2'.
-const { parse: parseV2 } = require('../v2/response')
+import {Decoder} from '../../../decoder.ts'
+import response from '../v2/response.ts'
+
+const parseV2 = response.parse;
 
 /**
  * OffsetFetch Response (Version: 3) => throttle_time_ms [responses] error_code
@@ -16,7 +16,6 @@ const { parse: parseV2 } = require('../v2/response')
  *   error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -26,13 +25,11 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeResp... Remove this comment to see the full error message
 const decodeResponses = (decoder: any) => ({
   topic: decoder.readString(),
   partitions: decoder.readArray(decodePartitions)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
 const decodePartitions = (decoder: any) => ({
   partition: decoder.readInt32(),
   offset: decoder.readInt64().toString(),
@@ -40,8 +37,7 @@ const decodePartitions = (decoder: any) => ({
   errorCode: decoder.readInt16()
 })
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
-  parse: parseV2,
+  parse: parseV2
 }

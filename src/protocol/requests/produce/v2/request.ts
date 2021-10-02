@@ -1,17 +1,14 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Produce: apiKey } = require('../../apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSet = require('../../../messageSet')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Types'.
-const { Types, lookupCodec } = require('../../../message/compression')
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+import MessageSet from '../../../messageSet'
+import { Types, lookupCodec } from '../../../message/compression'
+
+const apiKey = apiKeys.Produce;
 
 // Produce Request on or after v2 indicates the client can parse the timestamp field
 // in the produce Response.
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   acks,
   timeout,
   compression = Types.None,
@@ -36,7 +33,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicEncod... Remove this comment to see the full error message
 const topicEncoder = (compression: any) => {
   const encodePartitions = partitionsEncoder(compression)
 
@@ -54,7 +50,6 @@ const topicEncoder = (compression: any) => {
   };
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partitions... Remove this comment to see the full error message
 const partitionsEncoder = (compression: any) => async ({
   partition,
   messages

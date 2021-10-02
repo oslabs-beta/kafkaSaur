@@ -293,7 +293,7 @@ export class Encoder {
    * @param {any[]} array
    * @param {'int32'|'number'|'string'|'object'} [type]
    */
-  writeNullableArray(array: [], type: number|string|Record<string, unknown>) {
+  writeNullableArray(array: [], type?: number|string|Record<string, unknown>) {
     // A null value is encoded with length of -1 and there are no following bytes
     // On the context of this library, empty array and null are the same thing
     const length = array.length !== 0 ? array.length : -1;

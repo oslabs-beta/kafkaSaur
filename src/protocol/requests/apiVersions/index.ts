@@ -1,33 +1,30 @@
 /** @format */
+import requestV0 from './v0/request.ts'
+import responseV0 from './v0/response.ts'
+
+import requestV1 from './v1/request.ts'
+import responseV1 from './v1/response.ts'
+
+import requestV2 from './v2/request.ts'
+import responseV2 from './v2/response.ts'
 
 const logResponseError = false;
 
-const versions = {
+
+const versions: any = {
   0: () => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    //const request = require('./v0/request')
-    import * as request from './v0/request';
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    //const response = require('./v0/response')
-    import * as response from './v0/response';
+    const request = requestV0
+    const response = responseV0
     return { request: request(), response, logResponseError: true };
   },
   1: () => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    // const request = require('./v1/request')
-    import * as request from './v1/request';
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    //const response = require('./v1/response')
-    import * as response from './v1/response';
+    const request = requestV1
+    const response = responseV1
     return { request: request(), response, logResponseError };
   },
   2: () => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    //const request = require('./v2/request')
-    import * as request from './v2/request';
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    //const response = require('./v2/response')
-    import * as response from './v2/response';
+    const request = requestV2
+    const response = responseV2
     return { request: request(), response, logResponseError };
   },
 };
@@ -36,6 +33,6 @@ export default {
   versions: Object.keys(versions),
   protocol: ({
     version,
-  }: // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+  }: 
   any) => versions[version],
 };

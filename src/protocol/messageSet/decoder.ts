@@ -1,13 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-import Long from '../../utils/long'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageDec... Remove this comment to see the full error message
-import MessageDecoder from '../message/decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookupCode... Remove this comment to see the full error message
+import Long from '../../utils/long.ts'
+import { Decoder } from '../decoder.ts'
+import MessageDecoder from '../message/decoder.ts'
 import { lookupCodecByAttributes } from '../message/compression'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPar... Remove this comment to see the full error message
-import { KafkaJSPartialMessageError } from '../../errors'
+import { KafkaJSPartialMessageError } from '../../errors.ts'
 
 /**
  * MessageSet => [Offset MessageSize Message]
@@ -16,7 +11,6 @@ import { KafkaJSPartialMessageError } from '../../errors'
  *  Message => Bytes
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export default async (primaryDecoder: any, size = null) => {
   const messages = []
   const messageSetSize = size || primaryDecoder.readInt32()
@@ -33,7 +27,7 @@ export default async (primaryDecoder: any, size = null) => {
       } else {
         messages.push(message)
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.name === 'KafkaJSPartialMessageError') {
         // We tried to decode a partial message, it means that minBytes
         // is probably too low
@@ -80,7 +74,6 @@ const EntriesDecoder = (decoder: any, compressedMessage: any) => {
 const EntryDecoder = (decoder: any) => {
   if (!decoder.canReadInt64()) {
     throw new KafkaJSPartialMessageError(
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       `Tried to decode a partial message: There isn't enough bytes to read the offset`
     )
   }
@@ -89,7 +82,6 @@ const EntryDecoder = (decoder: any) => {
 
   if (!decoder.canReadInt32()) {
     throw new KafkaJSPartialMessageError(
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       `Tried to decode a partial message: There isn't enough bytes to read the message size`
     )
   }
