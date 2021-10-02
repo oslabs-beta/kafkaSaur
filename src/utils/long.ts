@@ -4,7 +4,6 @@
  * @param {bigint} value The value of the 64 bit int
  * @constructor
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
 class Long {
   static MIN_VALUE: any;
 
@@ -36,7 +35,6 @@ class Long {
    * @inner
    */
   static fromBits(value: any) {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(BigInt(value))
   }
 
@@ -48,7 +46,6 @@ class Long {
   static fromInt(value: any) {
     if (isNaN(value)) return Long.ZERO
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(BigInt.asIntN(64, BigInt(value)))
   }
 
@@ -60,7 +57,6 @@ class Long {
   static fromNumber(value: any) {
     if (isNaN(value)) return Long.ZERO
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(BigInt(value))
   }
 
@@ -74,10 +70,8 @@ class Long {
     if (typeof val === 'number') return this.fromNumber(val)
     if (typeof val === 'string') return this.fromString(val)
     if (typeof val === 'bigint') return new Long(val)
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     if (this.isLong(val)) return new Long(BigInt(val.value))
 
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(BigInt(val))
   }
 
@@ -90,7 +84,6 @@ class Long {
     if (str.length === 0) throw Error('empty string')
     if (str === 'NaN' || str === 'Infinity' || str === '+Infinity' || str === '-Infinity')
       return Long.ZERO
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(BigInt(str))
   }
 
@@ -99,7 +92,6 @@ class Long {
    * @returns {boolean}
    */
   isZero() {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return this.value === BigInt(0)
   }
 
@@ -108,7 +100,6 @@ class Long {
    * @returns {boolean}
    */
   isNegative() {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return this.value < BigInt(0)
   }
 
@@ -135,7 +126,6 @@ class Long {
    * @returns {number}
    */
   toInt() {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return Number(BigInt.asIntN(32, this.value))
   }
 
@@ -145,7 +135,6 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftLeft(numBits: any) {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(this.value << BigInt(numBits))
   }
 
@@ -155,7 +144,6 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftRight(numBits: any) {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(this.value >> BigInt(numBits))
   }
 
@@ -203,7 +191,6 @@ class Long {
    * @returns {!Long} Shifted bigint
    */
   shiftRightUnsigned(numBits: any) {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return new Long(this.value >> BigInt.asUintN(64, BigInt(numBits)))
   }
 
@@ -318,7 +305,6 @@ class Long {
    * @returns {number} Signed high bits
    */
   getHighBits() {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return Number(BigInt.asIntN(32, this.value >> BigInt(32)))
   }
 
@@ -327,7 +313,6 @@ class Long {
    * @returns {number} Signed low bits
    */
   getLowBits() {
-    // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
     return Number(BigInt.asIntN(32, this.value))
   }
 }
@@ -336,14 +321,12 @@ class Long {
  * Minimum signed value.
  * @type {bigint}
  */
-// @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
 Long.MIN_VALUE = new Long(BigInt('-9223372036854775808'))
 
 /**
  * Maximum signed value.
  * @type {bigint}
  */
-// @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
 Long.MAX_VALUE = new Long(BigInt('9223372036854775807'))
 
 /**

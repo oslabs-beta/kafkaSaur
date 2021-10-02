@@ -4,9 +4,8 @@ const KEEP_ALIVE_DELAY = 60000 // in ms
  * @returns {import("../../types").ISocketFactory}
  */
 export default () => {
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+  //NEED TO REFACTOR WITH DENO SOCKETS, purposely leavig these in so compiling fails
   const net = require('net')
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
   const tls = require('tls')
 
   return ({

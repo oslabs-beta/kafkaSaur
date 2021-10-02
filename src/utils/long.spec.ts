@@ -1,7 +1,6 @@
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
 import Long from './long'
 
-// @ts-expect-error ts-migrate(2737) FIXME: BigInt literals are not available when targeting l... Remove this comment to see the full error message
 const max = new Long(9223372036854775807n) // max signed int 64
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
@@ -19,7 +18,6 @@ describe('Utils > Long', () => {
 
     // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
     it('toString()', () => {
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       const output = new Long(BigInt(10))
       const expectedString = output.toString()
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
@@ -45,7 +43,6 @@ describe('Utils > Long', () => {
       expect(typeof stringOutput.value).toEqual('bigint')
 
       // Long
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       const longOutput = new Long(BigInt(12))
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
       expect(longOutput).toEqual({ value: 12n })
@@ -76,7 +73,6 @@ describe('Utils > Long', () => {
       // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
       it('should return an int', () => {
         const maxInt32 = 2 ** 31 - 1
-        // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
         const expectedInt = new Long(BigInt(maxInt32)).toInt()
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
         expect(expectedInt).toEqual(2147483647)
@@ -87,7 +83,6 @@ describe('Utils > Long', () => {
       // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
       it('should wrap around if the number is too big to be represented as an int32', () => {
         const maxInt32 = 2 ** 31 - 1
-        // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
         const expectedInt = new Long(BigInt(maxInt32 + 1)).toInt()
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
         expect(expectedInt).toEqual(-2147483648)
@@ -111,9 +106,7 @@ describe('Utils > Long', () => {
     let input1: any, input2: any
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'beforeAll'.
     beforeAll(() => {
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       input1 = new Long(BigInt(5))
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       input2 = new Long(BigInt(13))
     })
 
@@ -221,9 +214,7 @@ describe('Utils > Long', () => {
     let input1: any, input2: any
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'beforeAll'.
     beforeAll(() => {
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       input1 = new Long(BigInt(5))
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       input2 = new Long(BigInt(13))
     })
 
@@ -240,7 +231,6 @@ describe('Utils > Long', () => {
       expect(input2.getLowBits()).toEqual(13)
 
       // 128
-      // @ts-expect-error ts-migrate(2737) FIXME: BigInt literals are not available when targeting l... Remove this comment to see the full error message
       const input = new Long(128n)
 
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
@@ -253,7 +243,6 @@ describe('Utils > Long', () => {
     it('isZero()', () => {
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
       expect(input1.isZero()).toEqual(false)
-      // @ts-expect-error ts-migrate(2583) FIXME: Cannot find name 'BigInt'. Do you need to change y... Remove this comment to see the full error message
       const zero = new Long(BigInt(0))
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
       expect(zero.isZero()).toEqual(true)

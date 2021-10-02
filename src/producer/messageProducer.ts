@@ -1,11 +1,8 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createSend... Remove this comment to see the full error message
-const createSendMessages = require('./sendMessages');
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSErr... Remove this comment to see the full error message
-const { KafkaJSError, KafkaJSNonRetriableError } = require('../errors');
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONNECTION... Remove this comment to see the full error message
-const { CONNECTION_STATUS } = require('../network/connectionStatus');
+import createSendMessages from './sendMessages.ts';
+import { KafkaJSError, KafkaJSNonRetriableError } from '../errors.ts';
+import { CONNECTION_STATUS } from '../network/connectionStatus.ts';
 
 export default ({
   logger,
@@ -62,8 +59,7 @@ export default ({
     compression,
     topicMessages = [],
   }: any) => {
-    // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topic' implicitly has an 'any' ty... Remove this comment to see the full error message
-    if (topicMessages.some(({ topic }) => !topic)) {
+    if (topicMessages.some(({ topic }: any) => !topic)) {
       throw new KafkaJSNonRetriableError(`Invalid topic`);
     }
 
@@ -93,12 +89,10 @@ export default ({
     }
 
     validateConnectionStatus();
-    // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'merged' implicitly has an 'any' type.
     const mergedTopicMessages = topicMessages.reduce(
-      (merged, { topic, messages }) => {
-        // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'mergedTopic' implicitly has an 'a... Remove this comment to see the full error message
+      (merged : any, { topic, messages } : any) => {
         const index = merged.findIndex(
-          ({ topic: mergedTopic }) => topic === mergedTopic
+          ({ topic: mergedTopic } : any) => topic === mergedTopic
         );
 
         if (index === -1) {

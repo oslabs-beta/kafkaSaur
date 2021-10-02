@@ -1,7 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'EventEmitt... Remove this comment to see the full error message
-const { EventEmitter } = require('events')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../../errors')
+import { EventEmitter } from "https://deno.land/std@0.109.0/node/events.ts";
+
+import {KafkaJSNonRetriableError} from '../../errors.ts'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'STATES'.
 const STATES = require('./transactionStates')
 
@@ -13,8 +12,7 @@ const VALID_STATE_TRANSITIONS = {
   [STATES.ABORTING]: [STATES.READY],
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   logger,
   initialState = STATES.UNINITIALIZED
 }: any) => {
@@ -37,7 +35,6 @@ export ({
         )
 
         if (isAsync) {
-          // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
           return Promise.reject(error)
         } else {
           throw error
@@ -48,7 +45,6 @@ export ({
     };
   }
 
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   const stateMachine = Object.assign(new EventEmitter(), {
     /**
      * Create a clone of "object" where we ensure state machine is in correct state
@@ -73,7 +69,6 @@ export ({
     transitionTo(state: any) {
       logger.debug(`Transaction state transition ${currentState} --> ${state}`)
 
-      // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'any[]'... Remove this comment to see the full error message
       if (!VALID_STATE_TRANSITIONS[currentState].includes(state)) {
         throw new KafkaJSNonRetriableError(
           `Transaction state exception: Invalid transition ${currentState} --> ${state}`

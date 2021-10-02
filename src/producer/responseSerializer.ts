@@ -1,6 +1,6 @@
 /** @format */
 
-const flatten = require('../utils/flatten');
+import flatten from '../utils/flatten.ts';
 
 export default ({ topics }: any) => {
   const partitions = topics.map(({ topicName, partitions }: any) =>

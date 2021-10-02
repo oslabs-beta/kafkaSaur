@@ -1,23 +1,20 @@
 /** @format */
 
 //import { EventEmitter } from 'events'
-//Deno equivalent of Events...
+import { EventEmitter } from "https://deno.land/std@0.109.0/node/events.ts";
 import Long from '../utils/long.ts';
 import createRetry from '../retry/index.ts';
 import limitConcurrency from '../utils/concurrency.ts';
 import { KafkaJSError } from '../errors.ts';
 import barrier from './barrier.ts';
-
+import { events } from './instrumentationEvents.ts'
 const {
-  events: {
     FETCH,
     FETCH_START,
     START_BATCH_PROCESS,
     END_BATCH_PROCESS,
     REBALANCING,
-  },
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('./instrumentationEvents');
+  } = events;
 
 const isRebalancing = (e: any) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
@@ -28,7 +25,6 @@ const isSameOffset = (offsetA: any, offsetB: any) =>
 const CONSUMING_START = 'consuming-start';
 const CONSUMING_STOP = 'consuming-stop';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class Runner extends EventEmitter {
   _consuming: any;
   autoCommit: any;
@@ -439,8 +435,7 @@ export class Runner extends EventEmitter {
         this.consuming = false;
 
         if (this.running) {
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(),);
         }
       } catch (e: any) {
         if (!this.running) {
@@ -467,8 +462,7 @@ export class Runner extends EventEmitter {
           });
 
           await this.join();
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
@@ -486,14 +480,12 @@ export class Runner extends EventEmitter {
 
           this.consumerGroup.memberId = null;
           await this.join();
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(),0);
           return;
         }
 
         if (e.name === 'KafkaJSOffsetOutOfRange') {
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleFetch());
+          setTimeout(() => this.scheduleFetch(),0);
           return;
         }
 
@@ -567,8 +559,7 @@ export class Runner extends EventEmitter {
             memberId: this.consumerGroup.memberId,
           });
 
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleJoin());
+          setTimeout(() => this.scheduleJoin(), 0);
 
           bail(new KafkaJSError(e));
         }
@@ -586,8 +577,7 @@ export class Runner extends EventEmitter {
           );
 
           this.consumerGroup.memberId = null;
-          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'setImmediate'.
-          setImmediate(() => this.scheduleJoin());
+          setTimeout(() => this.scheduleJoin(),0);
 
           bail(new KafkaJSError(e));
         }

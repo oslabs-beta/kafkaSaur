@@ -1,19 +1,15 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createRetr... Remove this comment to see the full error message
-const createRetry = require('../../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'COORDINATO... Remove this comment to see the full error message
-const COORDINATOR_TYPES = require('../../protocol/coordinatorTypes')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const createStateMachine = require('./transactionStateMachine')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const assert = require('assert')
+import createRetry from '../../retry/index.ts'
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'STATES'.
-const STATES = require('./transactionStates')
+
+import {KafkaJSNonRetriableError} from '../../errors.ts'
+import COORDINATOR_TYPES from '../../protocol/coordinatorTypes.ts'
+import createStateMachine from './transactionStateMachine.ts'
+
+import { assert } from "https://deno.land/std@0.106.0/testing/asserts.ts";
+
+import STATES from './transactionStates.ts'
 const NO_PRODUCER_ID = -1
 const SEQUENCE_START = 0
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'INT_32_MAX... Remove this comment to see the full error message
 const INT_32_MAX_VALUE = Math.pow(2, 32)
 const INIT_PRODUCER_RETRIABLE_PROTOCOL_ERRORS = [
   'NOT_COORDINATOR_FOR_GROUP',
@@ -41,8 +37,7 @@ const COMMIT_STALE_COORDINATOR_PROTOCOL_ERRORS = ['COORDINATOR_NOT_AVAILABLE', '
  *
  * @returns {EosManager}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   logger,
   cluster,
   transactionTimeout = 60000,
@@ -70,12 +65,12 @@ export ({
    *
    * Sequences are sent with every Record Batch and tracked per Topic-Partition
    */
-  let producerSequence = {}
+  let producerSequence: any = {}
 
   /**
    * Topic partitions already participating in the transaction
    */
-  let transactionTopicPartitions = {}
+  let transactionTopicPartitions: any = {}
 
   const stateMachine = createStateMachine({ logger })
   stateMachine.on('transition', ({
@@ -126,7 +121,6 @@ export ({
        * Overwrites any existing state in this transaction manager
        */
       async initProducerId() {
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         return retrier(async (bail: any, retryCount: any, retryTime: any) => {
           try {
             await cluster.refreshMetadataIfNecessary()
@@ -147,8 +141,7 @@ export ({
             producerSequence = {}
 
             logger.debug('Initialized producer id & epoch', { producerId, producerEpoch })
-          } catch (e) {
-            // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
+          } catch (e:any) {
             if (INIT_PRODUCER_RETRIABLE_PROTOCOL_ERRORS.includes(e.type)) {
               if (e.type === 'CONCURRENT_TRANSACTIONS') {
                 logger.debug('There is an ongoing transaction on this transactionId, retrying', {
@@ -179,13 +172,11 @@ export ({
         if (!eosManager.isInitialized()) {
           return SEQUENCE_START
         }
+        
 
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         producerSequence[topic] = producerSequence[topic] || {}
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         producerSequence[topic][partition] = producerSequence[topic][partition] || SEQUENCE_START
 
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         return producerSequence[topic][partition]
       },
 
@@ -214,7 +205,6 @@ export ({
           sequence = 0
         }
 
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         producerSequence[topic][partition] = sequence
       },
 
@@ -237,26 +227,21 @@ export ({
        * @property {object[]} partitions
        * @property {number} partitions[].partition
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       async addPartitionsToTransaction(topicData: any) {
         transactionalGuard()
-        const newTopicPartitions = {}
+        const newTopicPartitions: any = {}
 
         topicData.forEach(({
           topic,
           partitions
         }: any) => {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           transactionTopicPartitions[topic] = transactionTopicPartitions[topic] || {}
 
           partitions.forEach(({
             partition
           }: any) => {
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             if (!transactionTopicPartitions[topic][partition]) {
-              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
               newTopicPartitions[topic] = newTopicPartitions[topic] || []
-              // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
               newTopicPartitions[topic].push(partition)
             }
           })
@@ -264,7 +249,6 @@ export ({
 
         const topics = Object.keys(newTopicPartitions).map(topic => ({
           topic,
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           partitions: newTopicPartitions[topic],
         }))
 
@@ -275,7 +259,6 @@ export ({
 
         topics.forEach(({ topic, partitions }) => {
           partitions.forEach((partition: any) => {
-            // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
             transactionTopicPartitions[topic][partition] = true
           })
         })
@@ -284,7 +267,6 @@ export ({
       /**
        * Commit the ongoing transaction
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       async commit() {
         transactionalGuard()
         stateMachine.transitionTo(STATES.COMMITTING)
@@ -303,7 +285,6 @@ export ({
       /**
        * Abort the ongoing transaction
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       async abort() {
         transactionalGuard()
         stateMachine.transitionTo(STATES.ABORTING)
@@ -372,7 +353,6 @@ export ({
           coordinatorType: COORDINATOR_TYPES.GROUP,
         })
 
-        // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         return retrier(async (bail: any, retryCount: any, retryTime: any) => {
           try {
             await groupCoordinator.txnOffsetCommit({
@@ -382,8 +362,7 @@ export ({
               groupId: consumerGroupId,
               topics,
             })
-          } catch (e) {
-            // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
+          } catch (e: any) {
             if (COMMIT_RETRIABLE_PROTOCOL_ERRORS.includes(e.type)) {
               logger.debug('Group coordinator is not ready yet, retrying', {
                 error: e.message,
@@ -397,7 +376,6 @@ export ({
             }
 
             if (
-              // @ts-expect-error ts-migrate(2550) FIXME: Property 'includes' does not exist on type 'string... Remove this comment to see the full error message
               COMMIT_STALE_COORDINATOR_PROTOCOL_ERRORS.includes(e.type) ||
               e.code === 'ECONNREFUSED'
             ) {
