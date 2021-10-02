@@ -1,18 +1,13 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSMem... Remove this comment to see the full error message
-const { KafkaJSMemberIdRequired } = require('../../../../errors')
-const {
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import { KafkaJSMemberIdRequired } from '../../../../errors.ts';
+import {
   failure,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createErro... Remove this comment to see the full error message
   createErrorFromCode,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'errorCodes... Remove this comment to see the full error message
   errorCodes,
-  // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
   failIfVersionNotSupported,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('../../../error')
+} from '../../../error.ts';
 
 /**
  * JoinGroup Response (Version: 5) => throttle_time_ms error_code generation_id group_protocol leader_id member_id [members]
@@ -27,33 +22,30 @@ const {
  *     group_instance_id => NULLABLE_STRING
  *     member_metadata => BYTES
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MEMBER_ID_... Remove this comment to see the full error message
 const { code: MEMBER_ID_REQUIRED_ERROR_CODE } = errorCodes.find(
   (e: any) => e.type === 'MEMBER_ID_REQUIRED'
-)
+) as any;
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     if (data.errorCode === MEMBER_ID_REQUIRED_ERROR_CODE) {
       throw new KafkaJSMemberIdRequired(createErrorFromCode(data.errorCode), {
         memberId: data.memberId,
-      })
+      });
     }
 
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
   return {
     throttleTime: 0,
@@ -66,13 +58,9 @@ const decode = async (rawData: any) => {
     members: decoder.readArray((decoder: any) => ({
       memberId: decoder.readString(),
       groupInstanceId: decoder.readString(),
-      memberMetadata: decoder.readBytes()
+      memberMetadata: decoder.readBytes(),
     })),
   };
-}
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse,
-}
+export default { decode, parse };

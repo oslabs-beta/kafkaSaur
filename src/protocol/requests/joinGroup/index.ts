@@ -1,5 +1,24 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'NETWORK_DE... Remove this comment to see the full error message
-const NETWORK_DELAY = 5000
+/** @format */
+
+import requestV0 from './v0/request.ts';
+import responseV0 from './v0/response.ts';
+
+import requestV1 from './v1/request.ts';
+import responseV1 from './v1/response.ts';
+
+import requestV2 from './v2/request.ts';
+import responseV2 from './v2/response.ts';
+
+import requestV3 from './v3/request.ts';
+import responseV3 from './v3/response.ts';
+
+import requestV4 from './v4/request.ts';
+import responseV4 from './v4/response.ts';
+
+import requestV5 from './v5/request.ts';
+import responseV5 from './v5/response.ts';
+
+const NETWORK_DELAY = 5000;
 
 /**
  * @see https://github.com/apache/kafka/pull/5203
@@ -8,32 +27,25 @@ const NETWORK_DELAY = 5000
  * NOTE: the sessionTimeout can be configured as Number.MAX_SAFE_INTEGER and overflow when
  * increased, so we have to check for potential overflows
  **/
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestTim... Remove this comment to see the full error message
-const requestTimeout = ({
-  rebalanceTimeout,
-  sessionTimeout
-}: any) => {
-  const timeout = rebalanceTimeout || sessionTimeout
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'isSafeInteger' does not exist on type 'N... Remove this comment to see the full error message
-  return Number.isSafeInteger(timeout + NETWORK_DELAY) ? timeout + NETWORK_DELAY : timeout
-}
+const requestTimeout = ({ rebalanceTimeout, sessionTimeout }: any) => {
+  const timeout = rebalanceTimeout || sessionTimeout;
+  return Number.isSafeInteger(timeout + NETWORK_DELAY)
+    ? timeout + NETWORK_DELAY
+    : timeout;
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'logRespons... Remove this comment to see the full error message
-const logResponseError = (memberId: any) => memberId != null && memberId !== ''
+const logResponseError = (memberId: any) => memberId != null && memberId !== '';
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'versions'.
-const versions = {
+const versions: any = {
   0: ({
     groupId,
     sessionTimeout,
     memberId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v0/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v0/response')
+    const request = requestV0;
+    const response = responseV0;
 
     return {
       request: request({
@@ -44,8 +56,11 @@ const versions = {
         groupProtocols,
       }),
       response,
-      requestTimeout: requestTimeout({ rebalanceTimeout: null, sessionTimeout }),
-    }
+      requestTimeout: requestTimeout({
+        rebalanceTimeout: null,
+        sessionTimeout,
+      }),
+    };
   },
   1: ({
     groupId,
@@ -53,12 +68,10 @@ const versions = {
     rebalanceTimeout,
     memberId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v1/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v1/response')
+    const request = requestV1;
+    const response = responseV1;
 
     return {
       request: request({
@@ -71,7 +84,7 @@ const versions = {
       }),
       response,
       requestTimeout: requestTimeout({ rebalanceTimeout, sessionTimeout }),
-    }
+    };
   },
   2: ({
     groupId,
@@ -79,12 +92,10 @@ const versions = {
     rebalanceTimeout,
     memberId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v2/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v2/response')
+    const request = requestV2;
+    const response = responseV2;
 
     return {
       request: request({
@@ -97,7 +108,7 @@ const versions = {
       }),
       response,
       requestTimeout: requestTimeout({ rebalanceTimeout, sessionTimeout }),
-    }
+    };
   },
   3: ({
     groupId,
@@ -105,12 +116,10 @@ const versions = {
     rebalanceTimeout,
     memberId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v3/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v3/response')
+    const request = requestV3;
+    const response = responseV3;
 
     return {
       request: request({
@@ -123,7 +132,7 @@ const versions = {
       }),
       response,
       requestTimeout: requestTimeout({ rebalanceTimeout, sessionTimeout }),
-    }
+    };
   },
   4: ({
     groupId,
@@ -131,12 +140,10 @@ const versions = {
     rebalanceTimeout,
     memberId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v4/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v4/response')
+    const request = requestV4;
+    const response = responseV4;
 
     return {
       request: request({
@@ -149,9 +156,8 @@ const versions = {
       }),
       response,
       requestTimeout: requestTimeout({ rebalanceTimeout, sessionTimeout }),
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       logResponseError: logResponseError(memberId),
-    }
+    };
   },
   5: ({
     groupId,
@@ -160,12 +166,10 @@ const versions = {
     memberId,
     groupInstanceId,
     protocolType,
-    groupProtocols
+    groupProtocols,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v5/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v5/response')
+    const request = requestV5;
+    const response = responseV5;
 
     return {
       request: request({
@@ -179,17 +183,12 @@ const versions = {
       }),
       response,
       requestTimeout: requestTimeout({ rebalanceTimeout, sessionTimeout }),
-      // @ts-expect-error ts-migrate(2349) FIXME: This expression is not callable.
       logResponseError: logResponseError(memberId),
-    }
+    };
   },
-}
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   versions: Object.keys(versions),
-  protocol: ({
-    version
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-  }: any) => versions[version],
-}
+  protocol: ({ version }: any) => versions[version],
+};

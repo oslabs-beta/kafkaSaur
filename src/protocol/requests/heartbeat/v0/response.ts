@@ -1,5 +1,11 @@
-import Decoder from '../../../decoder.ts'
-import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../../error.ts'
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import {
+  failure,
+  createErrorFromCode,
+  failIfVersionNotSupported,
+} from '../../../error.ts';
 
 /**
  * Heartbeat Response (Version: 0) => error_code
@@ -7,23 +13,23 @@ import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../.
  */
 
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
-  return { errorCode }
-}
+  return { errorCode };
+};
 
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-export default{
+export default {
   decode,
   parse,
-}
+};

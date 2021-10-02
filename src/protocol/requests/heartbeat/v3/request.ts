@@ -1,8 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Heartbeat: apiKey } = require('../../apiKeys')
+/** @format */
 
+import { Encoder } from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+const apiKey = apiKeys.Heartbeat;
 /**
  * Version 3 adds group_instance_id to indicate member identity across restarts.
  * @see https://cwiki.apache.org/confluence/display/KAFKA/KIP-345%3A+Introduce+static+membership+protocol+to+reduce+consumer+rebalances
@@ -14,12 +14,11 @@ const { Heartbeat: apiKey } = require('../../apiKeys')
  *   group_instance_id => NULLABLE_STRING
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   groupId,
   groupGenerationId,
   memberId,
-  groupInstanceId
+  groupInstanceId,
 }: any) => ({
   apiKey,
   apiVersion: 3,
@@ -29,6 +28,6 @@ export ({
       .writeString(groupId)
       .writeInt32(groupGenerationId)
       .writeString(memberId)
-      .writeString(groupInstanceId)
+      .writeString(groupInstanceId);
   },
-})
+});

@@ -1,8 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { JoinGroup: apiKey } = require('../../apiKeys')
+/** @format */
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
 
+import { Encoder } from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+const apiKey = apiKeys.JoinGroup;
 /**
  * JoinGroup Request (Version: 1) => group_id session_timeout rebalance_timeout member_id protocol_type [group_protocols]
  *   group_id => STRING
@@ -15,14 +16,13 @@ const { JoinGroup: apiKey } = require('../../apiKeys')
  *     protocol_metadata => BYTES
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   groupId,
   sessionTimeout,
   rebalanceTimeout,
   memberId,
   protocolType,
-  groupProtocols
+  groupProtocols,
 }: any) => ({
   apiKey,
   apiVersion: 1,
@@ -34,15 +34,10 @@ export ({
       .writeInt32(rebalanceTimeout)
       .writeString(memberId)
       .writeString(protocolType)
-      .writeArray(groupProtocols.map(encodeGroupProtocols))
+      .writeArray(groupProtocols.map(encodeGroupProtocols));
   },
-})
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeGrou... Remove this comment to see the full error message
-const encodeGroupProtocols = ({
-  name,
-  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-  metadata = Buffer.alloc(0)
-}: any) => {
-  return new Encoder().writeString(name).writeBytes(metadata)
-}
+const encodeGroupProtocols = ({ name, metadata = Buffer.alloc(0) }: any) => {
+  return new Encoder().writeString(name).writeBytes(metadata);
+};

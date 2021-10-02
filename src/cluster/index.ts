@@ -1,27 +1,28 @@
-import BrokerPool  from './brokerPool.ts'
-import Lock from '../utils/lock.ts'
-import createRetry from '../retry'
-import connectionBuilder from './connectionBuilder.ts'
-import flatten from '../utils/flatten.ts'
-import Constants from '../constants.ts'
-import { KafkaJSError, KafkaJSBrokerNotFound, KafkaJSMetadataNotLoaded, KafkaJSTopicMetadataNotLoaded, KafkaJSGroupCoordinatorNotFound } from '../errors.ts'
-import COORDINATOR_TYPES from '../protocol/coordinatorTypes.ts'
+/** @format */
+// deno-lint-ignore-file no-explicit-any
+
+import BrokerPool from './brokerPool.ts';
+import Lock from '../utils/lock.ts';
+import createRetry from '../retry/index.ts';
+import connectionBuilder from './connectionBuilder.ts';
+import flatten from '../utils/flatten.ts';
+import Constants from '../constants.ts';
+import {
+  KafkaJSError,
+  KafkaJSBrokerNotFound,
+  KafkaJSMetadataNotLoaded,
+  KafkaJSTopicMetadataNotLoaded,
+  KafkaJSGroupCoordinatorNotFound,
+} from '../errors.ts';
+import COORDINATOR_TYPES from '../protocol/coordinatorTypes.ts';
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
-const { keys } = Object
+const { keys } = Object;
 
-const mergeTopics = (
-  obj: any,
-  {
-    topic,
-    partitions
-  }: any
-) => ({
+const mergeTopics = (obj: any, { topic, partitions }: any) => ({
   ...obj,
-  [topic]: [...(obj[topic] || []), ...partitions]
-})
-
-
+  [topic]: [...(obj[topic] || []), ...partitions],
+});
 
 export class Cluster {
   brokerPool: any;
@@ -72,11 +73,11 @@ export class Cluster {
     maxInFlightRequests,
     isolationLevel,
     instrumentationEmitter = null,
-    offsets = new Map()
+    offsets = new Map(),
   }: any) {
-    this.rootLogger = rootLogger
-    this.logger = rootLogger.namespace('Cluster')
-    this.retrier = createRetry(retry)
+    this.rootLogger = rootLogger;
+    this.logger = rootLogger.namespace('Cluster');
+    this.retrier = createRetry(retry);
     this.connectionBuilder = connectionBuilder({
       logger: rootLogger,
       instrumentationEmitter,
@@ -89,14 +90,14 @@ export class Cluster {
       requestTimeout,
       enforceRequestTimeout,
       maxInFlightRequests,
-    })
+    });
 
-    this.targetTopics = new Set()
+    this.targetTopics = new Set();
     this.mutatingTargetTopics = new Lock({
       description: `updating target topics`,
       timeout: requestTimeout,
-    })
-    this.isolationLevel = isolationLevel
+    });
+    this.isolationLevel = isolationLevel;
     this.brokerPool = new BrokerPool({
       connectionBuilder: this.connectionBuilder,
       logger: this.rootLogger,
@@ -105,12 +106,12 @@ export class Cluster {
       authenticationTimeout,
       reauthenticationThreshold,
       metadataMaxAge,
-    })
-    this.committedOffsetsByGroup = offsets
+    });
+    this.committedOffsetsByGroup = offsets;
   }
 
   isConnected() {
-    return this.brokerPool.hasConnectedBrokers()
+    return this.brokerPool.hasConnectedBrokers();
   }
 
   /**
@@ -118,7 +119,7 @@ export class Cluster {
    * @returns {Promise<void>}
    */
   async connect() {
-    await this.brokerPool.connect()
+    await this.brokerPool.connect();
   }
 
   /**
@@ -126,7 +127,7 @@ export class Cluster {
    * @returns {Promise<void>}
    */
   async disconnect() {
-    await this.brokerPool.disconnect()
+    await this.brokerPool.disconnect();
   }
 
   /**
@@ -135,11 +136,8 @@ export class Cluster {
    * @param {String} destination.host
    * @param {Number} destination.port
    */
-  removeBroker({
-    host,
-    port
-  }: any) {
-    this.brokerPool.removeBroker({ host, port })
+  removeBroker({ host, port }: any) {
+    this.brokerPool.removeBroker({ host, port });
   }
 
   /**
@@ -147,7 +145,7 @@ export class Cluster {
    * @returns {Promise<void>}
    */
   async refreshMetadata() {
-    await this.brokerPool.refreshMetadata(Array.from(this.targetTopics))
+    await this.brokerPool.refreshMetadata(Array.from(this.targetTopics));
   }
 
   /**
@@ -155,7 +153,9 @@ export class Cluster {
    * @returns {Promise<void>}
    */
   async refreshMetadataIfNecessary() {
-    await this.brokerPool.refreshMetadataIfNecessary(Array.from(this.targetTopics))
+    await this.brokerPool.refreshMetadataIfNecessary(
+      Array.from(this.targetTopics)
+    );
   }
 
   /**
@@ -165,16 +165,16 @@ export class Cluster {
   async metadata({ topics = [] } = {}) {
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        await this.brokerPool.refreshMetadataIfNecessary(topics)
-        return this.brokerPool.withBroker(async ({
-          broker
-        }: any) => broker.metadata(topics));
-      } catch (e:any) {
+        await this.brokerPool.refreshMetadataIfNecessary(topics);
+        return this.brokerPool.withBroker(async ({ broker }: any) =>
+          broker.metadata(topics)
+        );
+      } catch (e: any) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
-          throw e
+          throw e;
         }
 
-        bail(e)
+        bail(e);
       }
     });
   }
@@ -185,7 +185,7 @@ export class Cluster {
    * @return {Promise}
    */
   async addTargetTopic(topic: any) {
-    return this.addMultipleTargetTopics([topic])
+    return this.addMultipleTargetTopics([topic]);
   }
 
   /**
@@ -194,30 +194,34 @@ export class Cluster {
    * @return {Promise}
    */
   async addMultipleTargetTopics(topics: any) {
-    await this.mutatingTargetTopics.acquire()
+    await this.mutatingTargetTopics.acquire();
 
     try {
-      const previousSize = this.targetTopics.size
-      const previousTopics = new Set(this.targetTopics)
+      const previousSize = this.targetTopics.size;
+      const previousTopics = new Set(this.targetTopics);
       for (const topic of topics) {
-        this.targetTopics.add(topic)
+        this.targetTopics.add(topic);
       }
 
-      const hasChanged = previousSize !== this.targetTopics.size || !this.brokerPool.metadata
+      const hasChanged =
+        previousSize !== this.targetTopics.size || !this.brokerPool.metadata;
 
       if (hasChanged) {
         try {
-          await this.refreshMetadata()
-        } catch (e:any) {
-          if (e.type === 'INVALID_TOPIC_EXCEPTION' || e.type === 'UNKNOWN_TOPIC_OR_PARTITION') {
-            this.targetTopics = previousTopics
+          await this.refreshMetadata();
+        } catch (e: any) {
+          if (
+            e.type === 'INVALID_TOPIC_EXCEPTION' ||
+            e.type === 'UNKNOWN_TOPIC_OR_PARTITION'
+          ) {
+            this.targetTopics = previousTopics;
           }
 
-          throw e
+          throw e;
         }
       }
     } finally {
-      await this.mutatingTargetTopics.release()
+      await this.mutatingTargetTopics.release();
     }
   }
 
@@ -227,22 +231,20 @@ export class Cluster {
    * @param {string} options.nodeId
    * @returns {Promise<import("../../types").Broker>}
    */
-  async findBroker({
-    nodeId
-  }: any) {
+  async findBroker({ nodeId }: any) {
     try {
-      return await this.brokerPool.findBroker({ nodeId })
-    } catch (e:any) {
+      return await this.brokerPool.findBroker({ nodeId });
+    } catch (e: any) {
       // The client probably has stale metadata
       if (
         e.name === 'KafkaJSBrokerNotFound' ||
         e.name === 'KafkaJSLockTimeout' ||
         e.name === 'KafkaJSConnectionError'
       ) {
-        await this.refreshMetadata()
+        await this.refreshMetadata();
       }
 
-      throw e
+      throw e;
     }
   }
 
@@ -251,22 +253,21 @@ export class Cluster {
    * @returns {Promise<import("../../types").Broker>}
    */
   async findControllerBroker() {
-    const { metadata } = this.brokerPool
+    const { metadata } = this.brokerPool;
 
     if (!metadata || metadata.controllerId == null) {
-      throw new KafkaJSMetadataNotLoaded('Topic metadata not loaded')
+      throw new KafkaJSMetadataNotLoaded('Topic metadata not loaded');
     }
 
-    const broker = await this.findBroker({ nodeId: metadata.controllerId })
+    const broker = await this.findBroker({ nodeId: metadata.controllerId });
 
     if (!broker) {
-      throw new KafkaJSBrokerNotFound(        
-
+      throw new KafkaJSBrokerNotFound(
         `Controller broker with id ${metadata.controllerId} not found in the cached metadata`
-      )
+      );
     }
 
-    return broker
+    return broker;
   }
 
   /**
@@ -282,13 +283,17 @@ export class Cluster {
    *                   }]
    */
   findTopicPartitionMetadata(topic: any) {
-    const { metadata } = this.brokerPool
+    const { metadata } = this.brokerPool;
     if (!metadata || !metadata.topicMetadata) {
-      throw new KafkaJSTopicMetadataNotLoaded('Topic metadata not loaded', { topic })
+      throw new KafkaJSTopicMetadataNotLoaded('Topic metadata not loaded', {
+        topic,
+      });
     }
 
-    const topicMetadata = metadata.topicMetadata.find((t: any) => t.topic === topic)
-    return topicMetadata ? topicMetadata.partitionMetadata : []
+    const topicMetadata = metadata.topicMetadata.find(
+      (t: any) => t.topic === topic
+    );
+    return topicMetadata ? topicMetadata.partitionMetadata : [];
   }
 
   /**
@@ -302,27 +307,29 @@ export class Cluster {
    *                   where the key is the nodeId.
    */
   findLeaderForPartitions(topic: any, partitions: any) {
-    const partitionMetadata = this.findTopicPartitionMetadata(topic)
+    const partitionMetadata = this.findTopicPartitionMetadata(topic);
     return partitions.reduce((result: any, id: any) => {
-      const partitionId = parseInt(id, 10)
-      const metadata = partitionMetadata.find((p: any) => p.partitionId === partitionId)
+      const partitionId = parseInt(id, 10);
+      const metadata = partitionMetadata.find(
+        (p: any) => p.partitionId === partitionId
+      );
 
       if (!metadata) {
-        return result
+        return result;
       }
 
-      
-      
       if (metadata.leader === null || metadata.leader === undefined) {
-        throw new KafkaJSError('Invalid partition metadata', { topic, partitionId, metadata } as { retriable?: boolean | undefined; } )
+        throw new KafkaJSError('Invalid partition metadata', {
+          topic,
+          partitionId,
+          metadata,
+        } as { retriable?: boolean | undefined });
       }
-      const { leader } = metadata
-      const current = result[leader] || []
-      return { ...result, [leader]: [...current, partitionId] }
+      const { leader } = metadata;
+      const current = result[leader] || [];
+      return { ...result, [leader]: [...current, partitionId] };
     }, {});
   }
-    
-  
 
   /**
    * @public
@@ -333,37 +340,43 @@ export class Cluster {
    */
   async findGroupCoordinator({
     groupId,
-    coordinatorType = COORDINATOR_TYPES.GROUP
+    coordinatorType = COORDINATOR_TYPES.GROUP,
   }: any) {
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         const { coordinator } = await this.findGroupCoordinatorMetadata({
           groupId,
           coordinatorType,
-        })
-        return await this.findBroker({ nodeId: coordinator.nodeId })
-      } catch (e: any ) {
+        });
+        return await this.findBroker({ nodeId: coordinator.nodeId });
+      } catch (e: any) {
         // A new broker can join the cluster before we have the chance
         // to refresh metadata
-        if (e.name === 'KafkaJSBrokerNotFound' || e.type === 'GROUP_COORDINATOR_NOT_AVAILABLE') {
-          this.logger.debug(`${e.message}, refreshing metadata and trying again...`, {
-            groupId,
-            retryCount,
-            retryTime,
-          })
+        if (
+          e.name === 'KafkaJSBrokerNotFound' ||
+          e.type === 'GROUP_COORDINATOR_NOT_AVAILABLE'
+        ) {
+          this.logger.debug(
+            `${e.message}, refreshing metadata and trying again...`,
+            {
+              groupId,
+              retryCount,
+              retryTime,
+            }
+          );
 
-          await this.refreshMetadata()
-          throw e
+          await this.refreshMetadata();
+          throw e;
         }
 
         if (e.code === 'ECONNREFUSED') {
           // During maintenance the current coordinator can go down; findBroker will
           // refresh metadata and re-throw the error. findGroupCoordinator has to re-throw
           // the error to go through the retry cycle.
-          throw e
+          throw e;
         }
 
-        bail(e)
+        bail(e);
       }
     });
   }
@@ -375,58 +388,62 @@ export class Cluster {
    * @param {import("../protocol/coordinatorTypes").CoordinatorType} [params.coordinatorType=0]
    * @returns {Promise<Object>}
    */
-  async findGroupCoordinatorMetadata({
-    groupId,
-    coordinatorType
-  }: any) {
-    const brokerMetadata = await this.brokerPool.withBroker(async ({
-      nodeId,
-      broker
-    }: any) => {
-      return await this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
-        try {
-          const brokerMetadata = await broker.findGroupCoordinator({ groupId, coordinatorType })
-          this.logger.debug('Found group coordinator', {
-            broker: brokerMetadata.host,
-            nodeId: brokerMetadata.coordinator.nodeId,
-          })
-          return brokerMetadata
-        } catch (e : any) {
-          this.logger.debug('Tried to find group coordinator', {
-            nodeId,
-            error: e,
-          })
+  async findGroupCoordinatorMetadata({ groupId, coordinatorType }: any) {
+    const brokerMetadata = await this.brokerPool.withBroker(
+      async ({ nodeId, broker }: any) => {
+        return await this.retrier(
+          async (bail: any, retryCount: any, retryTime: any) => {
+            try {
+              const brokerMetadata = await broker.findGroupCoordinator({
+                groupId,
+                coordinatorType,
+              });
+              this.logger.debug('Found group coordinator', {
+                broker: brokerMetadata.host,
+                nodeId: brokerMetadata.coordinator.nodeId,
+              });
+              return brokerMetadata;
+            } catch (e: any) {
+              this.logger.debug('Tried to find group coordinator', {
+                nodeId,
+                error: e,
+              });
 
-          if (e.type === 'GROUP_COORDINATOR_NOT_AVAILABLE') {
-            this.logger.debug('Group coordinator not available, retrying...', {
-              nodeId,
-              retryCount,
-              retryTime,
-            })
+              if (e.type === 'GROUP_COORDINATOR_NOT_AVAILABLE') {
+                this.logger.debug(
+                  'Group coordinator not available, retrying...',
+                  {
+                    nodeId,
+                    retryCount,
+                    retryTime,
+                  }
+                );
 
-            throw e
+                throw e;
+              }
+
+              bail(e);
+            }
           }
-
-          bail(e)
-        }
-      });
-    })
+        );
+      }
+    );
 
     if (brokerMetadata) {
-      return brokerMetadata
+      return brokerMetadata;
     }
 
-    throw new KafkaJSGroupCoordinatorNotFound('Failed to find group coordinator')
+    throw new KafkaJSGroupCoordinatorNotFound(
+      'Failed to find group coordinator'
+    );
   }
 
   /**
    * @param {object} topicConfiguration
    * @returns {number}
    */
-  defaultOffset({
-    fromBeginning
-  }: any) {
-    return fromBeginning ? EARLIEST_OFFSET : LATEST_OFFSET
+  defaultOffset({ fromBeginning }: any) {
+    return fromBeginning ? EARLIEST_OFFSET : LATEST_OFFSET;
   }
 
   /**
@@ -452,62 +469,64 @@ export class Cluster {
    *                          ]
    */
   async fetchTopicsOffset(topics: any) {
-    const partitionsPerBroker: any = {}
-    const topicConfigurations: any = {}
+    const partitionsPerBroker: any = {};
+    const topicConfigurations: any = {};
 
     const addDefaultOffset = (topic: any) => (partition: any) => {
-      const { timestamp } = topicConfigurations[topic]
-      return { ...partition, timestamp }
-    }
+      const { timestamp } = topicConfigurations[topic];
+      return { ...partition, timestamp };
+    };
 
     // Index all topics and partitions per leader (nodeId)
     for (const topicData of topics) {
-      const { topic, partitions, fromBeginning, fromTimestamp } = topicData
+      const { topic, partitions, fromBeginning, fromTimestamp } = topicData;
       const partitionsPerLeader = this.findLeaderForPartitions(
         topic,
         partitions.map((p: any) => p.partition)
-      )
+      );
       const timestamp =
-        fromTimestamp != null ? fromTimestamp : this.defaultOffset({ fromBeginning })
+        fromTimestamp != null
+          ? fromTimestamp
+          : this.defaultOffset({ fromBeginning });
 
-      topicConfigurations[topic] = { timestamp }
+      topicConfigurations[topic] = { timestamp };
 
-      keys(partitionsPerLeader).forEach(nodeId => {
-        partitionsPerBroker[nodeId] = partitionsPerBroker[nodeId] || {}
-        partitionsPerBroker[nodeId][topic] = partitions.filter((p: any) => partitionsPerLeader[nodeId].includes(p.partition)
-        )
-      })
+      keys(partitionsPerLeader).forEach((nodeId) => {
+        partitionsPerBroker[nodeId] = partitionsPerBroker[nodeId] || {};
+        partitionsPerBroker[nodeId][topic] = partitions.filter((p: any) =>
+          partitionsPerLeader[nodeId].includes(p.partition)
+        );
+      });
     }
 
     // Create a list of requests to fetch the offset of all partitions
-    const requests = keys(partitionsPerBroker).map(async nodeId => {
-      const broker = await this.findBroker({ nodeId })
-      const partitions = partitionsPerBroker[nodeId]
+    const requests = keys(partitionsPerBroker).map(async (nodeId) => {
+      const broker = await this.findBroker({ nodeId });
+      const partitions = partitionsPerBroker[nodeId];
 
       const { responses: topicOffsets } = await broker.listOffsets({
         isolationLevel: this.isolationLevel,
-        topics: keys(partitions).map(topic => ({
+        topics: keys(partitions).map((topic) => ({
           topic,
           partitions: partitions[topic].map(addDefaultOffset(topic)),
         })),
-      })
+      });
 
-      return topicOffsets
-    })
+      return topicOffsets;
+    });
 
     // Execute all requests, merge and normalize the responses
-    const responses = await Promise.all(requests)
-    const partitionsPerTopic = flatten(responses).reduce(mergeTopics, {})
+    const responses = await Promise.all(requests);
+    const partitionsPerTopic = flatten(responses).reduce(mergeTopics, {});
 
-    return keys(partitionsPerTopic).map(topic => ({
+    return keys(partitionsPerTopic).map((topic) => ({
       topic,
-      partitions: partitionsPerTopic[topic].map(({
-        partition,
-        offset
-      }: any) => ({
-        partition,
-        offset,
-      })),
+      partitions: partitionsPerTopic[topic].map(
+        ({ partition, offset }: any) => ({
+          partition,
+          offset,
+        })
+      ),
     }));
   }
 
@@ -517,14 +536,12 @@ export class Cluster {
    * @param {string} options.groupId
    * @returns {Object}
    */
-  committedOffsets({
-    groupId
-  }: any) {
+  committedOffsets({ groupId }: any) {
     if (!this.committedOffsetsByGroup.has(groupId)) {
-      this.committedOffsetsByGroup.set(groupId, {})
+      this.committedOffsetsByGroup.set(groupId, {});
     }
 
-    return this.committedOffsetsByGroup.get(groupId)
+    return this.committedOffsetsByGroup.get(groupId);
   }
 
   /**
@@ -535,15 +552,10 @@ export class Cluster {
    * @param {string|number} options.partition
    * @param {string} options.offset
    */
-  markOffsetAsCommitted({
-    groupId,
-    topic,
-    partition,
-    offset
-  }: any) {
-    const committedOffsets = this.committedOffsets({ groupId })
+  markOffsetAsCommitted({ groupId, topic, partition, offset }: any) {
+    const committedOffsets = this.committedOffsets({ groupId });
 
-    committedOffsets[topic] = committedOffsets[topic] || {}
-    committedOffsets[topic][partition] = offset
+    committedOffsets[topic] = committedOffsets[topic] || {};
+    committedOffsets[topic][partition] = offset;
   }
 }

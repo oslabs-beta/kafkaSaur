@@ -1,6 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV3'.
-const { parse: parseV3, decode: decodeV3 } = require('../v3/response')
+/** @format */
 
+import response from '../v3/response.ts';
+
+const parseV3 = response.parse;
+const decodeV3 = response.decode;
 /**
  * Metadata Response (Version: 4) => throttle_time_ms [brokers] cluster_id controller_id [topic_metadata]
  *   throttle_time_ms => INT32
@@ -23,8 +26,7 @@ const { parse: parseV3, decode: decodeV3 } = require('../v3/response')
  *       isr => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   parse: parseV3,
   decode: decodeV3,
-}
+};
