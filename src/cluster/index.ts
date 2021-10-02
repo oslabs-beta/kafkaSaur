@@ -22,6 +22,7 @@ const mergeTopics = (
 })
 
 
+
 export class Cluster {
   brokerPool: any;
   committedOffsetsByGroup: any;
@@ -310,16 +311,18 @@ export class Cluster {
         return result
       }
 
+      
+      
       if (metadata.leader === null || metadata.leader === undefined) {
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ topic: any; partitionId: numbe... Remove this comment to see the full error message
-        throw new KafkaJSError('Invalid partition metadata', { topic, partitionId, metadata })
+        throw new KafkaJSError('Invalid partition metadata', { topic, partitionId, metadata } as { retriable?: boolean | undefined; } )
       }
-
       const { leader } = metadata
       const current = result[leader] || []
       return { ...result, [leader]: [...current, partitionId] }
     }, {});
   }
+    
+  
 
   /**
    * @public
@@ -339,7 +342,7 @@ export class Cluster {
           coordinatorType,
         })
         return await this.findBroker({ nodeId: coordinator.nodeId })
-      } catch (e) {
+      } catch (e: any ) {
         // A new broker can join the cluster before we have the chance
         // to refresh metadata
         if (e.name === 'KafkaJSBrokerNotFound' || e.type === 'GROUP_COORDINATOR_NOT_AVAILABLE') {
@@ -388,7 +391,7 @@ export class Cluster {
             nodeId: brokerMetadata.coordinator.nodeId,
           })
           return brokerMetadata
-        } catch (e) {
+        } catch (e : any) {
           this.logger.debug('Tried to find group coordinator', {
             nodeId,
             error: e,
@@ -413,7 +416,6 @@ export class Cluster {
       return brokerMetadata
     }
 
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
     throw new KafkaJSGroupCoordinatorNotFound('Failed to find group coordinator')
   }
 
@@ -450,11 +452,10 @@ export class Cluster {
    *                          ]
    */
   async fetchTopicsOffset(topics: any) {
-    const partitionsPerBroker = {}
-    const topicConfigurations = {}
+    const partitionsPerBroker: any = {}
+    const topicConfigurations: any = {}
 
     const addDefaultOffset = (topic: any) => (partition: any) => {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const { timestamp } = topicConfigurations[topic]
       return { ...partition, timestamp }
     }
@@ -469,13 +470,10 @@ export class Cluster {
       const timestamp =
         fromTimestamp != null ? fromTimestamp : this.defaultOffset({ fromBeginning })
 
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       topicConfigurations[topic] = { timestamp }
 
       keys(partitionsPerLeader).forEach(nodeId => {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         partitionsPerBroker[nodeId] = partitionsPerBroker[nodeId] || {}
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         partitionsPerBroker[nodeId][topic] = partitions.filter((p: any) => partitionsPerLeader[nodeId].includes(p.partition)
         )
       })
@@ -484,7 +482,6 @@ export class Cluster {
     // Create a list of requests to fetch the offset of all partitions
     const requests = keys(partitionsPerBroker).map(async nodeId => {
       const broker = await this.findBroker({ nodeId })
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       const partitions = partitionsPerBroker[nodeId]
 
       const { responses: topicOffsets } = await broker.listOffsets({
@@ -499,7 +496,6 @@ export class Cluster {
     })
 
     // Execute all requests, merge and normalize the responses
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const responses = await Promise.all(requests)
     const partitionsPerTopic = flatten(responses).reduce(mergeTopics, {})
 

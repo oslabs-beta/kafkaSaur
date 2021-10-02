@@ -389,7 +389,7 @@ export class ConsumerGroup {
 
         this.instrumentationEmitter.emit(GROUP_JOIN, payload);
         this.logger.info('Consumer has joined the group', payload);
-      } catch (e) {
+      } catch (e: any) {
         if (isRebalancing(e)) {
           // Rebalance in progress isn't a retriable protocol error since the consumer
           // has to go through find coordinator and join again before it can

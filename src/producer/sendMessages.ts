@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-import flatten from '../utils/flatten'
+import flatten from '../utils/flatten.ts'
 import { KafkaJSMetadataNotLoaded } from '../errors.ts'
 import { staleMetadata }  from '../protocol/error.ts'
 import groupMessagesPerPartition from './groupMessagesPerPartition.ts'
@@ -58,8 +57,7 @@ export default({
         })
 
         const partitions = keys(messagesPerPartition)
-        const sequencePerPartition = partitions.reduce((result, partition) => {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+        const sequencePerPartition = partitions.reduce((result: any, partition) => {
           result[partition] = eosManager.getSequence(topic, partition)
           return result
         }, {})
@@ -88,13 +86,12 @@ export default({
         const topicDataForBroker = entries
           .filter(([_, {
           partitionsPerLeader
-        }: any]) => !!partitionsPerLeader[broker.nodeId])
+        }]: any) => !!partitionsPerLeader[broker.nodeId])
           .map(([topic, {
           partitionsPerLeader,
           messagesPerPartition,
           sequencePerPartition
-        // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'any' implicitly has an 'any' type... Remove this comment to see the full error message
-        }: any]) => ({
+        }]: any) => ({
             topic,
             partitions: partitionsPerLeader[broker.nodeId],
             sequencePerPartition,
@@ -148,12 +145,10 @@ export default({
 
       try {
         const requests = await createProducerRequests(responsePerBroker)
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         await Promise.all(requests)
-        // @ts-expect-error ts-migrate(2550) FIXME: Property 'from' does not exist on type 'ArrayConst... Remove this comment to see the full error message
         const responses = Array.from(responsePerBroker.values())
         return flatten(responses)
-      } catch (e) {
+      } catch (e: any) {
         if (e.name === 'KafkaJSConnectionClosedError') {
           cluster.removeBroker({ host: e.host, port: e.port })
         }

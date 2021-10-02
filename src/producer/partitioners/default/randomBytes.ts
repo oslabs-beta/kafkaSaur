@@ -1,5 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../../../errors')
+
+import {KafkaJSNonRetriableError} from '../../../errors.ts'
 
 const toNodeCompatible = (crypto: any) => ({
   // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
@@ -24,8 +24,7 @@ if (global && global.crypto) {
 
 const MAX_BYTES = 65536
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export (size: any) => {
+export default (size: any) => {
   if (size > MAX_BYTES) {
     throw new KafkaJSNonRetriableError(
       `Byte length (${size}) exceeds the max number of bytes of entropy available (${MAX_BYTES})`

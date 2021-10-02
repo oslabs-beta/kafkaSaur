@@ -1,4 +1,3 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'versions'.
 const versions = {
   0: ({
     creations
@@ -17,7 +16,7 @@ const versions = {
   }: any) => {
     
     //const request = require('./v1/request')
-    import * as request from './v1/request';
+    import * as request from './v1/request/';
    
     import * as response from './v1/response';
     return { request: request({ creations }), response }

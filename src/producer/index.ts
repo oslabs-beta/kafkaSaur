@@ -1,21 +1,12 @@
-// @ts-expect-error ts-migrate(6200) FIXME: Definitions of the following identifiers conflict ... Remove this comment to see the full error message
-const createRetry = require('../retry')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'CONNECTION... Remove this comment to see the full error message
-const { CONNECTION_STATUS } = require('../network/connectionStatus')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'DefaultPar... Remove this comment to see the full error message
-const { DefaultPartitioner } = require('./partitioners/')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Instrument... Remove this comment to see the full error message
-const InstrumentationEventEmitter = require('../instrumentation/emitter')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createEosM... Remove this comment to see the full error message
-const createEosManager = require('./eosManager')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const createMessageProducer = require('./messageProducer')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const { events, wrap: wrapEvent, unwrap: unwrapEvent } = require('./instrumentationEvents')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-const { KafkaJSNonRetriableError } = require('../errors')
+import createRetry from '../retry'
+import { CONNECTION_STATUS } from '../network/connectionStatus.ts'
+import { DefaultPartitioner } from './partitioners/'
+import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts'
+import createEosManager from './eosManager'
+import createMessageProducer from './messageProducer.ts'
+import { events, wrap as wrapEvent, unwrap as unwrapEvent } from './instrumentationEvents.ts'
+import { KafkaJSNonRetriableError } from '../errors.ts'
 
-// @ts-expect-error ts-migrate(2339) FIXME: Property 'values' does not exist on type 'ObjectCo... Remove this comment to see the full error message
 const { values, keys } = Object
 const eventNames = values(events)
 const eventKeys = keys(events)
@@ -38,8 +29,7 @@ const { CONNECT, DISCONNECT } = events
  *
  * @returns {import('../../types').Producer}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   cluster,
   logger: rootLogger,
   createPartitioner = DefaultPartitioner,
@@ -65,7 +55,6 @@ export ({
   }
 
   const partitioner = createPartitioner()
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   const retrier = createRetry(Object.assign({}, cluster.retry, retry))
   const instrumentationEmitter = rootInstrumentationEmitter || new InstrumentationEventEmitter()
   const idempotentEosManager = createEosManager({
@@ -100,7 +89,6 @@ export ({
 
     return instrumentationEmitter.addListener(unwrapEvent(eventName), (event: any) => {
       event.type = wrapEvent(event.type)
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       Promise.resolve(listener(event)).catch((e: any) => {
         logger.error(`Failed to execute listener: ${e.message}`, {
           eventName,
@@ -169,7 +157,6 @@ export ({
 
     const transactionGuard = (fn: any) => (...args: any[]) => {
       if (!isActive()) {
-        // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
         return Promise.reject(
           new KafkaJSNonRetriableError('Cannot continue to use transaction once ended')
         )
@@ -186,7 +173,6 @@ export ({
        *
        * @throws {KafkaJSNonRetriableError} If transaction has ended
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       abort: transactionGuard(async () => {
         await transactionalEosManager.abort()
         transactionDidEnd = true
@@ -196,7 +182,6 @@ export ({
        *
        * @throws {KafkaJSNonRetriableError} If transaction has ended
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       commit: transactionGuard(async () => {
         await transactionalEosManager.commit()
         transactionDidEnd = true
@@ -206,7 +191,6 @@ export ({
        *
        * @throws {KafkaJSNonRetriableError} If transaction has ended
        */
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       sendOffsets: transactionGuard(async ({
         consumerGroupId,
         topics
@@ -238,7 +222,6 @@ export ({
     /**
      * @returns {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     connect: async () => {
       await cluster.connect()
       connectionStatus = CONNECTION_STATUS.CONNECTED
@@ -251,7 +234,6 @@ export ({
     /**
      * @return {Promise}
      */
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     disconnect: async () => {
       connectionStatus = CONNECTION_STATUS.DISCONNECTING
       await cluster.disconnect()

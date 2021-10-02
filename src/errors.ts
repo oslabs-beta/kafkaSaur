@@ -4,11 +4,13 @@ import pkgJson from '../package.json';
 const { bugs } = pkgJson;
 
 class KafkaJSError extends Error {
+  //[key: string | number | symbol]: any;
   helpUrl: any;
-  retriable: any;
+  retriable?: Boolean;
   constructor(e: any, { retriable = true } = {}) {
-    super(e)(Error as any).captureStackTrace(this, this.constructor);
-    this.message = e.message || e;
+    const superObj: any = super(e) 
+    superObj.captureStackTrace(this, this.constructor);
+    this.message = e.message || e; 
     this.name = 'KafkaJSError';
     this.retriable = retriable;
     this.helpUrl = e.helpUrl;
@@ -157,7 +159,6 @@ class KafkaJSServerDoesNotSupportApiKey extends KafkaJSNonRetriableError {
 
 class KafkaJSBrokerNotFound extends KafkaJSError {
   constructor(p1?: any, p2?: any) {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1-2 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSBrokerNotFound';
   }
@@ -165,7 +166,6 @@ class KafkaJSBrokerNotFound extends KafkaJSError {
 
 class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSPartialMessageError';
   }
@@ -173,15 +173,13 @@ class KafkaJSPartialMessageError extends KafkaJSNonRetriableError {
 
 class KafkaJSSASLAuthenticationError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSSASLAuthenticationError';
   }
 }
 
 class KafkaJSGroupCoordinatorNotFound extends KafkaJSNonRetriableError {
-  constructor() {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
+  constructor(p1?:any, p2?:any, p3?:any) {
     super(...arguments);
     this.name = 'KafkaJSGroupCoordinatorNotFound';
   }
@@ -189,7 +187,6 @@ class KafkaJSGroupCoordinatorNotFound extends KafkaJSNonRetriableError {
 
 class KafkaJSNotImplemented extends KafkaJSNonRetriableError {
   constructor() {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSNotImplemented';
   }
@@ -197,7 +194,6 @@ class KafkaJSNotImplemented extends KafkaJSNonRetriableError {
 
 class KafkaJSTimeout extends KafkaJSNonRetriableError {
   constructor() {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSTimeout';
   }
@@ -205,7 +201,6 @@ class KafkaJSTimeout extends KafkaJSNonRetriableError {
 
 class KafkaJSLockTimeout extends KafkaJSTimeout {
   constructor() {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 0 arguments, but got 1 or more.
     super(...arguments);
     this.name = 'KafkaJSLockTimeout';
   }
@@ -213,7 +208,6 @@ class KafkaJSLockTimeout extends KafkaJSTimeout {
 
 class KafkaJSUnsupportedMagicByteInMessageSet extends KafkaJSNonRetriableError {
   constructor() {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSUnsupportedMagicByteInMessageSet';
   }
@@ -238,7 +232,7 @@ class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
 const issueUrl = bugs ? bugs.url : null;
 
 class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
-  helpUrl: any;
+  helpUrl
   constructor(e: any) {
     const message = e.message || e;
     super(
@@ -255,7 +249,6 @@ class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
 
 class KafkaJSInvalidVarIntError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSNonRetriableError';
   }
@@ -263,7 +256,6 @@ class KafkaJSInvalidVarIntError extends KafkaJSNonRetriableError {
 
 class KafkaJSInvalidLongError extends KafkaJSNonRetriableError {
   constructor(p1?: any) {
-    // @ts-expect-error ts-migrate(2556) FIXME: Expected 1 arguments, but got 0 or more.
     super(...arguments);
     this.name = 'KafkaJSNonRetriableError';
   }

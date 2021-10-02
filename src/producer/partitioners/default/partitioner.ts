@@ -1,6 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'randomByte... Remove this comment to see the full error message
-const randomBytes = require('./randomBytes')
 
+import randomBytes from './randomBytes.ts'
 // Based on the java client 0.10.2
 // https://github.com/apache/kafka/blob/0.10.2/clients/src/main/java/org/apache/kafka/clients/producer/internals/DefaultPartitioner.java
 
@@ -18,8 +17,7 @@ const toPositive = (x: any) => x & 0x7fffffff
  *  - If no partition is specified but a key is present choose a partition based on a hash of the key
  *  - If no partition or key is present choose a partition in a round-robin fashion
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export (murmur2: any) => () => {
+export default (murmur2: any) => () => {
   let counter = randomBytes(32).readUInt32BE(0)
 
   return ({
