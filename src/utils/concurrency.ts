@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSNon... Remove this comment to see the full error message
-import { KafkaJSNonRetriableError } from '../errors'
+import { KafkaJSNonRetriableError } from '../errors.ts'
 
 const REJECTED_ERROR = new KafkaJSNonRetriableError(
   'Queued function aborted due to earlier promise rejection'

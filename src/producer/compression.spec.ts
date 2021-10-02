@@ -1,16 +1,13 @@
 /** @format */
-const createProducer = require('./index');
-const Compression = require('../protocol/message/compression');
-const { KafkaJSNotImplemented } = require('../errors');
+import createProducer from './index.ts';
+import Compression from '../protocol/message/compression';
+import { KafkaJSNotImplemented } from '../errors.ts';
 
-const {
-  secureRandom,
-  createTopic,
-  createModPartitioner,
-  connectionOpts,
-  newLogger,
-  createCluster,
-} = require('testHelpers');
+import { secureRandom, 
+  createTopic, createModPartitioner, 
+  connectionOpts, 
+  newLogger, 
+  createCluster } from 'testHelpers';
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Producer', () => {

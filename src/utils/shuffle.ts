@@ -3,8 +3,7 @@
  * @returns T[]
  * @template T
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export (array: any) => {
+export default (array: any) => {
   if (!Array.isArray(array)) {
     throw new TypeError("'array' is not an array")
   }

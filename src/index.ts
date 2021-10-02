@@ -21,6 +21,7 @@ const PRIVATE = {
 const DEFAULT_METADATA_MAX_AGE = 300000;
 
 export class Client {
+  [key: string | number | symbol]: any;
   /**
    * @param {Object} options
    * @param {Array<string>} options.brokers example: ['127.0.0.1:9092', '127.0.0.1:9094']
@@ -50,13 +51,9 @@ export class Client {
     logLevel = INFO,
     logCreator = LoggerConsole,
   }: any) {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[PRIVATE.OFFSETS] = new Map();
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[PRIVATE.LOGGER] = createLogger({ level: logLevel, logCreator });
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[PRIVATE.CLUSTER_RETRY] = retry;
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     this[PRIVATE.CREATE_CLUSTER] = ({
       metadataMaxAge,
       allowAutoTopicCreation = true,
@@ -65,11 +62,8 @@ export class Client {
       isolationLevel,
     }: any) =>
       new Cluster({
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         logger: this[PRIVATE.LOGGER],
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         retry: this[PRIVATE.CLUSTER_RETRY],
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         offsets: this[PRIVATE.OFFSETS],
         socketFactory,
         brokers,
@@ -103,7 +97,6 @@ export class Client {
     maxInFlightRequests,
   }: any = {}) {
     const instrumentationEmitter = new InstrumentationEventEmitter();
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const cluster = this[PRIVATE.CREATE_CLUSTER]({
       metadataMaxAge,
       allowAutoTopicCreation,
@@ -112,9 +105,7 @@ export class Client {
     });
 
     return createProducer({
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       retry: { ...this[PRIVATE.CLUSTER_RETRY], ...retry },
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       logger: this[PRIVATE.LOGGER],
       cluster,
       createPartitioner,
@@ -150,7 +141,6 @@ export class Client {
       : ISOLATION_LEVEL.READ_COMMITTED;
 
     const instrumentationEmitter = new InstrumentationEventEmitter();
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const cluster = this[PRIVATE.CREATE_CLUSTER]({
       metadataMaxAge,
       allowAutoTopicCreation,
@@ -160,9 +150,7 @@ export class Client {
     });
 
     return createConsumer({
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       retry: { ...this[PRIVATE.CLUSTER_RETRY], ...retry },
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       logger: this[PRIVATE.LOGGER],
       cluster,
       groupId,
@@ -186,16 +174,13 @@ export class Client {
    */
   admin({ retry }: any = {}) {
     const instrumentationEmitter = new InstrumentationEventEmitter();
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     const cluster = this[PRIVATE.CREATE_CLUSTER]({
       allowAutoTopicCreation: false,
       instrumentationEmitter,
     });
 
     return createAdmin({
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       retry: { ...this[PRIVATE.CLUSTER_RETRY], ...retry },
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       logger: this[PRIVATE.LOGGER],
       instrumentationEmitter,
       cluster,
@@ -206,7 +191,6 @@ export class Client {
    * @public
    */
   logger() {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return this[PRIVATE.LOGGER];
   }
 }
