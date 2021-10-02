@@ -1,7 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('../../../isolationLevel')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV5'... Remove this comment to see the full error message
-const requestV5 = require('../v5/request')
+import {Encoder} from '../../../encoder.ts'
+import ISOLATION_LEVEL from '../../../isolationLevel.ts'
+import requestV5 from '../v5/request.ts'
 
 /**
  * Fetch Request (Version: 6) => replica_id max_wait_time min_bytes max_bytes isolation_level [topics]
@@ -19,8 +18,7 @@ const requestV5 = require('../v5/request')
  *       partition_max_bytes => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   replicaId,
   maxWaitTime,
   minBytes,
@@ -28,7 +26,6 @@ export ({
   topics,
   isolationLevel = ISOLATION_LEVEL.READ_COMMITTED
 }: any) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(
     requestV5({
       replicaId,

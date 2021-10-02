@@ -1,13 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSPar... Remove this comment to see the full error message
-import { KafkaJSPartialMessageError } from '../../../errors'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'lookupCode... Remove this comment to see the full error message
+import { Decoder } from '../../decoder.ts'
+import { KafkaJSPartialMessageError } from '../../../errors.ts'
 import { lookupCodecByAttributes } from '../../message/compression'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import RecordDecoder from '../record/v0/decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'TimestampT... Remove this comment to see the full error message
-import TimestampTypes from '../../timestampTypes'
+import RecordDecoder from '../record/v0/decoder.ts'
+import TimestampTypes from '../../timestampTypes.ts'
+import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+
 
 const TIMESTAMP_TYPE_FLAG_MASK = 0x8
 const TRANSACTIONAL_FLAG_MASK = 0x10
@@ -31,19 +28,16 @@ const CONTROL_FLAG_MASK = 0x20
  *  Records => [Record]
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export async (fetchDecoder: any) => {
+export default async (fetchDecoder: any) => {
   const firstOffset = fetchDecoder.readInt64().toString()
   const length = fetchDecoder.readInt32()
   const decoder = fetchDecoder.slice(length)
   fetchDecoder.forward(length)
 
-  // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
   const remainingBytes = Buffer.byteLength(decoder.buffer)
 
   if (remainingBytes < length) {
     throw new KafkaJSPartialMessageError(      
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
       `Tried to decode a partial record batch: remainingBytes(${remainingBytes}) < recordBatchLength(${length})`
     )

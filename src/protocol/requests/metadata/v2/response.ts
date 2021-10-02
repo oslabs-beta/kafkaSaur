@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
+import {Decoder} from '../../../decoder.ts'
+import response from '../v0/response.ts'
+
+const parse = response.parse;
 
 /**
  * Metadata Response (Version: 2) => [brokers] cluster_id controller_id [topic_metadata]
@@ -24,7 +24,6 @@ const { parse: parseV0 } = require('../v0/response')
  *       isr => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'broker'.
 const broker = (decoder: any) => ({
   nodeId: decoder.readInt32(),
   host: decoder.readString(),
@@ -32,7 +31,6 @@ const broker = (decoder: any) => ({
   rack: decoder.readString()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicMetad... Remove this comment to see the full error message
 const topicMetadata = (decoder: any) => ({
   topicErrorCode: decoder.readInt16(),
   topic: decoder.readString(),
@@ -40,7 +38,6 @@ const topicMetadata = (decoder: any) => ({
   partitionMetadata: decoder.readArray(partitionMetadata)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partitionM... Remove this comment to see the full error message
 const partitionMetadata = (decoder: any) => ({
   partitionErrorCode: decoder.readInt16(),
   partitionId: decoder.readInt32(),
@@ -49,7 +46,6 @@ const partitionMetadata = (decoder: any) => ({
   isr: decoder.readArray((d: any) => d.readInt32())
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -60,8 +56,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export {
   decode,
-  parse: parseV0,
+  parse
 }

@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import {Decoder} from '../../../decoder.ts';
+import { failure, createErrorFromCode } from '../../../error.ts'
 
 /**
  * DeleteAcls Response (Version: 0) => throttle_time_ms [filter_responses]
@@ -20,7 +18,6 @@ const { failure, createErrorFromCode } = require('../../../error')
  *       permission_type => INT8
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeMatc... Remove this comment to see the full error message
 const decodeMatchingAcls = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
@@ -32,14 +29,12 @@ const decodeMatchingAcls = (decoder: any) => ({
   permissionType: decoder.readInt8()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeFilt... Remove this comment to see the full error message
 const decodeFilterResponse = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
   matchingAcls: decoder.readArray(decodeMatchingAcls)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -51,7 +46,6 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   const filterResponsesWithError = data.filterResponses.filter(({
     errorCode
@@ -77,8 +71,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decodeMatchingAcls,
   decodeFilterResponse,
   decode,

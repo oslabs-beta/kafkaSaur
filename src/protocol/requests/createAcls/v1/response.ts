@@ -23,4 +23,4 @@ const decode = async (rawData: any) => {
   };
 };
 
-export { decode, parse };
+export default { decode, parse };

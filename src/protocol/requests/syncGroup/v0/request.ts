@@ -1,8 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { SyncGroup: apiKey } = require('../../apiKeys')
-
+import { Encoder } from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+const apiKey = apiKeys.SyncGroup;
 /**
  * SyncGroup Request (Version: 0) => group_id generation_id member_id [group_assignment]
  *   group_id => STRING
@@ -13,8 +11,7 @@ const { SyncGroup: apiKey } = require('../../apiKeys')
  *     member_assignment => BYTES
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   groupId,
   generationId,
   memberId,
@@ -32,7 +29,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeGrou... Remove this comment to see the full error message
 const encodeGroupAssignment = ({
   memberId,
   memberAssignment

@@ -1,6 +1,5 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 import { parse, decode as decodeV0 } from '../v0/response.ts';
 
 /**
@@ -15,7 +14,6 @@ import { parse, decode as decodeV0 } from '../v0/response.ts';
  *       partition => INT32
  *       error_code => INT16
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoded = await decodeV0(rawData);
 
@@ -26,5 +24,4 @@ const decode = async (rawData: any) => {
   };
 };
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export { decode, parse };

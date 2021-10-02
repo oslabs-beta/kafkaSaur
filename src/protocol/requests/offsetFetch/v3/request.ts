@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { OffsetFetch: apiKey } = require('../../apiKeys')
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+
+const apiKey = apiKeys.OffsetFetch;
 
 /**
  * OffsetFetch Request (Version: 3) => group_id [topics]
@@ -12,8 +12,7 @@ const { OffsetFetch: apiKey } = require('../../apiKeys')
  *       partition => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   groupId,
   topics
 }: any) => ({
@@ -25,7 +24,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
 const encodeTopic = ({
   topic,
   partitions
@@ -33,7 +31,6 @@ const encodeTopic = ({
   return new Encoder().writeString(topic).writeArray(partitions.map(encodePartition))
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodePart... Remove this comment to see the full error message
 const encodePartition = ({
   partition
 }: any) => {

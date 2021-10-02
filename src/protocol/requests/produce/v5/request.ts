@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV3'... Remove this comment to see the full error message
-const requestV3 = require('../v3/request')
+import requestV3 from '../v3/request.ts'
 
 /**
  * Produce Request (Version: 5) => transactional_id acks timeout [topic_data]
@@ -13,8 +12,7 @@ const requestV3 = require('../v3/request')
  *       record_set => RECORDS
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   acks,
   timeout,
   transactionalId,
@@ -23,7 +21,6 @@ export ({
   compression,
   topicData
 }: any) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(
     requestV3({
       acks,

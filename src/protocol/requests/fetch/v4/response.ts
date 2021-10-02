@@ -1,9 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV1'.
-const { parse: parseV1 } = require('../v1/response')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeMess... Remove this comment to see the full error message
-const decodeMessages = require('./decodeMessages')
+import {Decoder} from '../../../decoder.ts'
+import response from '../v1/response.ts'
+import decodeMessages from './decodeMessages.ts'
+const parse = response.parse
 
 /**
  * Fetch Response (Version: 4) => throttle_time_ms [responses]
@@ -22,13 +20,11 @@ const decodeMessages = require('./decodeMessages')
  *       record_set => RECORDS
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeAbor... Remove this comment to see the full error message
 const decodeAbortedTransactions = (decoder: any) => ({
   producerId: decoder.readInt64().toString(),
   firstOffset: decoder.readInt64().toString()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
 const decodePartition = async (decoder: any) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
@@ -38,13 +34,11 @@ const decodePartition = async (decoder: any) => ({
   messages: await decodeMessages(decoder)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeResp... Remove this comment to see the full error message
 const decodeResponse = async (decoder: any) => ({
   topicName: decoder.readString(),
   partitions: await decoder.readArrayAsync(decodePartition)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -56,8 +50,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
-  parse: parseV1,
+  parse,
 }

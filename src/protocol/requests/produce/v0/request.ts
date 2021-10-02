@@ -1,10 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Produce: apiKey } = require('../../apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSet = require('../../../messageSet')
+import { Encoder } from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+import MessageSet from '../../../messageSet'
 
+const apiKey = apiKeys.Produce;
 /**
  * Produce Request (Version: 0) => acks timeout [topic_data]
  *   acks => INT16
@@ -63,8 +61,7 @@ const MessageSet = require('../../../messageSet')
  *
  * @param topicData {Array}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   acks,
   timeout,
   topicData
@@ -81,7 +78,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
 const encodeTopic = ({
   topic,
   partitions

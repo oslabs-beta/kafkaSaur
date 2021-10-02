@@ -1,8 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../encoder'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+import { Encoder } from '../encoder.ts'
 import MessageProtocol from '../message'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Types'.
 import { Types } from '../message/compression'
 
 /**
@@ -18,8 +15,7 @@ import { Types } from '../message/compression'
  *   { key: "<value>", value: "<value>" },
  * ]
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
  messageVersion = 0,
  compression,
  entries

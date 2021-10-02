@@ -1,8 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { DescribeConfigs: apiKey } = require('../../apiKeys')
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
 
+const apiKey = apiKeys.DescribeConfigs
 /**
  * DescribeConfigs Request (Version: 1) => [resources] include_synonyms
  *   resources => resource_type resource_name [config_names]
@@ -16,8 +15,7 @@ const { DescribeConfigs: apiKey } = require('../../apiKeys')
  * @param {Array} resources An array of config resources to be returned
  * @param [includeSynonyms=false]
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   resources,
   includeSynonyms = false
 }: any) => ({
@@ -29,7 +27,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeReso... Remove this comment to see the full error message
 const encodeResource = ({
   type,
   name,

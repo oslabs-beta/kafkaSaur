@@ -1,8 +1,6 @@
 
-import Long from '../../../utils/long'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../encoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'crc32C'.
+import Long from '../../../utils/long.ts'
+import { Encoder } from '../../encoder.ts'
 import crc32C from '../crc32C'
 import {
   Types as Compression,
@@ -20,7 +18,6 @@ import {
 // 
 // } = require('../../message/compression')
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MAGIC_BYTE... Remove this comment to see the full error message
 const MAGIC_BYTE = 2
 const TIMESTAMP_MASK = 0 // The fourth lowest bit, always set this bit to 0 (since 0.10.0)
 const TRANSACTIONAL_MASK = 16 // The fifth lowest bit
@@ -43,7 +40,6 @@ const TRANSACTIONAL_MASK = 16 // The fifth lowest bit
  *  Records => [Record]
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RecordBatc... Remove this comment to see the full error message
 const RecordBatch = async ({
   compression = Compression.None,
   firstOffset = Long.fromInt(0),
@@ -102,7 +98,6 @@ const compressRecords = async (compression: any, records: any) => {
   return codec.compress(recordsEncoder)
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export {
   RecordBatch,
   MAGIC_BYTE,

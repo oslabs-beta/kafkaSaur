@@ -1,6 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+import { Encoder } from '../../../encoder.ts'
 import Header from '../../header/v0'
 
 /**
@@ -24,7 +22,6 @@ import Header from '../../header/v0'
  * @param value {Buffer}
  * @param [headers={}] {Object}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export default({
   offsetDelta = 0,
   timestampDelta = 0,
@@ -53,7 +50,9 @@ export default({
     .writeVarIntBytes(key)
     .writeVarIntBytes(value)
     .writeVarIntArray(headersArray.map(Header))
+    //src/protocol/encoder.ts
 }
+
 
 const sizeOfHeaders = (headersArray: any) => {
   let size = Encoder.sizeOfVarInt(headersArray.length)

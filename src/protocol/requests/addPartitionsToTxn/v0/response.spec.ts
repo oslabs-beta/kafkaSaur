@@ -1,7 +1,7 @@
 
-import { decode, parse } from './response'
+import { decode, parse } from '../response.ts'
 
-import { KafkaJSProtocolError } from '../../../../errors'
+import { KafkaJSProtocolError } from '../../../../errors.ts'
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > AddPartitionsToTxn > v0', () => {
@@ -23,11 +23,9 @@ describe('Protocol > Requests > AddPartitionsToTxn > v0', () => {
       ],
     })
 
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     await expect(parse(data)).resolves.toBeTruthy()
   })
 
-  // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'test'. Do you need to install ty... Remove this comment to see the full error message
   test('throws KafkaJSProtocolError if there is an error on any of the partitions', async () => {
     const data = {
       throttleTime: 0,
@@ -42,7 +40,6 @@ describe('Protocol > Requests > AddPartitionsToTxn > v0', () => {
       ],
     }
 
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     await expect(parse(data)).rejects.toEqual(
       new KafkaJSProtocolError(
         'The producer attempted to use a producer id which is not currently assigned to its transactional id'
