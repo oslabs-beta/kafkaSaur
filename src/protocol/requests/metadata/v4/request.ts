@@ -1,8 +1,9 @@
 /** @format */
 
-const Encoder = require('../../../encoder');
-const { Metadata: apiKey } = require('../../apiKeys');
+import {Encoder} from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
 
+const apiKey = apiKeys.Metadata;
 /**
  * Metadata Request (Version: 4) => [topics] allow_auto_topic_creation
  *   topics => STRING

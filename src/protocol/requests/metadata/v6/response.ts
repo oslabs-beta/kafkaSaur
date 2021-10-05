@@ -1,6 +1,6 @@
 /** @format */
 
-import response from '../v5/response';
+import response from '../v5/response.ts';
 
 const parse = response.parse;
 const decodeV1 = response.decode;
