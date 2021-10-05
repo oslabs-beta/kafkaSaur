@@ -1,6 +1,8 @@
+/** @format */
+
 import Kafka from './src/index.ts';
 import PartitionAssigners from './src/consumer/assigners/index.ts';
-import AssignerProtocol from './src/consumer/assignerProtocol.ts';
+import * as AssignerProtocol from './src/consumer/assignerProtocol.ts';
 import Partitioners from './src/producer/partitioners/index.ts';
 import Compression from './src/protocol/message/compression/index.ts';
 import ResourceTypes from './src/protocol/resourceTypes.ts';
@@ -12,14 +14,18 @@ import AclPermissionTypes from './src/protocol/aclPermissionTypes.ts';
 import ResourcePatternTypes from './src/protocol/resourcePatternTypes.ts';
 import { LEVELS } from './src/loggers/index.ts';
 
+const logLevel = LEVELS;
+const CompressionTypes = Compression.Types;
+const CompressionCodecs = Compression.Codecs;
+
 export {
   Kafka,
   PartitionAssigners,
   AssignerProtocol,
   Partitioners,
-  logLevel: LEVELS,
-  CompressionTypes: Compression.Types,
-  CompressionCodecs: Compression.Codecs,
+  logLevel,
+  CompressionTypes,
+  CompressionCodecs,
   /**
    * @deprecated
    * @see https://github.com/tulios/kafkajs/issues/649
@@ -33,4 +39,4 @@ export {
   AclPermissionTypes,
   ResourcePatternTypes,
   ConfigSource,
-}
+};

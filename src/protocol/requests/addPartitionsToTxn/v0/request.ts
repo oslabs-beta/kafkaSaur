@@ -3,7 +3,6 @@
 import { Encoder } from '../../../encoder.ts';
 
 import apiKeys from '../../apiKeys.ts';
-//steph how do you inmort from an object
 
 /**
  * AddPartitionsToTxn Request (Version: 0) => transactional_id producer_id producer_epoch [topics]

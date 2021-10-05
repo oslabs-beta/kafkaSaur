@@ -20,7 +20,7 @@ const PRIVATE = {
 
 const DEFAULT_METADATA_MAX_AGE = 300000;
 
-export class Client {
+export default class Client {
   [key: string | number | symbol]: any;
   /**
    * @param {Object} options

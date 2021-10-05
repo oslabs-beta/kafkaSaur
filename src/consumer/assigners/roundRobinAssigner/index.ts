@@ -1,17 +1,15 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MemberMeta... Remove this comment to see the full error message
-const { MemberMetadata, MemberAssignment } = require('../../assignerProtocol')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../utils/flatten')
+/** @format */
+
+import { MemberMetadata, MemberAssignment } from '../../assignerProtocol.ts';
+import flatten from '../../../utils/flatten.ts';
 
 /**
  * RoundRobinAssigner
  * @param {Cluster} cluster
  * @returns {function}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
-  cluster
-}: any) => ({
+
+export default ({ cluster }: any) => ({
   name: 'RoundRobinAssigner',
   version: 1,
 
@@ -42,63 +40,58 @@ export ({
    *                     }
    *                   ]
    */
-  async assign({
-    members,
-    topics
-  }: any) {
-    const membersCount = members.length
-    const sortedMembers = members.map(({
-      memberId
-    }: any) => memberId).sort()
-    const assignment = {}
+  async assign({ members, topics }: any) {
+    const membersCount = members.length;
+    const sortedMembers = members.map(({ memberId }: any) => memberId).sort();
+    const assignment = {};
 
     const topicsPartionArrays = topics.map((topic: any) => {
-      const partitionMetadata = cluster.findTopicPartitionMetadata(topic)
+      const partitionMetadata = cluster.findTopicPartitionMetadata(topic);
       return partitionMetadata.map((m: any) => ({
         topic: topic,
-        partitionId: m.partitionId
+        partitionId: m.partitionId,
       }));
-    })
-    const topicsPartitions = flatten(topicsPartionArrays)
+    });
+    const topicsPartitions = flatten(topicsPartionArrays);
 
     topicsPartitions.forEach((topicPartition: any, i: any) => {
-      const assignee = sortedMembers[i % membersCount]
+      const assignee = sortedMembers[i % membersCount];
 
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (!assignment[assignee]) {
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        assignment[assignee] = Object.create(null)
+        assignment[assignee] = Object.create(null);
       }
 
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (!assignment[assignee][topicPartition.topic]) {
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-        assignment[assignee][topicPartition.topic] = []
+        assignment[assignee][topicPartition.topic] = [];
       }
 
       // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-      assignment[assignee][topicPartition.topic].push(topicPartition.partitionId)
-    })
+      assignment[assignee][topicPartition.topic].push(
+        topicPartition.partitionId
+      );
+    });
 
-    return Object.keys(assignment).map(memberId => ({
+    return Object.keys(assignment).map((memberId) => ({
       memberId,
       memberAssignment: MemberAssignment.encode({
         version: this.version,
         // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         assignment: assignment[memberId],
       }),
-    }))
+    }));
   },
 
-  protocol({
-    topics
-  }: any) {
+  protocol({ topics }: any) {
     return {
       name: this.name,
       metadata: MemberMetadata.encode({
         version: this.version,
         topics,
       }),
-    }
+    };
   },
-})
+});

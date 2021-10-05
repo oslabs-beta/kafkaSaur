@@ -1,8 +1,10 @@
-import swapObject from '../utils/swapObject.ts'
-import InstrumentationEventType from '../instrumentation/eventType.ts'
-import networkEvents from '../network/instrumentationEvents.ts'
+/** @format */
 
-const consumerType = InstrumentationEventType('consumer')
+import swapObject from '../utils/swapObject.ts';
+import InstrumentationEventType from '../instrumentation/eventType.ts';
+import networkEvents from '../network/instrumentationEvents.ts';
+
+const consumerType = InstrumentationEventType('consumer');
 
 const events = {
   HEARTBEAT: consumerType('heartbeat'),
@@ -21,20 +23,17 @@ const events = {
   REQUEST: consumerType(networkEvents.NETWORK_REQUEST),
   REQUEST_TIMEOUT: consumerType(networkEvents.NETWORK_REQUEST_TIMEOUT),
   REQUEST_QUEUE_SIZE: consumerType(networkEvents.NETWORK_REQUEST_QUEUE_SIZE),
-}
+};
 
-const wrappedEvents = {
+const wrappedEvents: any = {
   [events.REQUEST]: networkEvents.NETWORK_REQUEST,
   [events.REQUEST_TIMEOUT]: networkEvents.NETWORK_REQUEST_TIMEOUT,
   [events.REQUEST_QUEUE_SIZE]: networkEvents.NETWORK_REQUEST_QUEUE_SIZE,
-}
+};
 
-const reversedWrappedEvents = swapObject(wrappedEvents)
-const unwrap = (eventName: any) => wrappedEvents[eventName] || eventName
-const wrap = (eventName: any) => reversedWrappedEvents[eventName] || eventName
+const reversedWrappedEvents: any = swapObject(wrappedEvents);
+const unwrap = (eventName: string) => wrappedEvents[eventName] || eventName;
+const wrap = (eventName: string) =>
+  reversedWrappedEvents[eventName] || eventName;
 
-export {
-  events,
-  wrap,
-  unwrap,
-}
+export { events, wrap, unwrap };

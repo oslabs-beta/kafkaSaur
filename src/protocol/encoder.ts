@@ -13,7 +13,6 @@ const OTHER_BITS = 0x7f; // 127
 const UNSIGNED_INT32_MAX_NUMBER = 0xffffff80;
 const UNSIGNED_INT64_MAX_NUMBER = 0xffffffffffffff80n;
 
-
 export class Encoder {
   buf: Buffer;
   offset: number;
@@ -52,7 +51,9 @@ export class Encoder {
     return bytes;
   }
 
-  static sizeOfVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
+  static sizeOfVarIntBytes(
+    value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer
+  ) {
     const size = value == null ? -1 : Buffer.byteLength(value);
 
     if (size < 0) {
@@ -190,7 +191,9 @@ export class Encoder {
     return this;
   }
 
-  writeBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
+  writeBytes(
+    value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer
+  ) {
     if (value == null) {
       this.writeInt32(-1);
       return this;
@@ -213,7 +216,9 @@ export class Encoder {
     return this;
   }
 
-  writeVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
+  writeVarIntBytes(
+    value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer
+  ) {
     if (value == null) {
       this.writeVarInt(-1);
       return this;
@@ -235,7 +240,9 @@ export class Encoder {
     return this;
   }
 
-  writeUVarIntBytes(value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer) {
+  writeUVarIntBytes(
+    value: string | Buffer | ArrayBufferView | ArrayBuffer | SharedArrayBuffer
+  ) {
     if (value == null) {
       this.writeVarInt(0);
       return this;
@@ -293,7 +300,10 @@ export class Encoder {
    * @param {any[]} array
    * @param {'int32'|'number'|'string'|'object'} [type]
    */
-  writeNullableArray(array: [], type?: number|string|Record<string, unknown>) {
+  writeNullableArray(
+    array: [],
+    type?: number | string | Record<string, unknown>
+  ) {
     // A null value is encoded with length of -1 and there are no following bytes
     // On the context of this library, empty array and null are the same thing
     const length = array.length !== 0 ? array.length : -1;
@@ -306,7 +316,11 @@ export class Encoder {
    * @param {'int32'|'number'|'string'|'object'} [type]
    * @param {number} [length]
    */
-  writeArray(array: any[], type?: number | string | Record<string, unknown>, length?: number) {
+  writeArray(
+    array: any[],
+    type?: number | string | Record<string, unknown>,
+    length?: number
+  ) {
     const arrayLength = length == null ? array.length : length;
     this.writeInt32(arrayLength);
     if (type !== undefined) {
@@ -340,19 +354,27 @@ export class Encoder {
     return this;
   }
 
-  writeVarIntArray(array: any[], type: number | string | Record<string, unknown>) {
+  writeVarIntArray(
+    array: any[],
+    type: number | string | Record<string, unknown>
+  ) {
     if (type === 'object') {
       this.writeVarInt(array.length);
       this.writeEncoderArray(array);
     } else {
-      const objectArray = array.filter((v: number | string | Record<string, unknown>) => typeof v === 'object');
+      const objectArray = array.filter(
+        (v: number | string | Record<string, unknown>) => typeof v === 'object'
+      );
       this.writeVarInt(objectArray.length);
       this.writeEncoderArray(objectArray);
     }
     return this;
   }
 
-  writeUVarIntArray(array: any[], type: number | string | Record<string, unknown>) {
+  writeUVarIntArray(
+    array: any[],
+    type: number | string | Record<string, unknown>
+  ) {
     if (type === 'object') {
       this.writeUVarInt(array.length + 1);
       this.writeEncoderArray(array);

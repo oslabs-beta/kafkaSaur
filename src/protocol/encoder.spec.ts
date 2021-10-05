@@ -33,10 +33,9 @@ describe('Protocol > Encoder', () => {
 
   const ubytes = (bytes: any) => new Encoder().writeUVarIntBytes(bytes).buffer;
   const decodeUBytes = (buffer: any) => new Decoder(buffer).readUVarIntBytes();
-
+  // @ts-ignore
   const uarray = (array: any) => new Encoder().writeUVarIntArray(array).buffer;
 
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
   const B = (...args: any[]) => Buffer.from(args);
   const L = (value: any) => Long.fromString(`${value}`);
 

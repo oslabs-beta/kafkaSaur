@@ -1,7 +1,9 @@
-import DefaultPartitioner from './default'
-import JavaCompatiblePartitioner from './defaultJava'
+/** @format */
 
-export {
+import DefaultPartitioner from './default/index.ts';
+import JavaCompatiblePartitioner from './defaultJava/index.ts';
+
+export default {
   DefaultPartitioner,
   JavaCompatiblePartitioner,
-}
+};

@@ -16,9 +16,7 @@
  *
  * @format
  */
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../encoder.ts';
+import { Encoder } from '../../encoder.ts';
 
 const US_ASCII_NULL_CHAR = '\u0000';
 

@@ -3,7 +3,6 @@
 import { Encoder } from '../../../encoder.ts';
 
 import apiKeys from '../../apiKeys.ts';
-//steph
 /**
  * CreateAcls Request (Version: 0) => [creations]
  *   creations => resource_type resource_name principal host operation permission_type

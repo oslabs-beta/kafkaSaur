@@ -1,7 +1,8 @@
 /** @format */
-import * as node from 'https://deno.land/std@0.109.0/node';
 
-const process = node._process;
+// deno-lint-ignore-file
+/** @format */
+import process from 'https://deno.land/std@0.109.0/node/process.ts';
 
 const { assign } = Object;
 

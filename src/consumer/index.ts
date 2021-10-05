@@ -3,7 +3,7 @@
 import Long from '../utils/long.ts';
 import createRetry from '../retry/index.ts';
 
-import * as Default from '../retry/defaults.ts';
+import defaultObj from '../retry/defaults.ts';
 
 import { ConsumerGroup } from './consumerGroup.ts';
 import { Runner } from './runner.ts';
@@ -14,13 +14,13 @@ import {
 } from './instrumentationEvents.ts';
 import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts';
 import { KafkaJSNonRetriableError } from '../errors.ts';
-import { roundRobin } from './assigners/index.ts';
+import roundRobin from './assigners/index.ts';
 import Constants from '../constants.ts';
 import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 
-const { initialRetryTime } = Default.initialRetryTime;
+const { initialRetryTime } = defaultObj;
 
 const { keys, values } = Object;
 const { CONNECT, DISCONNECT, STOP, CRASH } = events;

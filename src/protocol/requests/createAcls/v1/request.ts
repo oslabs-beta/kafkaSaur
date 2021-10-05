@@ -1,9 +1,9 @@
-import { Encoder } from '../../../encoder.ts'
+/** @format */
 
+import { Encoder } from '../../../encoder.ts';
 
-import apiKeys from '../../apiKeys.ts'
+import apiKeys from '../../apiKeys.ts';
 
-//steph
 /**
  * CreateAcls Request (Version: 1) => [creations]
  *   creations => resource_type resource_name resource_pattern_type principal host operation permission_type
@@ -16,7 +16,7 @@ import apiKeys from '../../apiKeys.ts'
  *     permission_type => INT8
  */
 
-const apiKey = apiKeys.CreateAcls
+const apiKey = apiKeys.CreateAcls;
 
 const encodeCreations = ({
   resourceType,
@@ -25,7 +25,7 @@ const encodeCreations = ({
   principal,
   host,
   operation,
-  permissionType
+  permissionType,
 }: any) => {
   return new Encoder()
     .writeInt8(resourceType)
@@ -34,16 +34,14 @@ const encodeCreations = ({
     .writeString(principal)
     .writeString(host)
     .writeInt8(operation)
-    .writeInt8(permissionType)
-}
+    .writeInt8(permissionType);
+};
 
-export default ({
-  creations
-}: any) => ({
+export default ({ creations }: any) => ({
   apiKey,
   apiVersion: 1,
   apiName: 'CreateAcls',
   encode: async () => {
-    return new Encoder().writeArray(creations.map(encodeCreations))
+    return new Encoder().writeArray(creations.map(encodeCreations));
   },
-})
+});

@@ -1,19 +1,20 @@
-import { Buffer } from 'https://deno.land/std@0.109.0/node/buffer.ts'
-import createSocket from './socket.ts'
-import createRequest from '../protocol/request.ts'
-import {Decoder} from '../protocol/decoder.ts'
-import { KafkaJSConnectionError, KafkaJSConnectionClosedError } from '../errors.ts'
-import INT_32_MAX_VALUE from '../constants.ts'
-import getEnv from '../env.ts'
-import RequestQueue from './requestQueue'
-import { CONNECTION_STATUS, CONNECTED_STATUS } from './connectionStatus.ts'
+/** @format */
 
-const requestInfo = ({
-  apiName,
-  apiKey,
-  apiVersion
-}: any) =>
-  `${apiName}(key: ${apiKey}, version: ${apiVersion})`
+import { Buffer } from 'https://deno.land/std@0.109.0/node/buffer.ts';
+import createSocket from './socket.ts';
+import createRequest from '../protocol/request.ts';
+import { Decoder } from '../protocol/decoder.ts';
+import {
+  KafkaJSConnectionError,
+  KafkaJSConnectionClosedError,
+} from '../errors.ts';
+import INT_32_MAX_VALUE from '../constants.ts';
+import getEnv from '../env.ts';
+import { RequestQueue } from './requestQueue/index.ts';
+import { CONNECTION_STATUS, CONNECTED_STATUS } from './connectionStatus.ts';
+
+const requestInfo = ({ apiName, apiKey, apiVersion }: any) =>
+  `${apiName}(key: ${apiKey}, version: ${apiVersion})`;
 
 export default class Connection {
   authExpectResponse: any;
@@ -75,28 +76,28 @@ export default class Connection {
     connectionTimeout = 1000,
     enforceRequestTimeout = false,
     maxInFlightRequests = null,
-    instrumentationEmitter = null
+    instrumentationEmitter = null,
   }: any) {
-    this.host = host
-    this.port = port
-    this.rack = rack
-    this.clientId = clientId
-    this.broker = `${this.host}:${this.port}`
-    this.logger = logger.namespace('Connection')
+    this.host = host;
+    this.port = port;
+    this.rack = rack;
+    this.clientId = clientId;
+    this.broker = `${this.host}:${this.port}`;
+    this.logger = logger.namespace('Connection');
 
-    this.socketFactory = socketFactory
-    this.ssl = ssl
-    this.sasl = sasl
+    this.socketFactory = socketFactory;
+    this.ssl = ssl;
+    this.sasl = sasl;
 
-    this.requestTimeout = requestTimeout
-    this.connectionTimeout = connectionTimeout
+    this.requestTimeout = requestTimeout;
+    this.connectionTimeout = connectionTimeout;
 
-    this.bytesBuffered = 0
-    this.bytesNeeded = Decoder.int32Size()
-    this.chunks = []
+    this.bytesBuffered = 0;
+    this.bytesNeeded = Decoder.int32Size();
+    this.chunks = [];
 
-    this.connectionStatus = CONNECTION_STATUS.DISCONNECTED
-    this.correlationId = 0
+    this.connectionStatus = CONNECTION_STATUS.DISCONNECTED;
+    this.correlationId = 0;
     this.requestQueue = new RequestQueue({
       instrumentationEmitter,
       maxInFlightRequests,
@@ -106,27 +107,30 @@ export default class Connection {
       broker: this.broker,
       logger: logger.namespace('RequestQueue'),
       isConnected: () => this.connected,
-    })
+    });
 
-    this.authHandlers = null
-    this.authExpectResponse = false
+    this.authHandlers = null;
+    this.authExpectResponse = false;
 
-    const log = (level: any) => (message: any, extra = {}) => {
-      const logFn = this.logger[level]
-      logFn(message, { broker: this.broker, clientId, ...extra })
-    }
+    const log =
+      (level: any) =>
+      (message: any, extra = {}) => {
+        const logFn = this.logger[level];
+        logFn(message, { broker: this.broker, clientId, ...extra });
+      };
 
-    this.logDebug = log('debug')
-    this.logError = log('error')
+    this.logDebug = log('debug');
+    this.logError = log('error');
 
-    const env = getEnv()
-    this.shouldLogBuffers = env.KAFKAJS_DEBUG_PROTOCOL_BUFFERS === '1'
+    const env = getEnv();
+    this.shouldLogBuffers = env.KAFKAJS_DEBUG_PROTOCOL_BUFFERS === '1';
     this.shouldLogFetchBuffer =
-      this.shouldLogBuffers && env.KAFKAJS_DEBUG_EXTENDED_PROTOCOL_BUFFERS === '1'
+      this.shouldLogBuffers &&
+      env.KAFKAJS_DEBUG_EXTENDED_PROTOCOL_BUFFERS === '1';
   }
 
   get connected() {
-    return CONNECTED_STATUS.includes(this.connectionStatus)
+    return CONNECTED_STATUS.includes(this.connectionStatus);
   }
 
   /**
@@ -136,75 +140,78 @@ export default class Connection {
   connect() {
     return new Promise((resolve: any, reject: any) => {
       if (this.connected) {
-        return resolve(true)
+        return resolve(true);
       }
 
-      let timeoutId: any
+      let timeoutId: any;
 
       const onConnect = () => {
-        clearTimeout(timeoutId)
-        this.connectionStatus = CONNECTION_STATUS.CONNECTED
-        this.requestQueue.scheduleRequestTimeoutCheck()
-        resolve(true)
-      }
+        clearTimeout(timeoutId);
+        this.connectionStatus = CONNECTION_STATUS.CONNECTED;
+        this.requestQueue.scheduleRequestTimeoutCheck();
+        resolve(true);
+      };
 
       const onData = (data: any) => {
-        this.processData(data)
-      }
+        this.processData(data);
+      };
 
       const onEnd = async () => {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
 
-        const wasConnected = this.connected
+        const wasConnected = this.connected;
 
         if (this.authHandlers) {
-          this.authHandlers.onError()
+          this.authHandlers.onError();
         } else if (wasConnected) {
-          this.logDebug('Kafka server has closed connection')
+          this.logDebug('Kafka server has closed connection');
           this.rejectRequests(
             new KafkaJSConnectionClosedError('Closed connection', {
               host: this.host,
               port: this.port,
             })
-          )
+          );
         }
 
-        await this.disconnect()
-      }
+        await this.disconnect();
+      };
 
       const onError = async (e: any) => {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
 
-        const error = new KafkaJSConnectionError(`Connection error: ${e.message}`, {
-          broker: `${this.host}:${this.port}`,
-          code: e.code,
-        })
+        const error = new KafkaJSConnectionError(
+          `Connection error: ${e.message}`,
+          {
+            broker: `${this.host}:${this.port}`,
+            code: e.code,
+          }
+        );
 
-        this.logError(error.message, { stack: e.stack })
-        this.rejectRequests(error)
-        await this.disconnect()
+        this.logError(error.message, { stack: e.stack });
+        this.rejectRequests(error);
+        await this.disconnect();
 
-        reject(error)
-      }
+        reject(error);
+      };
 
       const onTimeout = async () => {
         const error = new KafkaJSConnectionError('Connection timeout', {
           broker: `${this.host}:${this.port}`,
-        })
+        });
 
-        this.logError(error.message)
-        this.rejectRequests(error)
-        await this.disconnect()
-        reject(error)
-      }
+        this.logError(error.message);
+        this.rejectRequests(error);
+        await this.disconnect();
+        reject(error);
+      };
 
       this.logDebug(`Connecting`, {
         ssl: !!this.ssl,
         sasl: !!this.sasl,
-      })
+      });
 
       try {
-        timeoutId = setTimeout(onTimeout, this.connectionTimeout)
+        timeoutId = setTimeout(onTimeout, this.connectionTimeout);
         this.socket = createSocket({
           socketFactory: this.socketFactory,
           host: this.host,
@@ -215,14 +222,14 @@ export default class Connection {
           onEnd,
           onError,
           onTimeout,
-        })
+        });
       } catch (e: any) {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
         reject(
           new KafkaJSConnectionError(`Failed to connect: ${e.message}`, {
             broker: `${this.host}:${this.port}`,
           })
-        )
+        );
       }
     });
   }
@@ -232,32 +239,28 @@ export default class Connection {
    * @returns {Promise}
    */
   async disconnect() {
-    this.connectionStatus = CONNECTION_STATUS.DISCONNECTING
-    this.logDebug('disconnecting...')
+    this.connectionStatus = CONNECTION_STATUS.DISCONNECTING;
+    this.logDebug('disconnecting...');
 
-    await this.requestQueue.waitForPendingRequests()
-    this.requestQueue.destroy()
+    await this.requestQueue.waitForPendingRequests();
+    this.requestQueue.destroy();
 
     if (this.socket) {
-      this.socket.end()
-      this.socket.unref()
+      this.socket.end();
+      this.socket.unref();
     }
 
-    this.connectionStatus = CONNECTION_STATUS.DISCONNECTED
-    this.logDebug('disconnected')
-    return true
+    this.connectionStatus = CONNECTION_STATUS.DISCONNECTED;
+    this.logDebug('disconnected');
+    return true;
   }
 
   /**
    * @public
    * @returns {Promise}
    */
-  authenticate({
-    authExpectResponse = false,
-    request,
-    response
-  }: any) {
-    this.authExpectResponse = authExpectResponse
+  authenticate({ authExpectResponse = false, request, response }: any) {
+    this.authExpectResponse = authExpectResponse;
 
     /**
      * TODO: rewrite removing the async promise executor
@@ -267,34 +270,34 @@ export default class Connection {
     return new Promise(async (resolve: any, reject: any) => {
       this.authHandlers = {
         onSuccess: (rawData: any) => {
-          this.authHandlers = null
-          this.authExpectResponse = false
+          this.authHandlers = null;
+          this.authExpectResponse = false;
 
           response
             .decode(rawData)
             .then((data: any) => response.parse(data))
             .then(resolve)
-            .catch(reject)
+            .catch(reject);
         },
         onError: () => {
-          this.authHandlers = null
-          this.authExpectResponse = false
+          this.authHandlers = null;
+          this.authExpectResponse = false;
 
           reject(
             new KafkaJSConnectionError('Connection closed by the server', {
               broker: `${this.host}:${this.port}`,
             })
-          )
+          );
         },
-      }
+      };
 
       try {
-        const requestPayload = await request.encode()
+        const requestPayload = await request.encode();
 
-        this.failIfNotConnected()
-        this.socket.write(requestPayload.buffer, 'binary')
+        this.failIfNotConnected();
+        this.socket.write(requestPayload.buffer, 'binary');
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
@@ -317,84 +320,97 @@ export default class Connection {
     request,
     response,
     requestTimeout = null,
-    logResponseError = true
+    logResponseError = true,
   }: any) {
-    this.failIfNotConnected()
+    this.failIfNotConnected();
 
-    const expectResponse = !request.expectResponse || request.expectResponse()
+    const expectResponse = !request.expectResponse || request.expectResponse();
     const sendRequest = async () => {
-      const { clientId } = this
-      const correlationId = this.nextCorrelationId()
+      const { clientId } = this;
+      const correlationId = this.nextCorrelationId();
 
-      const requestPayload = await createRequest({ request, correlationId, clientId })
-      const { apiKey, apiName, apiVersion } = request
+      const requestPayload = await createRequest({
+        request,
+        correlationId,
+        clientId,
+      });
+      const { apiKey, apiName, apiVersion } = request;
       this.logDebug(`Request ${requestInfo(request)}`, {
         correlationId,
         expectResponse,
         size: Buffer.byteLength(requestPayload.buffer),
-      })
+      });
 
       return new Promise((resolve: any, reject: any) => {
         try {
-          this.failIfNotConnected()
-          const entry = { apiKey, apiName, apiVersion, correlationId, resolve, reject }
+          this.failIfNotConnected();
+          const entry = {
+            apiKey,
+            apiName,
+            apiVersion,
+            correlationId,
+            resolve,
+            reject,
+          };
 
           this.requestQueue.push({
             entry,
             expectResponse,
             requestTimeout,
             sendRequest: () => {
-              this.socket.write(requestPayload.buffer, 'binary')
+              this.socket.write(requestPayload.buffer, 'binary');
             },
-          })
+          });
         } catch (e) {
-          reject(e)
+          reject(e);
         }
       });
-    }
+    };
 
-    const { correlationId, size, entry, payload }: any = await sendRequest()
+    const { correlationId, size, entry, payload }: any = await sendRequest();
 
     if (!expectResponse) {
-      return
+      return;
     }
 
     try {
-      const payloadDecoded = await response.decode(payload)
+      const payloadDecoded = await response.decode(payload);
 
       /**
        * @see KIP-219
        * If the response indicates that the client-side needs to throttle, do that.
        */
-      this.requestQueue.maybeThrottle(payloadDecoded.clientSideThrottleTime)
+      this.requestQueue.maybeThrottle(payloadDecoded.clientSideThrottleTime);
 
-      const data = await response.parse(payloadDecoded)
-      const isFetchApi = entry.apiName === 'Fetch'
+      const data = await response.parse(payloadDecoded);
+      const isFetchApi = entry.apiName === 'Fetch';
       this.logDebug(`Response ${requestInfo(entry)}`, {
         correlationId,
         size,
         data: isFetchApi && !this.shouldLogFetchBuffer ? '[filtered]' : data,
-      })
+      });
 
-      return data
+      return data;
     } catch (e: any) {
       if (logResponseError) {
         this.logError(`Response ${requestInfo(entry)}`, {
           error: e.message,
           correlationId,
           size,
-        })
+        });
       }
 
-      const isBuffer = Buffer.isBuffer(payload)
+      const isBuffer = Buffer.isBuffer(payload);
       this.logDebug(`Response ${requestInfo(entry)}`, {
         error: e.message,
         correlationId,
         payload:
-          isBuffer && !this.shouldLogBuffers ? { type: 'Buffer', data: '[filtered]' } : payload,
-      })
+          isBuffer && !this.shouldLogBuffers
+            ? { type: 'Buffer', data: '[filtered]' }
+            : payload,
+      });
 
-      throw e
+      throw e;
     }
   }
 
@@ -405,7 +421,7 @@ export default class Connection {
     if (!this.connected) {
       throw new KafkaJSConnectionError('Not connected', {
         broker: `${this.host}:${this.port}`,
-      })
+      });
     }
   }
 
@@ -414,10 +430,10 @@ export default class Connection {
    */
   nextCorrelationId() {
     if (this.correlationId >= INT_32_MAX_VALUE) {
-      this.correlationId = 0
+      this.correlationId = 0;
     }
 
-    return this.correlationId++
+    return this.correlationId++;
   }
 
   /**
@@ -425,50 +441,52 @@ export default class Connection {
    */
   processData(rawData: any) {
     if (this.authHandlers && !this.authExpectResponse) {
-      return this.authHandlers.onSuccess(rawData)
+      return this.authHandlers.onSuccess(rawData);
     }
 
     // Accumulate the new chunk
-    this.chunks.push(rawData)
-    this.bytesBuffered += Buffer.byteLength(rawData)
+    this.chunks.push(rawData);
+    this.bytesBuffered += Buffer.byteLength(rawData);
 
     // Process data if there are enough bytes to read the expected response size,
     // otherwise keep buffering
     while (this.bytesNeeded <= this.bytesBuffered) {
-      const buffer = this.chunks.length > 1 ? Buffer.concat(this.chunks) : this.chunks[0]
-      const decoder = new Decoder(buffer)
-      const expectedResponseSize = decoder.readInt32()
+      const buffer =
+        this.chunks.length > 1 ? Buffer.concat(this.chunks) : this.chunks[0];
+      const decoder = new Decoder(buffer);
+      const expectedResponseSize = decoder.readInt32();
 
       // Return early if not enough bytes to read the full response
       if (!decoder.canReadBytes(expectedResponseSize)) {
-        this.chunks = [buffer]
-        this.bytesBuffered = Buffer.byteLength(buffer)
-        this.bytesNeeded = Decoder.int32Size() + expectedResponseSize
-        return
+        this.chunks = [buffer];
+        this.bytesBuffered = Buffer.byteLength(buffer);
+        this.bytesNeeded = Decoder.int32Size() + expectedResponseSize;
+        return;
       }
 
-      const response = new Decoder(decoder.readBytes(expectedResponseSize))
+      // @ts-ignore
+      const response = new Decoder(decoder.readBytes(expectedResponseSize));
 
       // Reset the buffered chunks as the rest of the bytes
-      const remainderBuffer = decoder.readAll()
-      this.chunks = [remainderBuffer]
-      this.bytesBuffered = Buffer.byteLength(remainderBuffer)
-      this.bytesNeeded = Decoder.int32Size()
+      const remainderBuffer = decoder.readAll();
+      this.chunks = [remainderBuffer];
+      this.bytesBuffered = Buffer.byteLength(remainderBuffer);
+      this.bytesNeeded = Decoder.int32Size();
 
       if (this.authHandlers) {
-        const rawResponseSize = Decoder.int32Size() + expectedResponseSize
-        const rawResponseBuffer = buffer.slice(0, rawResponseSize)
-        return this.authHandlers.onSuccess(rawResponseBuffer)
+        const rawResponseSize = Decoder.int32Size() + expectedResponseSize;
+        const rawResponseBuffer = buffer.slice(0, rawResponseSize);
+        return this.authHandlers.onSuccess(rawResponseBuffer);
       }
 
-      const correlationId = response.readInt32()
-      const payload = response.readAll()
+      const correlationId = response.readInt32();
+      const payload = response.readAll();
 
       this.requestQueue.fulfillRequest({
         size: expectedResponseSize,
         correlationId,
         payload,
-      })
+      });
     }
   }
 
@@ -476,6 +494,6 @@ export default class Connection {
    * @private
    */
   rejectRequests(error: any) {
-    this.requestQueue.rejectAll(error)
+    this.requestQueue.rejectAll(error);
   }
 }

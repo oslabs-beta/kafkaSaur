@@ -13,13 +13,13 @@ const events = {
   REQUEST_QUEUE_SIZE: producerType(networkEvents.NETWORK_REQUEST_QUEUE_SIZE),
 };
 
-const wrappedEvents = {
+const wrappedEvents: any = {
   [events.REQUEST]: networkEvents.NETWORK_REQUEST,
   [events.REQUEST_TIMEOUT]: networkEvents.NETWORK_REQUEST_TIMEOUT,
   [events.REQUEST_QUEUE_SIZE]: networkEvents.NETWORK_REQUEST_QUEUE_SIZE,
 };
 
-const reversedWrappedEvents = swapObject(wrappedEvents);
+const reversedWrappedEvents: any = swapObject(wrappedEvents);
 const unwrap = (eventName: any) => wrappedEvents[eventName] || eventName;
 const wrap = (eventName: any) => reversedWrappedEvents[eventName] || eventName;
 
