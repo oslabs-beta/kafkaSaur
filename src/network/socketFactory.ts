@@ -5,22 +5,27 @@ const KEEP_ALIVE_DELAY = 60000 // in ms
  */
 export default () => {
   //NEED TO REFACTOR WITH DENO SOCKETS, purposely leavig these in so compiling fails
-  const net = require('net')
-  const tls = require('tls')
+  // const net = require('net')
+  // const tls = require('tls')
 
-  return ({
+  return async ({
     host,
     port,
     ssl,
     onConnect
   }: any) => {
-    const socket = ssl
-      // deno.connect()
-       ? tls.connect(Object.assign({ host, port, servername: host }, ssl), onConnect)
-       : net.connect({ host, port }, onConnect)
 
-    socket.setKeepAlive(true, KEEP_ALIVE_DELAY)
 
-    return socket
+    const socket = await Deno.connect({ 
+      hostname: 'localhost',
+      port: 9093,
+      transport: 'tcp',
+      
+    });
+    
+    //socket.setKeepAlive(true, KEEP_ALIVE_DELAY)
+
+    return socket;
+
   };
 }
