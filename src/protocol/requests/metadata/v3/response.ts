@@ -1,8 +1,9 @@
 /** @format */
 
-import Decoder from '../../../decoder.ts';
-import { parse as parseV0 } from '../v0/response.ts';
+import {Decoder} from '../../../decoder.ts';
+import response from '../v0/response.ts';
 
+const { parse } = response;
 /**
  * Metadata Response (Version: 3) => throttle_time_ms [brokers] cluster_id controller_id [topic_metadata]
  *   throttle_time_ms => INT32
@@ -60,5 +61,5 @@ const decode = async (rawData: any) => {
 
 export default {
   decode,
-  parse: parseV0,
+  parse,
 };
