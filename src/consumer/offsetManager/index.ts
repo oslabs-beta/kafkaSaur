@@ -10,7 +10,7 @@ const { keys, assign } = Object
 const indexTopics = (topics: any) => topics.reduce((obj: any, topic: any) => assign(obj, { [topic]: {} }), {})
 
 const PRIVATE = {
-  COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets'),
+  COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets') as unknown as string,
 }
 export class OffsetManager {
   [key: string]: any

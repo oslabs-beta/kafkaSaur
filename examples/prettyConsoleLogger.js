@@ -1,8 +1,7 @@
 /** @format */
 
-const {
-  logLevel: { INFO, ERROR, WARN, DEBUG },
-} = require('../index');
+import {logLevel} from '../index.ts';
+const { INFO, ERROR, WARN, DEBUG } = logLevel
 
 const chars = {
   singleLine: '▪',

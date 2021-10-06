@@ -19,6 +19,7 @@ export default ({ groupId, members }: any) => ({
   apiKey,
   apiVersion: 3,
   apiName: 'LeaveGroup',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)

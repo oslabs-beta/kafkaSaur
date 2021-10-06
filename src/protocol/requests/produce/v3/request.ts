@@ -1,10 +1,10 @@
 import Long from '../../../../utils/long.ts'
 import {Encoder} from '../../../encoder.ts'
 import apiKeys from '../../apiKeys.ts'
-import { Types } from '../../../message/compression/index.ts'
+import compression from '../../../message/compression/index.ts'
 import Record from '../../../recordBatch/record/v0/index.ts'
 import { RecordBatch } from '../../../recordBatch/v0/index.ts'
-
+const {Types} = compression
 const apiKey = apiKeys.Produce;
 /**
  * Produce Request (Version: 3) => transactional_id acks timeout [topic_data]

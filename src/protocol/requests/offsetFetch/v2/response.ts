@@ -13,7 +13,7 @@ import flatten from '../../../../utils/flatten.ts'
  *       error_code => INT16
  *   error_code => INT16
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -33,7 +33,7 @@ const decodePartitions = (decoder: any) => ({
   metadata: decoder.readString(),
   errorCode: decoder.readInt16()
 })
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode)

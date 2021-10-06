@@ -11,6 +11,7 @@ const parseV0 = response.parse;
  *   sasl_auth_bytes => BYTES
  *   session_lifetime_ms => INT64
  */
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const errorCode = decoder.readInt16()

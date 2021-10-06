@@ -25,6 +25,7 @@ export default ({
   apiKey,
   apiVersion: 3,
   apiName: 'SyncGroup',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)

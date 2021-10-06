@@ -18,7 +18,7 @@ const parse = response.parse;
  *     member_id => STRING
  *     member_metadata => BYTES
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   const throttleTime = decoder.readInt32();

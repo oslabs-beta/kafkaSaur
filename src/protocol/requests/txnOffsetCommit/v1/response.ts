@@ -1,5 +1,8 @@
-import { parse, decode as decodeV1 } from '../v0/response.ts'
 
+import response from '../v0/response.ts'
+
+const {parse} = response
+const decodeV1 = response.decode
 /**
  * In version 1, on quota violation, brokers send out responses before throttling.
  * @see https://cwiki.apache.org/confluence/display/KAFKA/KIP-219+-+Improve+quota+communication

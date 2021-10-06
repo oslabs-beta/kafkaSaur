@@ -33,6 +33,7 @@ export default ({
   apiKey,
   apiVersion: 5,
   apiName: 'JoinGroup',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)

@@ -68,6 +68,7 @@ export default ({ acks, timeout, topicData }: any) => ({
   apiVersion: 0,
   apiName: 'Produce',
   expectResponse: () => acks !== 0,
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeInt16(acks)

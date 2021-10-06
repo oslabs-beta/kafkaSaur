@@ -2,8 +2,9 @@
 
 import { Encoder } from '../encoder.ts';
 import MessageProtocol from '../message/index.ts';
-import { Types } from '../message/compression/index.ts';
+import Compression from '../message/compression/index.ts';
 
+const { Types } = Compression;
 /**
  * MessageSet => [Offset MessageSize Message]
  *  Offset => int64

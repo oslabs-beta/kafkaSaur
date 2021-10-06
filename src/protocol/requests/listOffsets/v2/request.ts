@@ -17,6 +17,7 @@ export default ({ replicaId, isolationLevel, topics }: any) => ({
   apiKey,
   apiVersion: 2,
   apiName: 'ListOffsets',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeInt32(replicaId)

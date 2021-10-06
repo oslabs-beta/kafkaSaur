@@ -1,16 +1,28 @@
 /** @format */
 
+// class KafkaJSError extends Error {
+//   [key: string | number | symbol]: any;
+//   helpUrl: any;
+//   retriable?: Boolean;
+//   constructor(e: any, { retriable = true } = {}, ...args: any[]) {
+//     const superObj: any = super(e);
+//     superObj.captureStackTrace(this, this.constructor);
+//     this.message = e.message || e;
+//     this.name = 'KafkaJSError';
+//     this.retriable = retriable;
+//     this.helpUrl = e.helpUrl;
+//   }
+// }
+
 class KafkaJSError extends Error {
-  //[key: string | number | symbol]: any;
-  helpUrl: any;
-  retriable?: Boolean;
-  constructor(e: any, { retriable = true } = {}, ...args: any[]) {
-    const superObj: any = super(e);
-    superObj.captureStackTrace(this, this.constructor);
-    this.message = e.message || e;
-    this.name = 'KafkaJSError';
-    this.retriable = retriable;
-    this.helpUrl = e.helpUrl;
+  [key: string]: any
+  constructor(e: any, { retriable = true } = {}) {
+    super(e)
+    Error.captureStackTrace(this, this.constructor)
+    this.message = e.message || e
+    this.name = 'KafkaJSError'
+    this.retriable = retriable
+    this.helpUrl = e.helpUrl
   }
 }
 
@@ -110,7 +122,7 @@ class KafkaJSRequestTimeoutError extends KafkaJSError {
 
 class KafkaJSMetadataNotLoaded extends KafkaJSError {
   constructor(p1?: any, p2?: any, p3?: any) {
-    super(p1, p2, p3);
+    super(p1, p2,);
     this.name = 'KafkaJSMetadataNotLoaded';
   }
 }
@@ -157,7 +169,7 @@ class KafkaJSBrokerNotFound extends KafkaJSError {
   constructor(p1?: any, p2?: any, p3?: any) {
     // constructor ()  {
 
-    super(p1, p2, p3);
+    super(p1, p2,);
     this.name = 'KafkaJSBrokerNotFound';
   }
 }

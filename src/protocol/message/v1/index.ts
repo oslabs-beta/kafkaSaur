@@ -2,12 +2,13 @@
 
 import { Encoder } from '../../encoder.ts';
 import crc32 from '../../crc32.ts';
-import {
-  Types as Compression,
-  COMPRESSION_CODEC_MASK,
-} from '../compression/index.ts';
+import Compression from '../compression/index.ts';
 import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
+const {
+  Types,
+  COMPRESSION_CODEC_MASK,
+}  = Compression;
 /**
  * v1 (supported since 0.10.0)
  * Message => Crc MagicByte Attributes Key Value
@@ -20,7 +21,7 @@ import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
  */
 
 export default ({
-  compression = Compression.None,
+  compression = Types.None,
   timestamp = Date.now(),
   key,
   value,

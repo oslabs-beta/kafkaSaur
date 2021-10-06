@@ -21,7 +21,7 @@ const decode = response.decode;
 const { code: MEMBER_ID_REQUIRED_ERROR_CODE } = errorCodes.find(
   (e: any) => e.type === 'MEMBER_ID_REQUIRED'
 ) as any;
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     if (data.errorCode === MEMBER_ID_REQUIRED_ERROR_CODE) {

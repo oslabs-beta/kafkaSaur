@@ -17,7 +17,7 @@ const partition = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   offset: decoder.readInt64().toString()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const topics = decoder.readArray((decoder: any) => ({
