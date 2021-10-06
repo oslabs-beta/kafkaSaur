@@ -49,6 +49,7 @@ export default ({
   apiKey,
   apiVersion: 11,
   apiName: 'Fetch',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeInt32(replicaId)

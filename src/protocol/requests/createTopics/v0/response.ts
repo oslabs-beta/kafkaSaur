@@ -15,14 +15,14 @@ const topicErrors = (decoder: any) => ({
   topic: decoder.readString(),
   errorCode: decoder.readInt16()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
     topicErrors: decoder.readArray(topicErrors).sort(topicNameComparator),
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithError = data.topicErrors.filter(({
     errorCode

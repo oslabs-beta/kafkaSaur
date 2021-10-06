@@ -13,7 +13,7 @@ import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
  *       partition => INT32
  *       error_code => INT16
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: Buffer) => {
   const decoder = new Decoder(rawData);
   return {
@@ -30,7 +30,7 @@ const decodePartitions = (decoder: Decoder) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
 });
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const partitionsWithError = data.responses.map((response: any) =>
     response.partitions.filter((partition: any) => failure(partition.errorCode))

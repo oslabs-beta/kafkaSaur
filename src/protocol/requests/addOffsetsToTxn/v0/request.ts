@@ -1,10 +1,9 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder.ts';
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-import { AddOffsetsToTxn } from '../../apiKeys.ts';
-const { apiKey } = AddOffsetsToTxn;
+import { Encoder } from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+const apiKey = apiKeys.AddOffsetsToTxn;
+
 /**
  * AddOffsetsToTxn Request (Version: 0) => transactional_id producer_id producer_epoch group_id
  *   transactional_id => STRING
@@ -22,6 +21,7 @@ export default ({
   apiKey,
   apiVersion: 0,
   apiName: 'AddOffsetsToTxn',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(transactionalId)

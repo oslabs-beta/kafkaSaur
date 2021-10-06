@@ -17,5 +17,6 @@ export default ({
   apiKey,
   apiVersion: 0,
   apiName: 'SaslHandshake',
+  //deno-lint-ignore require-await
   encode: async () => new Encoder().writeString(mechanism),
 })

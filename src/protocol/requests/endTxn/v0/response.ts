@@ -6,6 +6,7 @@ import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../.
  *   throttle_time_ms => INT32
  *   error_code => INT16
  */
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -18,7 +19,7 @@ const decode = async (rawData: any) => {
     errorCode,
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode)

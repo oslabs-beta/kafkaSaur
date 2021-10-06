@@ -15,7 +15,7 @@ const parseV2 = response.parse;
  *       error_code => INT16
  *   error_code => INT16
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {

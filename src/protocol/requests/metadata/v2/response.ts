@@ -47,7 +47,7 @@ const partitionMetadata = (decoder: any) => ({
   replicas: decoder.readArray((d: any) => d.readInt32()),
   isr: decoder.readArray((d: any) => d.readInt32()),
 });
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   return {

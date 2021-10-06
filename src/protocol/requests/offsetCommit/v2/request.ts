@@ -27,6 +27,7 @@ export default ({
   apiKey,
   apiVersion: 2,
   apiName: 'OffsetCommit',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)

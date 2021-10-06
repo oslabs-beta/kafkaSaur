@@ -22,6 +22,7 @@ export default ({
   apiKey,
   apiVersion: 1,
   apiName: 'DescribeConfigs',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeArray(resources.map(encodeResource)).writeBoolean(includeSynonyms)
   },

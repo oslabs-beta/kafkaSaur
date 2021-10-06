@@ -1,6 +1,6 @@
 /** @format */
 
-import Decoder from '../../../decoder.ts';
+import {Decoder} from '../../../decoder.ts';
 import {
   failIfVersionNotSupported,
   failure,
@@ -18,7 +18,7 @@ const parseV2 = response.parse;
  *     group_instance_id => NULLABLE_STRING
  *     error_code => INT16
  */
-
+//
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   const throttleTime = decoder.readInt32();
@@ -40,7 +40,7 @@ const decodeMembers = (decoder: any) => ({
   groupInstanceId: decoder.readString(),
   errorCode: decoder.readInt16(),
 });
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const parsed = parseV2(data);
 

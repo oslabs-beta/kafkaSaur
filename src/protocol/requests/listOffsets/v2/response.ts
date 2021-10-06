@@ -15,6 +15,7 @@ import flatten from '../../../../utils/flatten.ts';
  *       timestamp => INT64
  *       offset => INT64
  */
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
 
@@ -35,12 +36,12 @@ const decodePartitions = (decoder: any) => ({
   timestamp: decoder.readInt64().toString(),
   offset: decoder.readInt64().toString(),
 });
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const partitionsWithError = data.responses.map((response: any) =>
     response.partitions.filter((partition: any) => failure(partition.errorCode))
   );
-  const partitionWithError = flatten(partitionsWithError)[0];
+  const partitionWithError: any = flatten(partitionsWithError)[0];
   if (partitionWithError) {
     throw createErrorFromCode(partitionWithError.errorCode);
   }

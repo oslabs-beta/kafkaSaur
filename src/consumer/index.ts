@@ -89,11 +89,11 @@ export default ({
   const logger = rootLogger.namespace('Consumer');
   const instrumentationEmitter =
     rootInstrumentationEmitter || new InstrumentationEventEmitter();
-  const assigners = partitionAssigners.map((createAssigner) =>
+  const assigners = partitionAssigners.map((createAssigner: any) =>
     createAssigner({ groupId, logger, cluster })
   );
 
-  const topics = {};
+  const topics: {[index: string]: any} = {};
   let runner: any = null;
   let consumerGroup: any = null;
 
@@ -209,7 +209,7 @@ export default ({
       const topicRegExp = topic;
       const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
-        .map(({ topic: topicName }) => topicName)
+        .map(({ topic: topicName}: any) => topicName)
         .filter((topicName: any) => topicRegExp.test(topicName));
 
       logger.debug('Subscription based on RegExp', {
@@ -358,8 +358,9 @@ export default ({
    * @param topicPartitions
    *   Example: [{ topic: 'topic-name', partition: 0, offset: '1', metadata: 'event-id-3' }]
    */
+  // deno-lint-ignore require-await
   const commitOffsets = async (topicPartitions = []) => {
-    const commitsByTopic = topicPartitions.reduce(
+    const commitsByTopic: {[key: string]: any} = topicPartitions.reduce(
       (payload, { topic, partition, offset, metadata = null }) => {
         if (!topic) {
           throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);

@@ -42,7 +42,7 @@ const partitionMetadata = (decoder: any) => ({
   replicas: decoder.readArray((d: any) => d.readInt32()),
   isr: decoder.readArray((d: any) => d.readInt32())
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -50,7 +50,7 @@ const decode = async (rawData: any) => {
     topicMetadata: decoder.readArray(topicMetadata),
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithErrors = data.topicMetadata.filter((topic: any) => failure(topic.topicErrorCode))
   if (topicsWithErrors.length > 0) {

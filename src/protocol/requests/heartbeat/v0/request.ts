@@ -16,6 +16,7 @@ export default ({ groupId, groupGenerationId, memberId }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'Heartbeat',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)

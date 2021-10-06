@@ -6,14 +6,14 @@ import events from '../instrumentationEvents.ts';
 import { KafkaJSInvariantViolation } from '../../errors.ts';
 
 const PRIVATE = {
-  EMIT_QUEUE_SIZE_EVENT: Symbol('private:RequestQueue:emitQueueSizeEvent'),
-  EMIT_REQUEST_QUEUE_EMPTY: Symbol('private:RequestQueue:emitQueueEmpty'),
+  EMIT_QUEUE_SIZE_EVENT: Symbol('private:RequestQueue:emitQueueSizeEvent') as unknown as string,
+  EMIT_REQUEST_QUEUE_EMPTY: Symbol('private:RequestQueue:emitQueueEmpty') as unknown as string,
 };
 
 const REQUEST_QUEUE_EMPTY = 'requestQueueEmpty';
 
 export class RequestQueue extends EventEmitter {
-  [key: string | number | symbol]: any;
+  [key: string]: any;
   /**
    * @param {Object} options
    * @param {number} options.maxInFlightRequests

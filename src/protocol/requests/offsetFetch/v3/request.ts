@@ -19,6 +19,7 @@ export default ({
   apiKey,
   apiVersion: 3,
   apiName: 'OffsetFetch',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeString(groupId).writeNullableArray(topics.map(encodeTopic))
   },

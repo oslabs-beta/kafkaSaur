@@ -32,7 +32,7 @@ const decodePartition = (decoder: Decoder) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
 });
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithErrors = data.topics
     .map(({ partitions }: any) => ({

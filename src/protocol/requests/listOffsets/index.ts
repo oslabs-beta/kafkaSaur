@@ -19,17 +19,13 @@ const REPLICA_ID = -1;
 
 const versions: any = {
   0: ({ replicaId = REPLICA_ID, topics }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v0/request');
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v0/response');
+    const request = requestV0;
+    const response = responseV0;
     return { request: request({ replicaId, topics }), response };
   },
   1: ({ replicaId = REPLICA_ID, topics }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v1/request');
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v1/response');
+    const request = requestV1;
+    const response = responseV1;
     return { request: request({ replicaId, topics }), response };
   },
   2: ({
@@ -37,10 +33,8 @@ const versions: any = {
     isolationLevel = ISOLATION_LEVEL.READ_COMMITTED,
     topics,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v2/request');
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v2/response');
+    const request = requestV2;
+    const response = responseV2;
     return {
       request: request({ replicaId, isolationLevel, topics }),
       response,
@@ -51,10 +45,8 @@ const versions: any = {
     isolationLevel = ISOLATION_LEVEL.READ_COMMITTED,
     topics,
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v3/request');
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v3/response');
+    const request = requestV3;
+    const response = responseV3;
     return {
       request: request({ replicaId, isolationLevel, topics }),
       response,

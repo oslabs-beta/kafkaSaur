@@ -20,7 +20,7 @@ const partition = (decoder: any) => ({
   baseOffset: decoder.readInt64().toString(),
   logAppendTime: decoder.readInt64().toString()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const topics = decoder.readArray((decoder: any) => ({
@@ -35,7 +35,7 @@ const decode = async (rawData: any) => {
     throttleTime,
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const partitionsWithError = data.topics.map((response: any) => {
     return response.partitions.filter((partition: any) => failure(partition.errorCode));

@@ -14,6 +14,7 @@ export default ({ topics, allowAutoTopicCreation = true }: any) => ({
   apiKey,
   apiVersion: 4,
   apiName: 'Metadata',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeNullableArray(topics)

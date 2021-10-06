@@ -1,10 +1,10 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder.ts';
+import {Decoder} from '../../../decoder.ts';
 import { failIfVersionNotSupported } from '../../../error.ts';
-import { parse as parseV0 } from '../v0/response.ts';
-
+import response from '../v0/response.ts';
+const {parse} = response
+const parseV0 = parse
 /**
  * ApiVersions Response (Version: 1) => error_code [api_versions] throttle_time_ms
  *   error_code => INT16
@@ -20,7 +20,7 @@ const apiVersion = (decoder: any) => ({
   minVersion: decoder.readInt16(),
   maxVersion: decoder.readInt16(),
 });
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   const errorCode = decoder.readInt16();

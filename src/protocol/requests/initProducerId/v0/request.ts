@@ -13,6 +13,7 @@ export default ({ transactionalId, transactionTimeout }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'InitProducerId',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(transactionalId)

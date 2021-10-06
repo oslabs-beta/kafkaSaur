@@ -13,7 +13,7 @@ import flatten from '../../../../utils/flatten.ts';
  *       error_code => INT16
  *       offsets => INT64
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   return {
@@ -33,14 +33,14 @@ const decodePartitions = (decoder: any) => ({
 });
 
 const decodeOffsets = (decoder: any) => decoder.readInt64().toString();
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
-  const partitionsWithError = data.responses.map((response: any) =>
+  const partitionsWithError =  data.responses.map((response: any) =>
     response.partitions.filter((partition: any) => failure(partition.errorCode))
   );
-  const partitionWithError = flatten(partitionsWithError)[0];
+  const partitionWithError =   flatten(partitionsWithError)[0];
   if (partitionWithError) {
-    throw createErrorFromCode(partitionWithError.errorCode);
+    throw createErrorFromCode(partitionWithError);
   }
 
   return data;

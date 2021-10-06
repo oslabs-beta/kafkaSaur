@@ -24,7 +24,7 @@ const partition = (decoder: any) => ({
   logAppendTime: decoder.readInt64().toString(),
   logStartOffset: decoder.readInt64().toString()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const topics = decoder.readArray((decoder: any) => ({

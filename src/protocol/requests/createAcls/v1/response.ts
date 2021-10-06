@@ -1,6 +1,9 @@
 /** @format */
 
-import { parse, decode as decodeV0 } from '../v0/response.ts';
+import response from '../v0/response.ts';
+const { parse  } = response
+//const { decode } = response 
+const decodeV0 = response.decode
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.

@@ -14,7 +14,7 @@ import { failure, createErrorFromCode } from '../../../error.ts'
  */
 
 const topicNameComparator = (a: any, b: any) => a.topic.localeCompare(b.topic)
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {

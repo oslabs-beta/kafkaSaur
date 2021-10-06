@@ -2,7 +2,8 @@
 
 import createRetry from '../retry/index.ts';
 import { CONNECTION_STATUS } from '../network/connectionStatus.ts';
-import DefaultPartitioner from './partitioners/index.ts';
+import partitionerObject from './partitioners/index.ts';
+const { DefaultPartitioner}  = partitionerObject
 import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts';
 import createEosManager from './eosManager/index.ts';
 import createMessageProducer from './messageProducer.ts';

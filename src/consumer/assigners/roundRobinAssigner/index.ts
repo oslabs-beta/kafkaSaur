@@ -40,10 +40,11 @@ export default ({ cluster }: any) => ({
    *                     }
    *                   ]
    */
+  // deno-lint-ignore require-await
   async assign({ members, topics }: any) {
     const membersCount = members.length;
     const sortedMembers = members.map(({ memberId }: any) => memberId).sort();
-    const assignment = {};
+    const assignment: {[key: string]: any} = {};
 
     const topicsPartionArrays = topics.map((topic: any) => {
       const partitionMetadata = cluster.findTopicPartitionMetadata(topic);
@@ -57,19 +58,14 @@ export default ({ cluster }: any) => ({
     topicsPartitions.forEach((topicPartition: any, i: any) => {
       const assignee = sortedMembers[i % membersCount];
 
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (!assignment[assignee]) {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         assignment[assignee] = Object.create(null);
       }
 
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       if (!assignment[assignee][topicPartition.topic]) {
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         assignment[assignee][topicPartition.topic] = [];
       }
 
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       assignment[assignee][topicPartition.topic].push(
         topicPartition.partitionId
       );
@@ -79,7 +75,6 @@ export default ({ cluster }: any) => ({
       memberId,
       memberAssignment: MemberAssignment.encode({
         version: this.version,
-        // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
         assignment: assignment[memberId],
       }),
     }));

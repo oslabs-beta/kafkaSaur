@@ -1,6 +1,6 @@
 /** @format */
 
-import Decoder from '../../../decoder.ts';
+import {Decoder} from '../../../decoder.ts';
 import {
   failure,
   createErrorFromCode,
@@ -11,7 +11,7 @@ import {
  * LeaveGroup Response (Version: 0) => error_code
  *   error_code => INT16
  */
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   const errorCode = decoder.readInt16();
@@ -20,7 +20,7 @@ const decode = async (rawData: any) => {
 
   return { errorCode };
 };
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode);

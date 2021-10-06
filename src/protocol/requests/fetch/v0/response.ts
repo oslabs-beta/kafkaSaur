@@ -40,7 +40,7 @@ const decode = async (rawData: any) => {
 const { code : OFFSET_OUT_OF_RANGE_ERROR_CODE } : any = errorCodes.find(
   (e: any) => e.type === 'OFFSET_OUT_OF_RANGE'
 )
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const partitionsWithError = data.responses.map(({
     topicName,

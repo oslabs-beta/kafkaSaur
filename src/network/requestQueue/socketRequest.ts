@@ -2,15 +2,15 @@ import { KafkaJSRequestTimeoutError, KafkaJSNonRetriableError } from '../../erro
 import events from '../instrumentationEvents.ts';
 
 const PRIVATE = {
-  STATE: Symbol('private:SocketRequest:state'),
-  EMIT_EVENT: Symbol('private:SocketRequest:emitEvent'),
+  STATE: Symbol('private:SocketRequest:state') as unknown as string,
+  EMIT_EVENT: Symbol('private:SocketRequest:emitEvent') as unknown as string,
 }
 
 const REQUEST_STATE = {
-  PENDING: Symbol('PENDING'),
-  SENT: Symbol('SENT'),
-  COMPLETED: Symbol('COMPLETED'),
-  REJECTED: Symbol('REJECTED'),
+  PENDING: Symbol('PENDING') as unknown as string,
+  SENT: Symbol('SENT') as unknown as string,
+  COMPLETED: Symbol('COMPLETED') as unknown as string,
+  REJECTED: Symbol('REJECTED') as unknown as string,
 }
 
 /**
@@ -39,7 +39,7 @@ const REQUEST_STATE = {
  * @property {Function} reject
  */
 export class SocketRequest {
-  [key: symbol | string | number]: any;
+  [key: string]: any;
   /**
    * @param {Object} options
    * @param {number} options.requestTimeout
