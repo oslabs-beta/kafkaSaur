@@ -14,6 +14,7 @@ import {
  *   producer_id => INT64
  *   producer_epoch => INT16
  */
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData);
   const throttleTime = decoder.readInt32();
@@ -28,7 +29,7 @@ const decode = async (rawData: any) => {
     producerEpoch: decoder.readInt16(),
   };
 };
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode);

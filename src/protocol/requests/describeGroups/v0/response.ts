@@ -33,7 +33,7 @@ const decodeGroup = (decoder: any) => ({
   protocol: decoder.readString(),
   members: decoder.readArray(decoderMember)
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const groups = decoder.readArray(decodeGroup)
@@ -42,7 +42,7 @@ const decode = async (rawData: any) => {
     groups,
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const groupsWithError = data.groups.filter(({
     errorCode

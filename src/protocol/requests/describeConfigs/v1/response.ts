@@ -55,7 +55,7 @@ const decodeResources = (decoder: any) => ({
   resourceName: decoder.readString(),
   configEntries: decoder.readArray(decodeConfigEntries)
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()

@@ -23,6 +23,7 @@ export default ({ resources, validateOnly = false }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'AlterConfigs',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeArray(resources.map(encodeResource))

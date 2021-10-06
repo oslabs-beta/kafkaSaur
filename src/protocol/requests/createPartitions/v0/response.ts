@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import {Decoder} from '../../../decoder.ts';
+import { failure,createErrorFromCode } from '../../../error.ts';
 
 /*
  * CreatePartitions Response (Version: 0) => throttle_time_ms [topic_errors]
@@ -19,7 +17,7 @@ const topicErrors = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -28,7 +26,7 @@ const decode = async (rawData: any) => {
     topicErrors: decoder.readArray(topicErrors).sort(topicNameComparator),
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithError = data.topicErrors.filter(({
     errorCode

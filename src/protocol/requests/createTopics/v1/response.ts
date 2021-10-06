@@ -18,7 +18,7 @@ const topicErrors = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {

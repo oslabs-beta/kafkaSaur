@@ -1,8 +1,8 @@
 /** @format */
-
+import {Buffer} from 'https://deno.land/std@0.110.0/node/buffer.ts'
 import responseV0 from '../v0/response.ts';
 
-import Decoder from '../../../decoder.ts';
+import {Decoder }from '../../../decoder.ts';
 
 /**
  * ListGroups Response (Version: 1) => error_code [groups]
@@ -13,7 +13,8 @@ import Decoder from '../../../decoder.ts';
  *     protocol_type => STRING
  */
 
-const decode = async (rawData: any) => {
+//deno-lint-ignore require-await
+const decode = async (rawData: Buffer) => {
   const decoder = new Decoder(rawData);
   const throttleTime = decoder.readInt32();
   const errorCode = decoder.readInt16();

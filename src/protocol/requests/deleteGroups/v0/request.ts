@@ -12,7 +12,7 @@ export default (groupIds: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'DeleteGroups',
-
+//deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeArray(groupIds.map(encodeGroups))
   }

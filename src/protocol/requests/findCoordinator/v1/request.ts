@@ -16,6 +16,7 @@ export default ({
   apiKey,
   apiVersion: 1,
   apiName: 'GroupCoordinator',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeString(coordinatorKey).writeInt8(coordinatorType)
   },

@@ -72,7 +72,7 @@ const decodeResources = (decoder: any) => {
     configEntries,
   }
 }
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -83,7 +83,7 @@ const decode = async (rawData: any) => {
     resources,
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const resourcesWithError = data.resources.filter(({
     errorCode

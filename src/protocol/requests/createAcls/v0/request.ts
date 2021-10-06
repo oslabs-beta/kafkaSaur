@@ -36,6 +36,7 @@ export default ({ creations }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'CreateAcls',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeArray(creations.map(encodeCreations));
   },

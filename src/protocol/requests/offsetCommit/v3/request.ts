@@ -1,7 +1,6 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV2'... Remove this comment to see the full error message
-const requestV2 = require('../v2/request');
+import requestV2 from '../v2/request.ts';
 
 /**
  * OffsetCommit Request (Version: 3) => group_id generation_id member_id retention_time [topics]

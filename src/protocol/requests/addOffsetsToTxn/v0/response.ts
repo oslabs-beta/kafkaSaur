@@ -1,7 +1,6 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder.ts';
+import {Decoder} from '../../../decoder.ts';
 
 import {
   failure,

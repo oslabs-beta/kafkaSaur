@@ -2,12 +2,13 @@
 
 import { Encoder } from '../../encoder.ts';
 import crc32 from '../../crc32.ts';
-import {
-  Types as Compression,
-  COMPRESSION_CODEC_MASK,
-} from '../compression/index.ts';
+import compression from '../compression/index.ts';
 import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
+const {Types} = compression
+const {COMPRESSION_CODEC_MASK} = compression
+
+const Compression = Types
 /**
  * v0
  * Message => Crc MagicByte Attributes Key Value

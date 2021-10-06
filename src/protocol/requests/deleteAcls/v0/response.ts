@@ -34,7 +34,7 @@ const decodeFilterResponse = (decoder: any) => ({
   errorMessage: decoder.readString(),
   matchingAcls: decoder.readArray(decodeMatchingAcls)
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()

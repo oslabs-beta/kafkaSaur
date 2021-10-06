@@ -12,7 +12,7 @@ const decodeGroup = (decoder: any) => ({
   groupId: decoder.readString(),
   errorCode: decoder.readInt16()
 })
-
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTimeMs = decoder.readInt32()
@@ -28,7 +28,7 @@ const decode = async (rawData: any) => {
     results,
   }
 }
-
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   return data
 }

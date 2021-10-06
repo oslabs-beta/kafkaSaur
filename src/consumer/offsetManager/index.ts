@@ -13,6 +13,7 @@ const PRIVATE = {
   COMMITTED_OFFSETS: Symbol('private:OffsetManager:committedOffsets'),
 }
 export class OffsetManager {
+  [key: string]: any
   autoCommit: any;
   autoCommitInterval: any;
   autoCommitThreshold: any;
@@ -296,9 +297,8 @@ export class OffsetManager {
     return { topics: topicsWithPartitionsToCommit }
   }
 
-  async commitOffsets(offsets = {}) {
+  async commitOffsets(offsets: {[key: string]: any} = {}) {
     const { groupId, generationId, memberId } = this
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'topics' does not exist on type '{}'.
     const { topics = this.uncommittedOffsets().topics } = offsets
 
     if (topics.length === 0) {
@@ -447,15 +447,12 @@ export class OffsetManager {
   }
 
   committedOffsets() {
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     if (!this[(PRIVATE as any).COMMITTED_OFFSETS]) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       this[(PRIVATE as any).COMMITTED_OFFSETS] = this.groupId
     ? this.cluster.committedOffsets({ groupId: this.groupId })
     : {};
     }
 
-    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return this[(PRIVATE as any).COMMITTED_OFFSETS];
   }
 }

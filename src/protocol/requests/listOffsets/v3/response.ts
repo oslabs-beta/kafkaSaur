@@ -1,7 +1,6 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-const response = require('../v2/response');
+import response from '../v2/response.ts';
 const parse = response.parse;
 const decodeV2 = response.decode;
 /**

@@ -1,6 +1,7 @@
 import {Decoder} from '../../../decoder.ts';
 import  response from '../v0/response.ts'
 const parseV0 = response.parse
+
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
  * @see https://cwiki.apache.org/confluence/display/KAFKA/KIP-219+-+Improve+quota+communication
@@ -41,7 +42,7 @@ const decodeFilterResponse = (decoder: any) => ({
   errorMessage: decoder.readString(),
   matchingAcls: decoder.readArray(decodeMatchingAcls)
 })
-
+// deno-lint-ignore require-await 
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()

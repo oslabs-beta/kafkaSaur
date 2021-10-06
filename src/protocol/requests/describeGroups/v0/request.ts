@@ -15,6 +15,7 @@ export default ({
   apiKey,
   apiVersion: 0,
   apiName: 'DescribeGroups',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeArray(groupIds)
   },

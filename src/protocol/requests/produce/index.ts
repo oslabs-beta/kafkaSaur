@@ -15,7 +15,7 @@ import responseV6 from "./v6/response.ts"
 import requestV7 from "./v7/request.ts"
 import responseV7 from "./v7/response.ts"
 
-const versions = {
+const versions: Record<number, any> = {
   0: ({
     acks,
     timeout,
@@ -171,6 +171,5 @@ export default {
   versions: Object.keys(versions),
   protocol: ({
     version
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   }: any) => versions[version],
 }

@@ -3,8 +3,7 @@
 import { EventEmitter } from 'https://deno.land/std@0.110.0/node/events.ts';
 
 import { KafkaJSNonRetriableError } from '../../errors.ts';
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'STATES'.
-const STATES = require('./transactionStates');
+import STATES from './transactionStates.ts';
 
 const VALID_STATE_TRANSITIONS = {
   [STATES.UNINITIALIZED]: [STATES.READY],
@@ -19,7 +18,7 @@ export default ({ logger, initialState = STATES.UNINITIALIZED }: any) => {
 
   const guard = (
     object: any,
-    method: any,
+    method: string,
     { legalStates, async: isAsync = true }: any
   ) => {
     if (!object[method]) {
@@ -58,8 +57,7 @@ export default ({ logger, initialState = STATES.UNINITIALIZED }: any) => {
      */
     createGuarded(object: any, methodStateMapping: any) {
       const guardedMethods = Object.keys(methodStateMapping).reduce(
-        (guards, method) => {
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+        (guards: Record<any, any>, method) => {
           guards[method] = guard(object, method, methodStateMapping[method]);
           return guards;
         },

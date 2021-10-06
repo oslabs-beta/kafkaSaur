@@ -1,4 +1,5 @@
 /** @format */
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts'
 
 export default {
   abortedTransactions: [],
@@ -9,7 +10,6 @@ export default {
       timestamp: '1543360392089',
       offset: '6',
       key: { type: 'Buffer', data: [107, 101, 121, 45, 50, 55, 56] },
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([
         110, 111, 110, 116, 114, 97, 110, 115, 97, 99, 116, 105, 111, 110, 97,
         108, 45, 50, 55, 56, 45, 50, 48, 49, 56, 45, 49, 49, 45, 50, 55, 84, 50,
@@ -37,7 +37,6 @@ export default {
       timestamp: '1543360392089',
       offset: '7',
       key: { type: 'Buffer', data: [107, 101, 121, 45, 54, 48, 50] },
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([
         110, 111, 110, 116, 114, 97, 110, 115, 97, 99, 116, 105, 111, 110, 97,
         108, 45, 54, 48, 50, 45, 50, 48, 49, 56, 45, 49, 49, 45, 50, 55, 84, 50,
@@ -65,7 +64,6 @@ export default {
       timestamp: '1543360392089',
       offset: '8',
       key: { type: 'Buffer', data: [107, 101, 121, 45, 54, 48] },
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([
         110, 111, 110, 116, 114, 97, 110, 115, 97, 99, 116, 105, 111, 110, 97,
         108, 45, 54, 48, 45, 50, 48, 49, 56, 45, 49, 49, 45, 50, 55, 84, 50, 51,

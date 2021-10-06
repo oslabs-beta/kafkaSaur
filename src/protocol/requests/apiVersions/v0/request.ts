@@ -1,9 +1,8 @@
 /** @format */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder.ts';
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-import { ApiVersions as apiKey } from '../../apiKeys.ts';
+import {Encoder} from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+const apiKey = apiKeys.ApiVersions;
 
 /**
  * ApiVersionRequest => ApiKeys

@@ -35,12 +35,12 @@ const decodePartitions = (decoder: any) => ({
 const decodeOffsets = (decoder: any) => decoder.readInt64().toString();
 
 const parse = async (data: any) => {
-  const partitionsWithError = data.responses.map((response: any) =>
+  const partitionsWithError =  data.responses.map((response: any) =>
     response.partitions.filter((partition: any) => failure(partition.errorCode))
   );
-  const partitionWithError = flatten(partitionsWithError)[0];
+  const partitionWithError =   flatten(partitionsWithError)[0];
   if (partitionWithError) {
-    throw createErrorFromCode(partitionWithError.errorCode);
+    throw createErrorFromCode(partitionWithError);
   }
 
   return data;

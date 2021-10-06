@@ -23,6 +23,7 @@ export default ({
   apiKey,
   apiVersion: 3,
   apiName: 'Heartbeat',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)
