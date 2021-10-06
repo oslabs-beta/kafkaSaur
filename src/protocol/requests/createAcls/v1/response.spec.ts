@@ -1,6 +1,6 @@
 /** @format */
-
-import { decode, parse } from './response';
+/*
+import { decode, parse } from './response.ts';
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Protocol > Requests > CreateAcls > v1', () => {
@@ -20,3 +20,4 @@ describe('Protocol > Requests > CreateAcls > v1', () => {
     await expect(parse(data)).resolves.toBeTruthy();
   });
 });
+*/

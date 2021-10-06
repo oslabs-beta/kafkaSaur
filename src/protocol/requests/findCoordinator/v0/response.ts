@@ -1,6 +1,12 @@
-import { Decoder } from '../../../decoder.ts'
-import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../../error.ts'
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import {
+  failure,
+  createErrorFromCode,
+  failIfVersionNotSupported,
+} from '../../../error.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 /**
  * FindCoordinator Response (Version: 0) => error_code coordinator
@@ -12,32 +18,32 @@ import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
  */
 
 const decode = async (rawData: Buffer) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
   const coordinator = {
     nodeId: decoder.readInt32(),
     host: decoder.readString(),
     port: decoder.readInt32(),
-  }
+  };
 
   return {
     errorCode,
     coordinator,
-  }
-}
+  };
+};
 
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-export default{
+export default {
   decode,
   parse,
-}
+};

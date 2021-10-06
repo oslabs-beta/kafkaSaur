@@ -89,7 +89,6 @@ export default ({
   const logger = rootLogger.namespace('Consumer');
   const instrumentationEmitter =
     rootInstrumentationEmitter || new InstrumentationEventEmitter();
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'createAssigner' implicitly has an 'any'... Remove this comment to see the full error message
   const assigners = partitionAssigners.map((createAssigner) =>
     createAssigner({ groupId, logger, cluster })
   );
@@ -210,7 +209,6 @@ export default ({
       const topicRegExp = topic;
       const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
-        // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topicName' implicitly has an 'any... Remove this comment to see the full error message
         .map(({ topic: topicName }) => topicName)
         .filter((topicName: any) => topicRegExp.test(topicName));
 
@@ -226,7 +224,6 @@ export default ({
     }
 
     for (const t of topicsToSubscribe) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       topics[t] = { fromBeginning };
     }
 
@@ -416,7 +413,6 @@ export default ({
       topics: topics.map((topic) => {
         return {
           topic,
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           partitions: commitsByTopic[topic],
         };
       }),

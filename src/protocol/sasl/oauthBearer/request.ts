@@ -1,3 +1,6 @@
+/** @format */
+
+// deno-lint-ignore-file require-await
 /**
  * http://www.ietf.org/rfc/rfc5801.txt
  *
@@ -28,7 +31,7 @@
  */
 
 import { Encoder } from '../../encoder.ts';
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 const SEPARATOR = '\u0001'; // SOH - Start Of Header ASCII
 

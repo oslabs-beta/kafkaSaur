@@ -1,9 +1,7 @@
 /** @format */
 
-// import * as node from "https://deno.land/std@0.109.0/node";
-// const crypto = node._crypto;
 import scram from '../../protocol/sasl/scram/index.ts';
-import { Buffer } from 'https://deno.land/std@0.109.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 import {
   KafkaJSSASLAuthenticationError,
   KafkaJSNonRetriableError,

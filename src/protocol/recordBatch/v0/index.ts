@@ -1,26 +1,26 @@
+/** @format */
+import Long from '../../../utils/long.ts';
+import { Encoder } from '../../encoder.ts';
+import crc32C from '../crc32C/index.ts';
+import compression from '../../message/compression/index.ts';
 
-import Long from '../../../utils/long.ts'
-import { Encoder } from '../../encoder.ts'
-import crc32C from '../crc32C'
-import {
-  Types as Compression,
-  lookupCodec,
-  COMPRESSION_CODEC_MASK
-} from '../../message/compression'
-
+const { Types } = compression;
+const { lookupCodec } = compression;
+const { COMPRESSION_CODEC_MASK } = compression;
+const Compression = Types;
 // const {
-//   
+//
 //   Types: Compression,
-//   
+//
 //   lookupCodec,
-//   
+//
 //   COMPRESSION_CODEC_MASK,
-// 
+//
 // } = require('../../message/compression')
 
-const MAGIC_BYTE = 2
-const TIMESTAMP_MASK = 0 // The fourth lowest bit, always set this bit to 0 (since 0.10.0)
-const TRANSACTIONAL_MASK = 16 // The fifth lowest bit
+const MAGIC_BYTE = 2;
+const TIMESTAMP_MASK = 0; // The fourth lowest bit, always set this bit to 0 (since 0.10.0)
+const TRANSACTIONAL_MASK = 16; // The fifth lowest bit
 
 /**
  * v0
@@ -53,9 +53,9 @@ const RecordBatch = async ({
   firstSequence = 0, // for idempotent messages
   records = [],
 }) => {
-  const COMPRESSION_CODEC = compression & COMPRESSION_CODEC_MASK
-  const IN_TRANSACTION = transactional ? TRANSACTIONAL_MASK : 0
-  const attributes = COMPRESSION_CODEC | TIMESTAMP_MASK | IN_TRANSACTION
+  const COMPRESSION_CODEC = compression & COMPRESSION_CODEC_MASK;
+  const IN_TRANSACTION = transactional ? TRANSACTIONAL_MASK : 0;
+  const attributes = COMPRESSION_CODEC | TIMESTAMP_MASK | IN_TRANSACTION;
 
   const batchBody = new Encoder()
     .writeInt16(attributes)
@@ -64,17 +64,17 @@ const RecordBatch = async ({
     .writeInt64(maxTimestamp)
     .writeInt64(producerId)
     .writeInt16(producerEpoch)
-    .writeInt32(firstSequence)
+    .writeInt32(firstSequence);
 
   if (compression === Compression.None) {
-    if (records.every(v => typeof v === typeof records[0])) {
-      batchBody.writeArray(records, typeof records[0])
+    if (records.every((v) => typeof v === typeof records[0])) {
+      batchBody.writeArray(records, typeof records[0]);
     } else {
-      batchBody.writeArray(records)
+      batchBody.writeArray(records);
     }
   } else {
-    const compressedRecords = await compressRecords(compression, records)
-    batchBody.writeInt32(records.length).writeBuffer(compressedRecords)
+    const compressedRecords = await compressRecords(compression, records);
+    batchBody.writeInt32(records.length).writeBuffer(compressedRecords);
   }
 
   // CRC32C validation is happening here:
@@ -84,21 +84,18 @@ const RecordBatch = async ({
     .writeInt32(partitionLeaderEpoch)
     .writeInt8(MAGIC_BYTE)
     .writeUInt32(crc32C(batchBody.buffer))
-    .writeEncoder(batchBody)
+    .writeEncoder(batchBody);
 
-  return new Encoder().writeInt64(firstOffset).writeBytes(batch.buffer)
-}
+  return new Encoder().writeInt64(firstOffset).writeBytes(batch.buffer);
+};
 
 const compressRecords = async (compression: any, records: any) => {
-  const codec = lookupCodec(compression)
-  const recordsEncoder = new Encoder()
+  const codec: any = lookupCodec(compression);
+  const recordsEncoder = new Encoder();
 
-  recordsEncoder.writeEncoderArray(records)
+  recordsEncoder.writeEncoderArray(records);
 
-  return codec.compress(recordsEncoder)
-}
+  return codec.compress(recordsEncoder);
+};
 
-export {
-  RecordBatch,
-  MAGIC_BYTE,
-}
+export { RecordBatch, MAGIC_BYTE };

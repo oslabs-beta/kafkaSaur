@@ -1,4 +1,4 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 export {
   abortedTransactions: [
     {
@@ -12,9 +12,7 @@ export {
       attributes: 0,
       timestamp: '1543360252730',
       offset: '4',
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       key: Buffer.from([107, 101, 121, 45, 52, 57, 55]),
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([
         97,
         98,
@@ -72,9 +70,7 @@ export {
       attributes: 0,
       timestamp: '1543360252730',
       offset: '5',
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       key: Buffer.from([107, 101, 121, 45, 50, 48, 50]),
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([
         97,
         98,
@@ -132,9 +128,7 @@ export {
       attributes: 0,
       timestamp: '1543360252825',
       offset: '6',
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       key: Buffer.from([0, 0, 0, 0]),
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
       value: Buffer.from([0, 0, 0, 0, 0, 117]),
       headers: {},
       isControlRecord: true,

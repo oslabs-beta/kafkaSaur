@@ -1,7 +1,12 @@
-import { Encoder } from '../../encoder.ts'
-import crc32 from '../../crc32.ts'
-import { Types as Compression, COMPRESSION_CODEC_MASK } from '../compression/index.ts'
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+/** @format */
+
+import { Encoder } from '../../encoder.ts';
+import crc32 from '../../crc32.ts';
+import {
+  Types as Compression,
+  COMPRESSION_CODEC_MASK,
+} from '../compression/index.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 /**
  * v1 (supported since 0.10.0)
@@ -18,9 +23,9 @@ export default ({
   compression = Compression.None,
   timestamp = Date.now(),
   key,
-  value
+  value,
 }: {
-  compression?: number; 
+  compression?: number;
   timestamp: number;
   key: any;
   value: any;
@@ -30,8 +35,8 @@ export default ({
     .writeInt8(compression & COMPRESSION_CODEC_MASK)
     .writeInt64(timestamp)
     .writeBytes(key)
-    .writeBytes(value)
+    .writeBytes(value);
 
-  const crc = crc32(content)
-  return new Encoder().writeInt32(crc).writeEncoder(content)
-}
+  const crc = crc32(content);
+  return new Encoder().writeInt32(crc).writeEncoder(content);
+};

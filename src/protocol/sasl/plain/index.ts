@@ -1,6 +1,6 @@
 /** @format */
 
-import * as request from './request.ts';
-import * as response from './response.ts';
+import request from './request.ts';
+import response from './response.ts';
 
-export { request, response };
+export default { request, response };

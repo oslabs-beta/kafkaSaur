@@ -2,7 +2,7 @@
 
 import Long from '../utils/long.ts';
 //import buffer from Deno
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 const ABORTED_MESSAGE_KEY = Buffer.from([0, 0, 0, 0]);
 

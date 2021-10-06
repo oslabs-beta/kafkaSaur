@@ -1,7 +1,7 @@
 /** @format */
 
 import { KafkaJSNumberOfRetriesExceeded } from '../errors.ts';
-import process from 'https://deno.land/std@0.109.0/node/process.ts';
+import process from 'https://deno.land/std@0.110.0/node/process.ts';
 
 const isTestMode = process.env.NODE_ENV === 'test';
 //const RETRY_DEFAULT = isTestMode ? import * from  : import * from './defaults'

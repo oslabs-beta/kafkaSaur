@@ -1,16 +1,20 @@
-import {Decoder} from '../../../decoder.ts'
-import {Encoder} from '../../../encoder.ts'
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import { Encoder } from '../../../encoder.ts';
 import {
   failure,
   createErrorFromCode,
   failIfVersionNotSupported,
-  errorCodes
-} from '../../../error.ts'
+  errorCodes,
+} from '../../../error.ts';
 
-import { KafkaJSProtocolError } from '../../../../errors.ts'
+import { KafkaJSProtocolError } from '../../../../errors.ts';
 
-const SASL_AUTHENTICATION_FAILED = 58
-const protocolAuthError = errorCodes.find((e: any) => e.code === SASL_AUTHENTICATION_FAILED)
+const SASL_AUTHENTICATION_FAILED = 58;
+const protocolAuthError = errorCodes.find(
+  (e: any) => e.code === SASL_AUTHENTICATION_FAILED
+);
 
 /**
  * SaslAuthenticate Response (Version: 0) => error_code error_message sasl_auth_bytes
@@ -20,41 +24,41 @@ const protocolAuthError = errorCodes.find((e: any) => e.code === SASL_AUTHENTICA
  */
 
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
-  const errorMessage = decoder.readString()
+  failIfVersionNotSupported(errorCode);
+  const errorMessage = decoder.readString();
 
   // This is necessary to make the response compatible with the original
   // mechanism protocols. They expect a byte response, which starts with
   // the size
-  const authBytesEncoder = new Encoder().writeBytes(decoder.readBytes())
-  const authBytes = authBytesEncoder.buffer
+  const authBytesEncoder = new Encoder().writeBytes(decoder.readBytes());
+  const authBytes = authBytesEncoder.buffer;
 
   return {
     errorCode,
     errorMessage,
     authBytes,
-  }
-}
+  };
+};
 
 const parse = async (data: any) => {
   if (data.errorCode === SASL_AUTHENTICATION_FAILED && data.errorMessage) {
     throw new KafkaJSProtocolError({
       ...protocolAuthError,
       message: data.errorMessage,
-    })
+    });
   }
 
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
 export default {
   decode,
   parse,
-}
+};

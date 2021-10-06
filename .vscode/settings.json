@@ -1,6 +1,6 @@
 {
   "deno.suggest.imports.hosts": {
-    "https://deno.land": false
+    "https://deno.land": true
   },
   "deno.enable": true,
   "deno.lint": true,

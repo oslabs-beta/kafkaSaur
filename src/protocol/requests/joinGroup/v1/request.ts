@@ -1,5 +1,5 @@
 /** @format */
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 import { Encoder } from '../../../encoder.ts';
 import apiKeys from '../../apiKeys.ts';

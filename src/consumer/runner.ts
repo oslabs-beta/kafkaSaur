@@ -1,20 +1,20 @@
 /** @format */
 
 //import { EventEmitter } from 'events'
-import { EventEmitter } from "https://deno.land/std@0.109.0/node/events.ts";
+import { EventEmitter } from 'https://deno.land/std@0.110.0/node/events.ts';
 import Long from '../utils/long.ts';
 import createRetry from '../retry/index.ts';
 import limitConcurrency from '../utils/concurrency.ts';
 import { KafkaJSError } from '../errors.ts';
 import barrier from './barrier.ts';
-import { events } from './instrumentationEvents.ts'
+import { events } from './instrumentationEvents.ts';
 const {
-    FETCH,
-    FETCH_START,
-    START_BATCH_PROCESS,
-    END_BATCH_PROCESS,
-    REBALANCING,
-  } = events;
+  FETCH,
+  FETCH_START,
+  START_BATCH_PROCESS,
+  END_BATCH_PROCESS,
+  REBALANCING,
+} = events;
 
 const isRebalancing = (e: any) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
@@ -435,7 +435,7 @@ export class Runner extends EventEmitter {
         this.consuming = false;
 
         if (this.running) {
-          setTimeout(() => this.scheduleFetch(),);
+          setTimeout(() => this.scheduleFetch());
         }
       } catch (e: any) {
         if (!this.running) {
@@ -480,12 +480,12 @@ export class Runner extends EventEmitter {
 
           this.consumerGroup.memberId = null;
           await this.join();
-          setTimeout(() => this.scheduleFetch(),0);
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
         if (e.name === 'KafkaJSOffsetOutOfRange') {
-          setTimeout(() => this.scheduleFetch(),0);
+          setTimeout(() => this.scheduleFetch(), 0);
           return;
         }
 
@@ -577,7 +577,7 @@ export class Runner extends EventEmitter {
           );
 
           this.consumerGroup.memberId = null;
-          setTimeout(() => this.scheduleJoin(),0);
+          setTimeout(() => this.scheduleJoin(), 0);
 
           bail(new KafkaJSError(e));
         }

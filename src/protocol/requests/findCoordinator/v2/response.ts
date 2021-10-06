@@ -1,7 +1,9 @@
+/** @format */
+
 import response from '../v1/response.ts';
 const decodeV1 = response.decode;
 const parse = response.parse;
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 /**
  * Starting in version 2, on quota violation, brokers send out responses before throttling.
@@ -18,16 +20,16 @@ import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
  */
 
 const decode = async (rawData: Buffer) => {
-  const decoded = await decodeV1(rawData)
+  const decoded = await decodeV1(rawData);
 
   return {
     ...decoded,
     throttleTime: 0,
     clientSideThrottleTime: decoded.throttleTime,
-  }
-}
+  };
+};
 
 export default {
   decode,
   parse,
-}
+};

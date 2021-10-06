@@ -1,6 +1,6 @@
 /** @format */
 
-export function response() {
-  decode: async () => true;
-  parse: async () => true;
-}
+export default {
+  decode: async () => true,
+  parse: async () => true,
+};

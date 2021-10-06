@@ -2,10 +2,43 @@
 
 import apiKeys from './apiKeys.ts';
 
+import Produce from './produce/index.ts';
+import Fetch from './fetch/index.ts';
+import Findcoordinator from './findCoordinator/index.ts';
+import ListOffsets from './listOffsets/index.ts';
+import Metadata from './metadata/index.ts';
+import OffsetCommit from './offsetCommit/index.ts';
+import OffsetFetch from './offsetFetch/index.ts';
+import JoinGroup from './joinGroup/index.ts';
+import Heartbeat from './heartbeat/index.ts';
+import LeaveGroup from './LeaveGroup/index.ts';
+import SyncGroup from './syncGroup/index.ts';
+import DescribeGroups from './listGroups/index.ts';
+import ListGroups from './listGroups/index.ts';
+import SaslHandshake from './saslHandshake/index.ts';
+import ApiVersions from './apiVersions/index.ts';
+import CreateTopics from './createTopics/index.ts';
+import DeleteTopics from './deleteTopics/index.ts';
+import DeleteRecords from './deleteRecords/index.ts';
+import InitProducerId from './InitProducerId/index.ts';
+import AddPartitionsToTxn from './AddPartitionsToTxn/index.ts';
+import AddOffsetsToTxn from './addOffsetsToTxn/index.ts';
+import EndTxn from './endTxn/index.ts';
+import TxnOffsetCommit from './TxnOffsetCommit/index.ts';
+import DescribeAcls from './describeAcls/index.ts';
+import CreateAcls from './createAcls/index.ts';
+import DeleteAcls from './deleteAcls/index.ts';
+import DescribeConfigs from './describeConfigs/index.ts';
+import AlterConfigs from './alterConfigs/index.ts';
+import SaslAuthenticate from './saslAuthenticate/index.ts';
+import CreatePartitions from './createPartitions/index.ts';
+import DeleteGroups from './deleteGroups/index.ts';
+
 import {
   KafkaJSServerDoesNotSupportApiKey,
   KafkaJSNotImplemented,
 } from '../../errors.ts';
+
 /**
  * @typedef {(options?: Object) => { request: any, response: any, logResponseErrors?: boolean }} Request
  */
@@ -32,80 +65,51 @@ const noImplementedRequestDefinitions = {
  * @type {{[apiName: string]: RequestDefinitions}}
  */
 const requests = {
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  Produce: require('./produce'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  Fetch: require('./fetch'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  ListOffsets: require('./listOffsets'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  Metadata: require('./metadata'),
+  Produce: Produce,
+  Fetch: Fetch,
+  ListOffsets: ListOffsets,
+  // Findcoordinator: Findcoordinator,
+  Metadata: Metadata,
   LeaderAndIsr: noImplementedRequestDefinitions,
   StopReplica: noImplementedRequestDefinitions,
   UpdateMetadata: noImplementedRequestDefinitions,
   ControlledShutdown: noImplementedRequestDefinitions,
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  OffsetCommit: require('./offsetCommit'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  OffsetFetch: require('./offsetFetch'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  GroupCoordinator: require('./findCoordinator'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  JoinGroup: require('./joinGroup'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  Heartbeat: require('./heartbeat'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  LeaveGroup: require('./leaveGroup'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  SyncGroup: require('./syncGroup'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DescribeGroups: require('./describeGroups'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  ListGroups: require('./listGroups'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  SaslHandshake: require('./saslHandshake'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  ApiVersions: require('./apiVersions'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  CreateTopics: require('./createTopics'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DeleteTopics: require('./deleteTopics'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DeleteRecords: require('./deleteRecords'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  InitProducerId: require('./initProducerId'),
+  OffsetCommit: OffsetCommit,
+  OffsetFetch: OffsetFetch,
+  GroupCoordinator: Findcoordinator,
+  JoinGroup: JoinGroup,
+  Heartbeat: Heartbeat,
+  LeaveGroup: LeaveGroup,
+  SyncGroup: SyncGroup,
+  DescribeGroups: DescribeGroups,
+  ListGroups: ListGroups,
+  SaslHandshake: SaslHandshake,
+  ApiVersions: ApiVersions,
+  CreateTopics: CreateTopics,
+  DeleteTopics: DeleteTopics,
+  DeleteRecords: DeleteRecords,
+  InitProducerId: InitProducerId,
   OffsetForLeaderEpoch: noImplementedRequestDefinitions,
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  AddPartitionsToTxn: require('./addPartitionsToTxn'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  AddOffsetsToTxn: require('./addOffsetsToTxn'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  EndTxn: require('./endTxn'),
+  AddPartitionsToTxn: AddPartitionsToTxn,
+  AddOffsetsToTxn: AddOffsetsToTxn,
+  EndTxn: EndTxn,
   WriteTxnMarkers: noImplementedRequestDefinitions,
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  TxnOffsetCommit: require('./txnOffsetCommit'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DescribeAcls: require('./describeAcls'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  CreateAcls: require('./createAcls'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DeleteAcls: require('./deleteAcls'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DescribeConfigs: require('./describeConfigs'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  AlterConfigs: require('./alterConfigs'),
+  TxnOffsetCommit: TxnOffsetCommit,
+  DescribeAcls: DescribeAcls,
+  CreateAcls: CreateAcls,
+  DeleteAcls: DeleteAcls,
+  DescribeConfigs: DescribeConfigs,
+  AlterConfigs: AlterConfigs,
   AlterReplicaLogDirs: noImplementedRequestDefinitions,
   DescribeLogDirs: noImplementedRequestDefinitions,
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  SaslAuthenticate: require('./saslAuthenticate'),
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  CreatePartitions: require('./createPartitions'),
+  SaslAuthenticate: SaslAuthenticate,
+  CreatePartitions: CreatePartitions,
+
   CreateDelegationToken: noImplementedRequestDefinitions,
   RenewDelegationToken: noImplementedRequestDefinitions,
   ExpireDelegationToken: noImplementedRequestDefinitions,
   DescribeDelegationToken: noImplementedRequestDefinitions,
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  DeleteGroups: require('./deleteGroups'),
+  DeleteGroups: DeleteGroups,
 };
 
 const names = Object.keys(apiKeys);

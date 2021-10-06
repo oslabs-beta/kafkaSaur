@@ -1,7 +1,9 @@
-import { Decoder } from '../../../decoder.ts'
-import { failure, createErrorFromCode } from '../../../error.ts'
-import flatten from '../../../../utils/flatten.ts'
-import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import { failure, createErrorFromCode } from '../../../error.ts';
+import flatten from '../../../../utils/flatten.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 /**
  * OffsetCommit Response (Version: 0) => [responses]
@@ -13,34 +15,35 @@ import { Buffer } from 'https://deno.land/std@0.76.0/node/buffer.ts';
  */
 
 const decode = async (rawData: Buffer) => {
-  const decoder = new Decoder(rawData)
+  const decoder = new Decoder(rawData);
   return {
     responses: decoder.readArray(decodeResponses),
-  }
-}
+  };
+};
 
 const decodeResponses = (decoder: Decoder) => ({
   topic: decoder.readString(),
-  partitions: decoder.readArray(decodePartitions)
-})
+  partitions: decoder.readArray(decodePartitions),
+});
 
 const decodePartitions = (decoder: Decoder) => ({
   partition: decoder.readInt32(),
-  errorCode: decoder.readInt16()
-})
+  errorCode: decoder.readInt16(),
+});
 
 const parse = async (data: any) => {
-  const partitionsWithError = data.responses.map((response: any) => response.partitions.filter((partition: any) => failure(partition.errorCode))
-  )
-  const partitionWithError : Record<any, any> = flatten(partitionsWithError)[0]
+  const partitionsWithError = data.responses.map((response: any) =>
+    response.partitions.filter((partition: any) => failure(partition.errorCode))
+  );
+  const partitionWithError: Record<any, any> = flatten(partitionsWithError)[0];
   if (partitionWithError) {
-    throw createErrorFromCode(partitionWithError.errorCode)
+    throw createErrorFromCode(partitionWithError.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
 export default {
   decode,
   parse,
-}
+};

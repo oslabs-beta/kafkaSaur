@@ -1,9 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-import response from '../v0/response'
+/** @format */
 
-const parse = response.parse
-const decodeV0 = response.decode
+import response from '../v0/response.ts';
 
+const parse = response.parse;
+const decodeV0 = response.decode;
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
@@ -17,16 +17,16 @@ const decodeV0 = response.decode
  */
 
 const decode = async (rawData: any) => {
-  const decoded = await decodeV0(rawData)
+  const decoded: any = await decodeV0(rawData);
 
   return {
     ...decoded,
     throttleTime: 0,
     clientSideThrottleTime: decoded.throttleTime,
-  }
-}
+  };
+};
 
 export default {
   decode,
   parse,
-}
+};

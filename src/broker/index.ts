@@ -2,13 +2,15 @@
 
 import Long from '../utils/long.ts';
 import Lock from '../utils/lock.ts';
-import { Types as Compression } from '../protocol/message/compression/index.ts';
+import CompressionObj from '../protocol/message/compression/index.ts';
 import { requests, lookup } from '../protocol/requests/index.ts';
 import { KafkaJSNonRetriableError } from '../errors.ts';
 import apiKeys from '../protocol/requests/apiKeys.ts';
 import { SASLAuthenticator } from './saslAuthenticator/index.ts';
 import shuffle from '../utils/shuffle.ts';
-import process from 'https://deno.land/std@0.109.0/node/process.ts';
+import process from 'https://deno.land/std@0.110.0/node/process.ts';
+
+const { Types } = CompressionObj;
 
 const PRIVATE = {
   //typed as key of broker in order to index broker class
@@ -268,7 +270,7 @@ export class Broker {
     producerEpoch,
     acks = -1,
     timeout = 30000,
-    compression = Compression.None,
+    compression = Types.None,
   }: any) {
     const produce = this.lookupRequest(apiKeys.Produce, requests.Produce);
     return await this[PRIVATE.SEND_REQUEST](

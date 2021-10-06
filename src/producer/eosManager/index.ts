@@ -1,16 +1,17 @@
-import createRetry from '../../retry/index.ts'
+/** @format */
 
+import createRetry from '../../retry/index.ts';
 
-import {KafkaJSNonRetriableError} from '../../errors.ts'
-import COORDINATOR_TYPES from '../../protocol/coordinatorTypes.ts'
-import createStateMachine from './transactionStateMachine.ts'
+import { KafkaJSNonRetriableError } from '../../errors.ts';
+import COORDINATOR_TYPES from '../../protocol/coordinatorTypes.ts';
+import createStateMachine from './transactionStateMachine.ts';
 
-import { assert } from "https://deno.land/std@0.106.0/testing/asserts.ts";
+import { assert } from 'https://deno.land/std@0.110.0/testing/asserts.ts';
 
-import STATES from './transactionStates.ts'
-const NO_PRODUCER_ID = -1
-const SEQUENCE_START = 0
-const INT_32_MAX_VALUE = Math.pow(2, 32)
+import STATES from './transactionStates.ts';
+const NO_PRODUCER_ID = -1;
+const SEQUENCE_START = 0;
+const INT_32_MAX_VALUE = Math.pow(2, 32);
 const INIT_PRODUCER_RETRIABLE_PROTOCOL_ERRORS = [
   'NOT_COORDINATOR_FOR_GROUP',
   'GROUP_COORDINATOR_NOT_AVAILABLE',
@@ -21,12 +22,15 @@ const INIT_PRODUCER_RETRIABLE_PROTOCOL_ERRORS = [
    * @see https://github.com/apache/kafka/blob/201da0542726472d954080d54bc585b111aaf86f/clients/src/main/java/org/apache/kafka/clients/producer/internals/TransactionManager.java#L1001-L1002
    */
   'CONCURRENT_TRANSACTIONS',
-]
+];
 const COMMIT_RETRIABLE_PROTOCOL_ERRORS = [
   'UNKNOWN_TOPIC_OR_PARTITION',
   'COORDINATOR_LOAD_IN_PROGRESS',
-]
-const COMMIT_STALE_COORDINATOR_PROTOCOL_ERRORS = ['COORDINATOR_NOT_AVAILABLE', 'NOT_COORDINATOR']
+];
+const COMMIT_STALE_COORDINATOR_PROTOCOL_ERRORS = [
+  'COORDINATOR_NOT_AVAILABLE',
+  'NOT_COORDINATOR',
+];
 
 /**
  * @typedef {Object} EosManager
@@ -42,57 +46,59 @@ export default ({
   cluster,
   transactionTimeout = 60000,
   transactional,
-  transactionalId
+  transactionalId,
 }: any) => {
   if (transactional && !transactionalId) {
-    throw new KafkaJSNonRetriableError('Cannot manage transactions without a transactionalId')
+    throw new KafkaJSNonRetriableError(
+      'Cannot manage transactions without a transactionalId'
+    );
   }
 
-  const retrier = createRetry(cluster.retry)
+  const retrier = createRetry(cluster.retry);
 
   /**
    * Current producer ID
    */
-  let producerId = NO_PRODUCER_ID
+  let producerId = NO_PRODUCER_ID;
 
   /**
    * Current producer epoch
    */
-  let producerEpoch = 0
+  let producerEpoch = 0;
 
   /**
    * Idempotent production requires that the producer track the sequence number of messages.
    *
    * Sequences are sent with every Record Batch and tracked per Topic-Partition
    */
-  let producerSequence: any = {}
+  let producerSequence: any = {};
 
   /**
    * Topic partitions already participating in the transaction
    */
-  let transactionTopicPartitions: any = {}
+  let transactionTopicPartitions: any = {};
 
-  const stateMachine = createStateMachine({ logger })
-  stateMachine.on('transition', ({
-    to
-  }: any) => {
+  const stateMachine = createStateMachine({ logger });
+  stateMachine.on('transition', ({ to }: any) => {
     if (to === STATES.READY) {
-      transactionTopicPartitions = {}
+      transactionTopicPartitions = {};
     }
-  })
+  });
 
   const findTransactionCoordinator = () => {
     return cluster.findGroupCoordinator({
       groupId: transactionalId,
       coordinatorType: COORDINATOR_TYPES.TRANSACTION,
-    })
-  }
+    });
+  };
 
   const transactionalGuard = () => {
     if (!transactional) {
-      throw new KafkaJSNonRetriableError('Method unavailable if non-transactional')
+      throw new KafkaJSNonRetriableError(
+        'Method unavailable if non-transactional'
+      );
     }
-  }
+  };
 
   const eosManager = stateMachine.createGuarded(
     {
@@ -101,7 +107,7 @@ export default ({
        * @returns {number}
        */
       getProducerId() {
-        return producerId
+        return producerId;
       },
 
       /**
@@ -109,11 +115,11 @@ export default ({
        * @returns {number}
        */
       getProducerEpoch() {
-        return producerEpoch
+        return producerEpoch;
       },
 
       getTransactionalId() {
-        return transactionalId
+        return transactionalId;
       },
 
       /**
@@ -123,40 +129,46 @@ export default ({
       async initProducerId() {
         return retrier(async (bail: any, retryCount: any, retryTime: any) => {
           try {
-            await cluster.refreshMetadataIfNecessary()
+            await cluster.refreshMetadataIfNecessary();
 
             // If non-transactional we can request the PID from any broker
             const broker = await (transactional
               ? findTransactionCoordinator()
-              : cluster.findControllerBroker())
+              : cluster.findControllerBroker());
 
             const result = await broker.initProducerId({
               transactionalId: transactional ? transactionalId : undefined,
               transactionTimeout,
-            })
+            });
 
-            stateMachine.transitionTo(STATES.READY)
-            producerId = result.producerId
-            producerEpoch = result.producerEpoch
-            producerSequence = {}
+            stateMachine.transitionTo(STATES.READY);
+            producerId = result.producerId;
+            producerEpoch = result.producerEpoch;
+            producerSequence = {};
 
-            logger.debug('Initialized producer id & epoch', { producerId, producerEpoch })
-          } catch (e:any) {
+            logger.debug('Initialized producer id & epoch', {
+              producerId,
+              producerEpoch,
+            });
+          } catch (e: any) {
             if (INIT_PRODUCER_RETRIABLE_PROTOCOL_ERRORS.includes(e.type)) {
               if (e.type === 'CONCURRENT_TRANSACTIONS') {
-                logger.debug('There is an ongoing transaction on this transactionId, retrying', {
-                  error: e.message,
-                  stack: e.stack,
-                  transactionalId,
-                  retryCount,
-                  retryTime,
-                })
+                logger.debug(
+                  'There is an ongoing transaction on this transactionId, retrying',
+                  {
+                    error: e.message,
+                    stack: e.stack,
+                    transactionalId,
+                    retryCount,
+                    retryTime,
+                  }
+                );
               }
 
-              throw e
+              throw e;
             }
 
-            bail(e)
+            bail(e);
           }
         });
       },
@@ -170,14 +182,14 @@ export default ({
        */
       getSequence(topic: any, partition: any) {
         if (!eosManager.isInitialized()) {
-          return SEQUENCE_START
+          return SEQUENCE_START;
         }
-        
 
-        producerSequence[topic] = producerSequence[topic] || {}
-        producerSequence[topic][partition] = producerSequence[topic][partition] || SEQUENCE_START
+        producerSequence[topic] = producerSequence[topic] || {};
+        producerSequence[topic][partition] =
+          producerSequence[topic][partition] || SEQUENCE_START;
 
-        return producerSequence[topic][partition]
+        return producerSequence[topic][partition];
       },
 
       /**
@@ -190,30 +202,30 @@ export default ({
        */
       updateSequence(topic: any, partition: any, increment: any) {
         if (!eosManager.isInitialized()) {
-          return
+          return;
         }
 
-        const previous = eosManager.getSequence(topic, partition)
-        let sequence = previous + increment
+        const previous = eosManager.getSequence(topic, partition);
+        let sequence = previous + increment;
 
         // Sequence is defined as Int32 in the Record Batch,
         // so theoretically should need to rotate here
         if (sequence >= INT_32_MAX_VALUE) {
           logger.debug(
             `Sequence for ${topic} ${partition} exceeds max value (${sequence}). Rotating to 0.`
-          )
-          sequence = 0
+          );
+          sequence = 0;
         }
 
-        producerSequence[topic][partition] = sequence
+        producerSequence[topic][partition] = sequence;
       },
 
       /**
        * Begin a transaction
        */
       beginTransaction() {
-        transactionalGuard()
-        stateMachine.transitionTo(STATES.TRANSACTING)
+        transactionalGuard();
+        stateMachine.transitionTo(STATES.TRANSACTING);
       },
 
       /**
@@ -228,91 +240,92 @@ export default ({
        * @property {number} partitions[].partition
        */
       async addPartitionsToTransaction(topicData: any) {
-        transactionalGuard()
-        const newTopicPartitions: any = {}
+        transactionalGuard();
+        const newTopicPartitions: any = {};
 
-        topicData.forEach(({
-          topic,
-          partitions
-        }: any) => {
-          transactionTopicPartitions[topic] = transactionTopicPartitions[topic] || {}
+        topicData.forEach(({ topic, partitions }: any) => {
+          transactionTopicPartitions[topic] =
+            transactionTopicPartitions[topic] || {};
 
-          partitions.forEach(({
-            partition
-          }: any) => {
+          partitions.forEach(({ partition }: any) => {
             if (!transactionTopicPartitions[topic][partition]) {
-              newTopicPartitions[topic] = newTopicPartitions[topic] || []
-              newTopicPartitions[topic].push(partition)
+              newTopicPartitions[topic] = newTopicPartitions[topic] || [];
+              newTopicPartitions[topic].push(partition);
             }
-          })
-        })
+          });
+        });
 
-        const topics = Object.keys(newTopicPartitions).map(topic => ({
+        const topics = Object.keys(newTopicPartitions).map((topic) => ({
           topic,
           partitions: newTopicPartitions[topic],
-        }))
+        }));
 
         if (topics.length) {
-          const broker = await findTransactionCoordinator()
-          await broker.addPartitionsToTxn({ transactionalId, producerId, producerEpoch, topics })
+          const broker = await findTransactionCoordinator();
+          await broker.addPartitionsToTxn({
+            transactionalId,
+            producerId,
+            producerEpoch,
+            topics,
+          });
         }
 
         topics.forEach(({ topic, partitions }) => {
           partitions.forEach((partition: any) => {
-            transactionTopicPartitions[topic][partition] = true
-          })
-        })
+            transactionTopicPartitions[topic][partition] = true;
+          });
+        });
       },
 
       /**
        * Commit the ongoing transaction
        */
       async commit() {
-        transactionalGuard()
-        stateMachine.transitionTo(STATES.COMMITTING)
+        transactionalGuard();
+        stateMachine.transitionTo(STATES.COMMITTING);
 
-        const broker = await findTransactionCoordinator()
+        const broker = await findTransactionCoordinator();
         await broker.endTxn({
           producerId,
           producerEpoch,
           transactionalId,
           transactionResult: true,
-        })
+        });
 
-        stateMachine.transitionTo(STATES.READY)
+        stateMachine.transitionTo(STATES.READY);
       },
 
       /**
        * Abort the ongoing transaction
        */
       async abort() {
-        transactionalGuard()
-        stateMachine.transitionTo(STATES.ABORTING)
+        transactionalGuard();
+        stateMachine.transitionTo(STATES.ABORTING);
 
-        const broker = await findTransactionCoordinator()
+        const broker = await findTransactionCoordinator();
         await broker.endTxn({
           producerId,
           producerEpoch,
           transactionalId,
           transactionResult: false,
-        })
+        });
 
-        stateMachine.transitionTo(STATES.READY)
+        stateMachine.transitionTo(STATES.READY);
       },
 
       /**
        * Whether the producer id has already been initialized
        */
       isInitialized() {
-        return producerId !== NO_PRODUCER_ID
+        return producerId !== NO_PRODUCER_ID;
       },
 
       isTransactional() {
-        return transactional
+        return transactional;
       },
 
       isInTransaction() {
-        return stateMachine.state() === STATES.TRANSACTING
+        return stateMachine.state() === STATES.TRANSACTING;
       },
 
       /**
@@ -331,14 +344,11 @@ export default ({
        * @property {number} partition
        * @property {number} offset
        */
-      async sendOffsets({
-        consumerGroupId,
-        topics
-      }: any) {
-        assert(consumerGroupId, 'Missing consumerGroupId')
-        assert(topics, 'Missing offset topics')
+      async sendOffsets({ consumerGroupId, topics }: any) {
+        assert(consumerGroupId, 'Missing consumerGroupId');
+        assert(topics, 'Missing offset topics');
 
-        const transactionCoordinator = await findTransactionCoordinator()
+        const transactionCoordinator = await findTransactionCoordinator();
 
         // Do we need to add offsets if we've already done so for this consumer group?
         await transactionCoordinator.addOffsetsToTxn({
@@ -346,12 +356,12 @@ export default ({
           producerId,
           producerEpoch,
           groupId: consumerGroupId,
-        })
+        });
 
         let groupCoordinator = await cluster.findGroupCoordinator({
           groupId: consumerGroupId,
           coordinatorType: COORDINATOR_TYPES.GROUP,
-        })
+        });
 
         return retrier(async (bail: any, retryCount: any, retryTime: any) => {
           try {
@@ -361,7 +371,7 @@ export default ({
               producerEpoch,
               groupId: consumerGroupId,
               topics,
-            })
+            });
           } catch (e: any) {
             if (COMMIT_RETRIABLE_PROTOCOL_ERRORS.includes(e.type)) {
               logger.debug('Group coordinator is not ready yet, retrying', {
@@ -370,9 +380,9 @@ export default ({
                 transactionalId,
                 retryCount,
                 retryTime,
-              })
+              });
 
-              throw e
+              throw e;
             }
 
             if (
@@ -388,17 +398,17 @@ export default ({
                   retryCount,
                   retryTime,
                 }
-              )
+              );
 
               groupCoordinator = await cluster.findGroupCoordinator({
                 groupId: consumerGroupId,
                 coordinatorType: COORDINATOR_TYPES.GROUP,
-              })
+              });
 
-              throw e
+              throw e;
             }
 
-            bail(e)
+            bail(e);
           }
         });
       },
@@ -415,7 +425,7 @@ export default ({
       commit: { legalStates: [STATES.TRANSACTING] },
       abort: { legalStates: [STATES.TRANSACTING] },
     }
-  )
+  );
 
-  return eosManager
-}
+  return eosManager;
+};

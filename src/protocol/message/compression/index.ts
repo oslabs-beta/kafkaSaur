@@ -2,6 +2,7 @@
 
 import { KafkaJSNotImplemented } from '../../../errors.ts';
 import gzip from './gzip.ts';
+
 const COMPRESSION_CODEC_MASK = 0x07;
 const Types = {
   None: 0,
@@ -30,7 +31,7 @@ const lookupCodecByAttributes = (attributes: any) => {
   return codec ? codec() : null;
 };
 
-export {
+export default {
   Types,
   Codecs,
   lookupCodec,
