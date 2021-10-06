@@ -79,24 +79,24 @@ run().catch((e) =>
 const errorTypes = ['unhandledRejection', 'uncaughtException'];
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 
-errorTypes.map((type) => {
-  process.on(type, async (e: any) => {
-    try {
-      kafka.logger().info(`process.on ${type}`);
-      kafka.logger().error(e.message, { stack: e.stack });
-      await producer.disconnect();
-      process.exit(0);
-    } catch (_) {
-      process.exit(1);
-    }
-  });
-});
+// errorTypes.map((type) => {
+//   process.on(type, async (e: any) => {
+//     try {
+//       kafka.logger().info(`process.on ${type}`);
+//       kafka.logger().error(e.message, { stack: e.stack });
+//       await producer.disconnect();
+//       process.exit(0);
+//     } catch (_) {
+//       process.exit(1);
+//     }
+//   });
+// });
 
-signalTraps.map((type) => {
-  process.once(type, async () => {
-    console.log('');
-    kafka.logger().info('[example/producer] disconnecting');
-    clearInterval(intervalId);
-    await producer.disconnect();
-  });
-});
+// signalTraps.map((type) => {
+//   process.once(type, async () => {
+//     console.log('');
+//     kafka.logger().info('[example/producer] disconnecting');
+//     clearInterval(intervalId);
+//     await producer.disconnect();
+//   });
+// });

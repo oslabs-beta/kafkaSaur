@@ -22,6 +22,7 @@ export default ({
   onTimeout
 }: any) => {
   const socket = socketFactory({ host, port, ssl, onConnect })
+  console.log('socketfactory.socket is ', socket)
 
   socket.on('data', onData)
   socket.on('end', onEnd)

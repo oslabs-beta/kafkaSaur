@@ -246,8 +246,8 @@ export default class Connection {
     this.requestQueue.destroy();
 
     if (this.socket) {
-      this.socket.end();
-      this.socket.unref();
+      this.socket.close(); //was previously this.socket.end
+      //this.socket.unref();
     }
 
     this.connectionStatus = CONNECTION_STATUS.DISCONNECTED;

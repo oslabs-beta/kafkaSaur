@@ -1,31 +1,20 @@
-const KEEP_ALIVE_DELAY = 60000 // in ms
-
+//const KEEP_ALIVE_DELAY = 60000 // in ms
+//keepalive?
 /**
  * @returns {import("../../types").ISocketFactory}
  */
+
+import { Client, Event, Packet } from "https://deno.land/x/tcp_socket@0.0.1/mods.ts";
+
 export default () => {
-  //NEED TO REFACTOR WITH DENO SOCKETS, purposely leavig these in so compiling fails
-  // const net = require('net')
-  // const tls = require('tls')
 
-  return async ({
-    host,
-    port,
-    ssl,
-    onConnect
-  }: any) => {
-
-
-    const socket = await Deno.connect({ 
-      hostname: 'localhost',
-      port: 9093,
-      transport: 'tcp',
-      
-    });
-    
-    //socket.setKeepAlive(true, KEEP_ALIVE_DELAY)
-
+  return ({ host, port, onConnect}: any) => { //async await????
+    const socket = new Client({hostname: host, port: port})
+    socket.connect();
+    socket.on(Event.connect, ()=> {
+      console.log('connected!!!');
+      onConnect();
+    })
     return socket;
-
   };
 }
