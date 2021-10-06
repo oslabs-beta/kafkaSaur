@@ -39,52 +39,48 @@ const isRebalancing = (e: any) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
 const PRIVATE = {
-  JOIN: Symbol('private:ConsumerGroup:join'),
-  SYNC: Symbol('private:ConsumerGroup:sync'),
-  HEARTBEAT: Symbol('private:ConsumerGroup:heartbeat'),
-  SHAREDHEARTBEAT: Symbol('private:ConsumerGroup:sharedHeartbeat'),
+  JOIN: Symbol('private:ConsumerGroup:join') as unknown as string,
+  SYNC: Symbol('private:ConsumerGroup:sync') as unknown as string,
+  HEARTBEAT: Symbol('private:ConsumerGroup:heartbeat') as unknown as string,
+  SHAREDHEARTBEAT: Symbol('private:ConsumerGroup:sharedHeartbeat') as unknown as string
 };
 
 export class ConsumerGroup {
-  [key: symbol | number | string]: any;
-  // [key: string]: any;
-  // [key: number]: any;
-
-  // cluster: any;
-  // groupId: any;
+  [index: string]: any
+  cluster: any;
+  groupId: any;
   topics: any;
-  // topicsSubscribed: any;
-  // topicConfigurations: any;
-  // logger: any;
-  // instrumentationEmitter: any;
-  // retrier: any;
-  // assigners: any;
-  // sessionTimeout: any;
-  // rebalanceTimeout: any;
-  // maxBytesPerPartition: any;
-  // minBytes: any;
-  // maxBytes: any;
-  // maxWaitTimeInMs: any;
-  // autoCommit: any;
-  // autoCommitInterval: any;
-  // autoCommitThreshold: any;
-  // isolationLevel: any;
-  // rackId: any;
-  // metadataMaxAge: any;
-  // maxWaitTime: any;
-  // seekOffset: any;
-  // coordinator: any;
-  // generationId: any;
-  // leaderId: any;
-  // memberId: any;
-  // members: any;
-  // groupProtocol: any;
-  // partitionsPerSubscribedTopic: any;
-  // offsetManager: any;
-  // subscriptionState: any;
-
-  // preferredReadReplicasPerTopicPartition: any;
-  // lastRequest: any;
+  topicsSubscribed: any;
+  topicConfigurations: any;
+  logger: any;
+  instrumentationEmitter: any;
+  retrier: any;
+  assigners: any;
+  sessionTimeout: any;
+  rebalanceTimeout: any;
+  maxBytesPerPartition: any;
+  minBytes: any;
+  maxBytes: any;
+  maxWaitTimeInMs: any;
+  autoCommit: any;
+  autoCommitInterval: any;
+  autoCommitThreshold: any;
+  isolationLevel: any;
+  rackId: any;
+  metadataMaxAge: any;
+  maxWaitTime: any;
+  seekOffset: any;
+  coordinator: any;
+  generationId: any;
+  leaderId: any;
+  memberId: any;
+  members: any;
+  groupProtocol: any;
+  partitionsPerSubscribedTopic: any;
+  offsetManager: any;
+  subscriptionState: any;
+  preferredReadReplicasPerTopicPartition: any;
+  lastRequest: any;
 
   constructor({
     retry,

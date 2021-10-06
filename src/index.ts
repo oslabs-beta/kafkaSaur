@@ -12,16 +12,17 @@ import ISOLATION_LEVEL from './protocol/isolationLevel.ts';
 import defaultSocketFactory from './network/socketFactory.ts';
 const { INFO } = LEVELS;
 const PRIVATE = {
-  CREATE_CLUSTER: Symbol('private:Kafka:createCluster'),
-  CLUSTER_RETRY: Symbol('private:Kafka:clusterRetry'),
-  LOGGER: Symbol('private:Kafka:logger'),
-  OFFSETS: Symbol('private:Kafka:offsets'),
+  CREATE_CLUSTER: Symbol('private:Kafka:createCluster') as unknown as string,
+  CLUSTER_RETRY: Symbol('private:Kafka:clusterRetry') as unknown as string,
+  LOGGER: Symbol('private:Kafka:logger') as unknown as string,
+  OFFSETS: Symbol('private:Kafka:offsets') as unknown as string,
 };
+
 
 const DEFAULT_METADATA_MAX_AGE = 300000;
 
 export default class Client {
-  [key: string | number | symbol]: any;
+  [key: string]: any;
   /**
    * @param {Object} options
    * @param {Array<string>} options.brokers example: ['127.0.0.1:9092', '127.0.0.1:9094']
