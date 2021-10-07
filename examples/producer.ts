@@ -6,12 +6,12 @@ import process from 'https://deno.land/std@0.110.0/node/process.ts';
 import { Kafka, CompressionTypes, logLevel } from '../index.ts';
 import PrettyConsoleLogger from './prettyConsoleLogger.js';
 
-const host = 'localhost';
+const host = '127.0.0.1';
 
 const kafka = new Kafka({
   logLevel: logLevel.INFO,
   logCreator: PrettyConsoleLogger,
-  brokers: [`${host}:9093`],
+  brokers: [`${host}:9092`],
   clientId: 'example-producer',
   ssl: {
     servername: 'localhost',

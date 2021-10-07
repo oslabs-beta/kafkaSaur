@@ -10,11 +10,10 @@ export default () => {
 
   return ({ host, port, onConnect}: any) => { //async await????
     const socket = new Client({hostname: host, port: port})
+    socket.on(Event.connect, ()=>console.log('connected', socket))
     socket.connect();
-    socket.on(Event.connect, ()=> {
-      console.log('connected!!!');
-      onConnect();
-    })
+    // socket.on(Event.connect, onConnect)
+    // console.log('socket inside of SF', socket)
     return socket;
   };
 }

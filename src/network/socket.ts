@@ -10,6 +10,7 @@
  * @param {(err: Error) => void} options.onError
  * @param {() => void} options.onTimeout
  */
+ import { Client, Event, Packet } from "https://deno.land/x/tcp_socket@0.0.1/mods.ts";
 export default ({
   socketFactory,
   host,
@@ -22,12 +23,12 @@ export default ({
   onTimeout
 }: any) => {
   const socket = socketFactory({ host, port, ssl, onConnect })
-  console.log('socketfactory.socket is ', socket)
-
+  //await socket.connect();
   socket.on('data', onData)
   socket.on('end', onEnd)
   socket.on('error', onError)
   socket.on('timeout', onTimeout)
+
 
   return socket
 }
