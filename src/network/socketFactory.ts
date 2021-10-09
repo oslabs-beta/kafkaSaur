@@ -16,7 +16,6 @@ export default () => {
     
     
     socket.on('connect', onConnect)
-    socket.connect();
     socket.on('connect', () => console.log('I connected'))
     // // socket.on(Event.connect, onConnect)
     // // console.log('socket inside of SF', socket)

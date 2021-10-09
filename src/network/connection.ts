@@ -137,8 +137,8 @@ export default class Connection {
    * @public
    * @returns {Promise}
    */
-  connect() {
-    return new Promise((resolve: any, reject: any) => {
+    connect() {
+    return new Promise(async (resolve: any, reject: any) => {
       if (this.connected) {
         return resolve(true);
       }
@@ -212,7 +212,7 @@ export default class Connection {
 
       try {
         timeoutId = setTimeout(onTimeout, this.connectionTimeout);
-        this.socket = createSocket({
+        this.socket = await createSocket({
           socketFactory: this.socketFactory,
           host: this.host,
           port: this.port,
@@ -223,6 +223,8 @@ export default class Connection {
           onError,
           onTimeout,
         });
+
+        console.log("IN THE CONNECTION.TS ", this.socket)
       } catch (e: any) {
         clearTimeout(timeoutId);
         reject(

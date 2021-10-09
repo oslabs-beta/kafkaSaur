@@ -10,7 +10,7 @@
  * @param {(err: Error) => void} options.onError
  * @param {() => void} options.onTimeout
  */
- import { Client, Event, Packet } from "https://deno.land/x/tcp_socket@0.0.2/mods.ts";
+ //import { Client, Event, Packet } from "https://deno.land/x/tcp_socket@0.0.2/mods.ts";
 export default async ({
   socketFactory,
   host,
@@ -24,12 +24,14 @@ export default async ({
 }: any) => {
   const socket = await socketFactory({ host, port, ssl, onConnect })
   
+  console.log('THIS.WRITE ', socket.write);
+  console.log('THIS.CLOSE ', socket.close);
 
   socket.on('data', onData)
   socket.on('end', onEnd)
   socket.on('error', onError)
   socket.on('timeout', onTimeout)
-
+  socket.connect();
 
   return socket
 }
