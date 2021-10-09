@@ -1,4 +1,4 @@
-import { Client, Packet, Event } from "https://deno.land/x/tcp_socket@0.0.1/mods.ts";
+import { Client, Packet, Event } from "https://deno.land/x/tcp_socket@0.0.2/mods.ts";
 
 const client = new Client({ hostname: "127.0.0.1", port: 8080 });
 

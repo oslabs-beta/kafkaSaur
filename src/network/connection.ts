@@ -226,7 +226,7 @@ export default class Connection {
       } catch (e: any) {
         clearTimeout(timeoutId);
         reject(
-          new KafkaJSConnectionError(`Failed to connect: ${e.message}`, {
+          new KafkaJSConnectionError(`Failed to connect: ${e.message} sorry sam`, {
             broker: `${this.host}:${this.port}`,
           })
         );
@@ -358,7 +358,7 @@ export default class Connection {
             expectResponse,
             requestTimeout,
             sendRequest: () => {
-              this.socket.write(requestPayload.buffer, 'binary');
+              this.socket.write(requestPayload.buffer);
             },
           });
         } catch (e) {
