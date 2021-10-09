@@ -16,7 +16,7 @@ const kafka = new Kafka({
   ssl: {
     servername: 'localhost',
     rejectUnauthorized: false,
-    ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], //'uft-8' was in readFileSync for dinner
+    ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], 
   },
   sasl: {
     mechanism: 'plain',
@@ -72,8 +72,10 @@ const run = async () => {
   intervalId = setInterval(sendMessage, 3000);
 };
 
-run().catch((e) =>
+run().catch((e) => {
+  console.log('whattup bae')
   kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
+}
 );
 
 const errorTypes = ['unhandledRejection', 'uncaughtException'];

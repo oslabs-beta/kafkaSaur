@@ -4,16 +4,15 @@
  * @returns {import("../../types").ISocketFactory}
  */
 
-import { Client, Event, Packet } from "https://deno.land/x/tcp_socket@0.0.1/mods.ts";
+ import { Client } from './socketClass.ts'
 
 export default () => {
 
-  return ({ host, port, onConnect}: any) => { //async await????
+  return ({ host, port, onConnect}: any) => { 
     const socket = new Client({hostname: host, port: port})
-    socket.on(Event.connect, ()=>console.log('connected', socket))
-    socket.connect();
-    // socket.on(Event.connect, onConnect)
-    // console.log('socket inside of SF', socket)
+    //socket.on('connect', onConnect)
+    
+    
     return socket;
   };
 }

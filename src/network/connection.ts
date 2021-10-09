@@ -146,17 +146,21 @@ export default class Connection {
       let timeoutId: any;
 
       const onConnect = () => {
+        console.log('inside onConnect, before cleartimeout')
         clearTimeout(timeoutId);
+        console.log('inside onConnect, after cleartimeout')
         this.connectionStatus = CONNECTION_STATUS.CONNECTED;
         this.requestQueue.scheduleRequestTimeoutCheck();
         resolve(true);
       };
 
       const onData = (data: any) => {
+        console.log('inside onData')
         this.processData(data);
       };
 
       const onEnd = async () => {
+        console.log('inside onEnd')
         clearTimeout(timeoutId);
 
         const wasConnected = this.connected;
@@ -195,6 +199,7 @@ export default class Connection {
       };
 
       const onTimeout = async () => {
+        console.log('INSIDE ONTIMEOUT')
         const error = new KafkaJSConnectionError('Connection timeout', {
           broker: `${this.host}:${this.port}`,
         });
@@ -358,6 +363,9 @@ export default class Connection {
             expectResponse,
             requestTimeout,
             sendRequest: () => {
+              console.log('i am send request', this.socket, "******")
+              console.log('i am this.socket.write onConnect', this.socket.write.toString())
+              console.log('i am request payload', requestPayload, 'buffer', requestPayload.buffer)
               this.socket.write(requestPayload.buffer, 'binary');
             },
           });
