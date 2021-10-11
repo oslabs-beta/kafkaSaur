@@ -363,9 +363,9 @@ export default class Connection {
             expectResponse,
             requestTimeout,
             sendRequest: () => {
-              console.log('i am send request', this.socket, "******")
-              console.log('i am this.socket.write onConnect', this.socket.write.toString())
-              console.log('i am request payload', requestPayload, 'buffer', requestPayload.buffer)
+              // console.log('i am send request', this.socket, "******")
+              // console.log('i am this.socket.write onConnect', this.socket.write.toString())
+              // console.log('i am request payload', requestPayload, 'buffer', requestPayload.buffer)
               this.socket.write(requestPayload.buffer, 'binary');
             },
           });

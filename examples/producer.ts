@@ -13,16 +13,16 @@ const kafka = new Kafka({
   logCreator: PrettyConsoleLogger,
   brokers: [`${host}:9092`],
   clientId: 'example-producer',
-  ssl: {
-    servername: 'localhost',
-    rejectUnauthorized: false,
-    ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], 
-  },
-  sasl: {
-    mechanism: 'plain',
-    username: 'test',
-    password: 'testtest',
-  },
+  // ssl: {
+  //   servername: 'localhost',
+  //   rejectUnauthorized: false,
+  //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], 
+  // },
+  // sasl: {
+  //   mechanism: 'plain',
+  //   username: 'test',
+  //   password: 'testtest',
+  // },
 });
 
 const topic = 'topic-test';
@@ -68,7 +68,9 @@ const sendMessage = () => {
 
 let intervalId: any;
 const run = async () => {
+  console.log('inside run 1')
   await producer.connect();
+  console.log('inside run 2')
   intervalId = setInterval(sendMessage, 3000);
 };
 
@@ -77,6 +79,9 @@ run().catch((e) => {
   kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
 }
 );
+// console.log('line 80')
+// await producer.disconnect()
+// console.log('line 82')
 
 const errorTypes = ['unhandledRejection', 'uncaughtException'];
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2'];

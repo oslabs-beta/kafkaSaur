@@ -29,16 +29,15 @@ export default ({
   socket.on('error', onError)
   socket.on('timeout', onTimeout)
 
-  // socket.on('connect', ()=>{
-  //   while (socket.conn) console.log('i am connected')
-  // })
-  //socket.on('connect', ()=>console.log(onConnect.toString()))
-  //socket.on('connect', async ()=> await socket.write('hello there'))
-  socket.on('data', ()=> console.log('data'))
-  socket.on('end', ()=>console.log('end'))
-  socket.on('error', ()=>console.log('error'))
-  socket.on('timeout', ()=>console.log('timeout'))
-  socket.connect();
+  socket.on('connect', onConnect)
 
+
+  socket.on('data', ()=> console.log('****data****'))
+  socket.on('end', ()=>console.log('****end****'))
+  socket.on('error', ()=>console.log('****error****'))
+  socket.on('timeout', ()=>console.log('****timeout****'))
+
+  socket.connect()
+  
   return socket
 }

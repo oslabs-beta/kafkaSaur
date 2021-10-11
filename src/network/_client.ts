@@ -1,28 +1,31 @@
 import { Client, Packet, Event } from "https://deno.land/x/tcp_socket@0.0.1/mods.ts";
 
-const client = new Client({ hostname: "127.0.0.1", port: 8080 });
+let temp = await Deno.connect({hostname: '127.0.0.1', port:8080})
+console.log(temp.toString())
 
-// Connection open
-client.on(Event.connect, (client: Client) => {
-  console.log(client)
-  console.log("Connect", client.conn?.remoteAddr);
-});
+// const client = new Client({ hostname: "127.0.0.1", port: 8080 });
 
-// Receive message
-client.on(Event.receive, (client: Client, data: Packet) => {
-  console.log("Receive", data.toString());
-});
+// // Connection open
+// client.on(Event.connect, (client: Client) => {
+//   console.log(client)
+//   console.log("Connect", client.conn?.remoteAddr);
+// });
 
-// Connection close
-client.on(Event.close, (client: Client) => {
-  console.log("Close");
-});
+// // Receive message
+// client.on(Event.receive, (client: Client, data: Packet) => {
+//   console.log("Receive", data.toString());
+// });
 
-// Handle error
-client.on(Event.error, (e) => {
-  console.error(e);
-});
+// // Connection close
+// client.on(Event.close, (client: Client) => {
+//   console.log("Close");
+// });
 
-// Do
-await client.connect(); // Start client connect
-await client.write("Hello World"); // Send string data
+// // Handle error
+// client.on(Event.error, (e) => {
+//   console.error(e);
+// });
+
+// // Do
+// await client.connect(); // Start client connect
+// await client.write("Hello World"); // Send string data

@@ -50,7 +50,7 @@ export class Client extends EventEmitter{
       this.emit('connect', this);
       
       for await (const buffer of Deno.iter(conn, {bufSize: this.options.chunkSize!})) {
-        this.emit('recieve', this, new Buffer(), buffer.length)
+        this.emit('receive', this, new Buffer(), buffer.length)
       }
       this.close();
     } catch (e: any) {
@@ -64,10 +64,11 @@ export class Client extends EventEmitter{
   }
 
   async write(data: Buffer): Promise<number> {
-	//let write = await this.conn?.write(new Packet(data).toData());
-    console.log('inside write')
     let write = await this.conn?.write(data);
-    //---we're already encoding data in KafkaSaur...so do we just pass the data here? Assuming its already encoded? 
+    console.log('write completed')
+    //const temp = new Buffer(100)
+    // let read = await this.conn?.read(temp)
+    // console.log(read)
 	return Promise.resolve(<number>write)
   }
 }

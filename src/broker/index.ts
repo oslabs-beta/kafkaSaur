@@ -25,6 +25,53 @@ const notInitializedLookup = () => {
   throw new Error('Broker not connected');
 };
 
+//HARDCODED VERSIONS BELOW
+let tempVersions = {
+  '0': { minVersion: 0, maxVersion: 5 },
+  '1': { minVersion: 0, maxVersion: 7 },
+  '2': { minVersion: 0, maxVersion: 2 },
+  '3': { minVersion: 0, maxVersion: 5 },
+  '4': { minVersion: 0, maxVersion: 1 },
+  '5': { minVersion: 0, maxVersion: 0 },
+  '6': { minVersion: 0, maxVersion: 4 },
+  '7': { minVersion: 0, maxVersion: 1 },
+  '8': { minVersion: 0, maxVersion: 3 },
+  '9': { minVersion: 0, maxVersion: 3 },
+  '10': { minVersion: 0, maxVersion: 1 },
+  '11': { minVersion: 0, maxVersion: 2 },
+  '12': { minVersion: 0, maxVersion: 1 },
+  '13': { minVersion: 0, maxVersion: 1 },
+  '14': { minVersion: 0, maxVersion: 1 },
+  '15': { minVersion: 0, maxVersion: 1 },
+  '16': { minVersion: 0, maxVersion: 1 },
+  '17': { minVersion: 0, maxVersion: 1 },
+  '18': { minVersion: 0, maxVersion: 1 },
+  '19': { minVersion: 0, maxVersion: 2 },
+  '20': { minVersion: 0, maxVersion: 1 },
+  '21': { minVersion: 0, maxVersion: 0 },
+  '22': { minVersion: 0, maxVersion: 0 },
+  '23': { minVersion: 0, maxVersion: 0 },
+  '24': { minVersion: 0, maxVersion: 0 },
+  '25': { minVersion: 0, maxVersion: 0 },
+  '26': { minVersion: 0, maxVersion: 0 },
+  '27': { minVersion: 0, maxVersion: 0 },
+  '28': { minVersion: 0, maxVersion: 0 },
+  '29': { minVersion: 0, maxVersion: 0 },
+  '30': { minVersion: 0, maxVersion: 0 },
+  '31': { minVersion: 0, maxVersion: 0 },
+  '32': { minVersion: 0, maxVersion: 1 },
+  '33': { minVersion: 0, maxVersion: 0 },
+  '34': { minVersion: 0, maxVersion: 0 },
+  '35': { minVersion: 0, maxVersion: 0 },
+  '36': { minVersion: 0, maxVersion: 0 },
+  '37': { minVersion: 0, maxVersion: 0 },
+  '38': { minVersion: 0, maxVersion: 0 },
+  '39': { minVersion: 0, maxVersion: 0 },
+  '40': { minVersion: 0, maxVersion: 0 },
+  '41': { minVersion: 0, maxVersion: 0 },
+  '42': { minVersion: 0, maxVersion: 0 }
+}
+
 /**
  * Each node in a Kafka cluster is called broker. This class contains
  * the high-level operations a node can perform.
@@ -75,7 +122,7 @@ export class Broker {
     this.nodeId = nodeId;
     this.rootLogger = logger;
     this.logger = logger.namespace('Broker');
-    this.versions = versions;
+    this.versions = tempVersions;
     this.authenticationTimeout = authenticationTimeout;
     this.reauthenticationThreshold = reauthenticationThreshold;
     this.allowAutoTopicCreation = allowAutoTopicCreation;
@@ -108,25 +155,36 @@ export class Broker {
    * @returns {Promise}
    */
   async connect() {
+    console.log('inside broker/connect - top level')
     try {
       await this.lock.acquire();
+      console.log('inside broker/connect - after lock acquire')
       if (this.isConnected()) {
         return;
       }
       this.authenticatedAt = null;
       await this.connection.connect();
+      console.log('inside broker/connect - after this.connection.connect')
+      //console.log('this.connection, ', this.connection)
+      console.log('this.versions', this.versions)
       if (!this.versions) {
+        console.log('inside !this.versions')
         this.versions = await this.apiVersions();
       }
+      console.log('before lookup request')
       this.lookupRequest = lookup(this.versions);
+      console.log('after lookuprequest')
       if (this.supportAuthenticationProtocol === null) {
+        console.log('supportAuthenticationProtocol is null - inside if block')
         try {
+          console.log('inside lookuprequest try block')
           this.lookupRequest(
             apiKeys.SaslAuthenticate,
             requests.SaslAuthenticate
           );
           this.supportAuthenticationProtocol = true;
         } catch (_) {
+          console.log('inside lookuprequest catch block')
           this.supportAuthenticationProtocol = false;
         }
         this.logger.debug(`Verified support for SaslAuthenticate`, {
@@ -135,18 +193,22 @@ export class Broker {
         });
       }
       if (this.authenticatedAt == null && this.connection.sasl) {
+        console.log('this.authenticatedAt == null && this.connection.sasl')
         const authenticator = new SASLAuthenticator(
           this.connection,
           this.rootLogger,
           this.versions,
           this.supportAuthenticationProtocol
         );
+        console.log('before authenticator.authenticate()')
         await authenticator.authenticate();
+        console.log('after authenticator.authenticate()')
         this.authenticatedAt = process.hrtime();
         this.sessionLifetime = Long.fromValue(authenticator.sessionLifetime);
       }
     } finally {
       await this.lock.release();
+      console.log('lock released')
     }
   }
   /**
