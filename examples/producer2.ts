@@ -19,10 +19,9 @@ const kafka = new Kafka({
   //},
 });
 
-const topic = 'spooky-ghost';
+const topic = 'jesus-help';
 const producer = kafka.producer();
 
-const getRandomNumber = () => Math.round(Math.random() * 1000);
 const createMessage = (num: number) => ({
   key: `key-${num}`,
   value: `value-${num}-${new Date().toISOString()}`,
@@ -31,38 +30,20 @@ const createMessage = (num: number) => ({
   },
 });
 
-let msgNumber = 0;
-let requestNumber = 0;
-const sendMessage = () => {
-  const messages = Array(getRandomNumber())
-    .fill(undefined)
-    .map((_) => createMessage(getRandomNumber()));
+const sendMe : any[] = [];
+sendMe.push(createMessage(100))
 
-  const requestId = requestNumber++;
-  msgNumber += messages.length;
-  kafka.logger().info(`Sending ${messages.length} messages #${requestId}...`);
-  return producer
-    .send({
-      topic,
-      //compression: CompressionTypes.GZIP,
-      messages,
-    })
-    .then((response: any) => {
-      kafka.logger().info(`Messages sent #${requestId}`, {
-        response,
-        msgNumber,
-      });
-    })
-    .catch((e: any) =>
-      kafka
-        .logger()
-        .error(`[example/producer] ${e.message}`, { stack: e.stack })
-    );
-};
+const sendMessage = () => {
+  return producer.send({
+    topic,
+    //compression: CompressionTypes.GZIP,
+    messages: sendMe
+  })
+}
 
 const run = async () => {
   await producer.connect();
-  setInterval(sendMessage, 3000);
+  sendMessage();
 };
 
 run().catch((e) =>

@@ -1073,9 +1073,6 @@ export class Broker {
       //return await this.connection.send(protocolRequest);
       console.log('UPCOMING REQUEST IS', protocolRequest)
       return await this.connection.send(protocolRequest);
-      // await console.log(this.connection.socket.conn.write.toString())
-      // await console.log(protocolRequest)
-      // return await this.connection.socket.conn.write(protocolRequest);
     } catch (e: any) {
       if (e.name === 'KafkaJSConnectionClosedError') {
         await this.disconnect();

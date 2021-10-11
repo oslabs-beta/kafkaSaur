@@ -50,7 +50,7 @@ const sendMessage = () => {
   return producer
     .send({
       topic,
-      compression: CompressionTypes.GZIP,
+      //compression: CompressionTypes.GZIP,
       messages,
     })
     .then((response: any) => {

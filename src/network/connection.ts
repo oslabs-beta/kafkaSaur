@@ -328,24 +328,25 @@ export default class Connection {
     logResponseError = true,
   }: any) {
     this.failIfNotConnected();
-
+    
     const expectResponse = !request.expectResponse || request.expectResponse();
     const sendRequest = async () => {
       const { clientId } = this;
       const correlationId = this.nextCorrelationId();
-
+      console.log('BEFORE SUSPECT AWAIT!!!!!!!!!!')
       const requestPayload = await createRequest({
         request,
         correlationId,
         clientId,
       });
+      console.log('AFTER SUSPECT AWAIT!!!!!!!!!!!!!!!')
       const { apiKey, apiName, apiVersion } = request;
       this.logDebug(`Request ${requestInfo(request)}`, {
         correlationId,
         expectResponse,
         size: Buffer.byteLength(requestPayload.buffer),
       });
-
+      console.log('\n****CREATING NEW REQUEST PAYLOAD FOR REQUEST ', apiName, ' REQUEST PAYLOAD IS: \n', requestPayload)
       return new Promise((resolve: any, reject: any) => {
         try {
           this.failIfNotConnected();
@@ -363,7 +364,6 @@ export default class Connection {
             expectResponse,
             requestTimeout,
             sendRequest: async () => {
-              //CHANGED 10/11 this.socket.write(requestPayload.buffer, 'binary');
               console.log('\n****!!!!!!!!!!!!!!!SEND REQUEST FIRING FOR REQUEST : !!!!!!!!!!!!!!!!!!!**** ', request.apiName)
               await this.socket.write(requestPayload.buffer)
             },
