@@ -68,14 +68,11 @@ const sendMessage = () => {
 
 let intervalId: any;
 const run = async () => {
-  console.log('inside run 1')
   await producer.connect();
-  console.log('inside run 2')
   intervalId = setInterval(sendMessage, 3000);
 };
 
 run().catch((e) => {
-  console.log('whattup bae')
   kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
 }
 );

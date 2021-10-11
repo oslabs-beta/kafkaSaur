@@ -364,9 +364,8 @@ export default class Connection {
             requestTimeout,
             sendRequest: async () => {
               //CHANGED 10/11 this.socket.write(requestPayload.buffer, 'binary');
-              console.log('****SEND REQUEST FIRING FOR REQUEST NAME: **** ', request.apiName)
+              console.log('\n****!!!!!!!!!!!!!!!SEND REQUEST FIRING FOR REQUEST : !!!!!!!!!!!!!!!!!!!**** ', request.apiName)
               await this.socket.write(requestPayload.buffer)
-              console.log('****SEND REQEUEST - AFTER WRITE AWAIT*****')
             },
           });
         } catch (e) {

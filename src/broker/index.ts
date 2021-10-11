@@ -164,7 +164,6 @@ export class Broker {
       }
       this.authenticatedAt = null;
       await this.connection.connect();
-      console.log('inside broker/connect - after this.connection.connect')
       console.log('this.connection, ', this.connection)
       console.log('this.versions', this.versions)
       if (!this.versions) {
@@ -172,20 +171,16 @@ export class Broker {
         this.versions = await this.apiVersions();
         console.log('after this.versions check - this.versions is ', this.versions)
       }
-      console.log('before lookup request')
       this.lookupRequest = lookup(this.versions);
-      console.log('after lookuprequest')
       if (this.supportAuthenticationProtocol === null) {
         console.log('supportAuthenticationProtocol is null - inside if block')
         try {
-          console.log('inside lookuprequest try block')
           this.lookupRequest(
             apiKeys.SaslAuthenticate,
             requests.SaslAuthenticate
           );
           this.supportAuthenticationProtocol = true;
         } catch (_) {
-          console.log('inside lookuprequest catch block')
           this.supportAuthenticationProtocol = false;
         }
         this.logger.debug(`Verified support for SaslAuthenticate`, {
@@ -209,7 +204,7 @@ export class Broker {
       }
     } finally {
       await this.lock.release();
-      console.log('lock released')
+      console.log('*****lock released*****')
     }
   }
   /**
@@ -1076,7 +1071,7 @@ export class Broker {
   async [(PRIVATE as any).SEND_REQUEST](protocolRequest: any) {
     try {
       //return await this.connection.send(protocolRequest);
-      console.log('protocol request', protocolRequest)
+      console.log('UPCOMING REQUEST IS', protocolRequest)
       return await this.connection.send(protocolRequest);
       // await console.log(this.connection.socket.conn.write.toString())
       // await console.log(protocolRequest)
