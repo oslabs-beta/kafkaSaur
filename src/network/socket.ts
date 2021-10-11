@@ -31,7 +31,7 @@ export default ({
 
   socket.on('connect', onConnect)
 
-
+  socket.on('connect', ()=>console.log('****connected****'))
   socket.on('data', ()=> console.log('****data****'))
   socket.on('end', ()=>console.log('****end****'))
   socket.on('error', ()=>console.log('****error****'))

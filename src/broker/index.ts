@@ -122,7 +122,7 @@ export class Broker {
     this.nodeId = nodeId;
     this.rootLogger = logger;
     this.logger = logger.namespace('Broker');
-    this.versions = tempVersions;
+    this.versions = null;
     this.authenticationTimeout = authenticationTimeout;
     this.reauthenticationThreshold = reauthenticationThreshold;
     this.allowAutoTopicCreation = allowAutoTopicCreation;
@@ -165,11 +165,12 @@ export class Broker {
       this.authenticatedAt = null;
       await this.connection.connect();
       console.log('inside broker/connect - after this.connection.connect')
-      //console.log('this.connection, ', this.connection)
+      console.log('this.connection, ', this.connection)
       console.log('this.versions', this.versions)
       if (!this.versions) {
         console.log('inside !this.versions')
         this.versions = await this.apiVersions();
+        console.log('after this.versions check - this.versions is ', this.versions)
       }
       console.log('before lookup request')
       this.lookupRequest = lookup(this.versions);
@@ -1074,7 +1075,12 @@ export class Broker {
    */
   async [(PRIVATE as any).SEND_REQUEST](protocolRequest: any) {
     try {
+      //return await this.connection.send(protocolRequest);
+      console.log('protocol request', protocolRequest)
       return await this.connection.send(protocolRequest);
+      // await console.log(this.connection.socket.conn.write.toString())
+      // await console.log(protocolRequest)
+      // return await this.connection.socket.conn.write(protocolRequest);
     } catch (e: any) {
       if (e.name === 'KafkaJSConnectionClosedError') {
         await this.disconnect();

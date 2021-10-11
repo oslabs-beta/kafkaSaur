@@ -300,7 +300,7 @@ export default class Connection {
         const requestPayload = await request.encode();
 
         this.failIfNotConnected();
-        this.socket.write(requestPayload.buffer, 'binary');
+        this.socket.conn.write(requestPayload.buffer);
       } catch (e) {
         reject(e);
       }
@@ -362,11 +362,11 @@ export default class Connection {
             entry,
             expectResponse,
             requestTimeout,
-            sendRequest: () => {
-              // console.log('i am send request', this.socket, "******")
-              // console.log('i am this.socket.write onConnect', this.socket.write.toString())
-              // console.log('i am request payload', requestPayload, 'buffer', requestPayload.buffer)
-              this.socket.write(requestPayload.buffer, 'binary');
+            sendRequest: async () => {
+              //CHANGED 10/11 this.socket.write(requestPayload.buffer, 'binary');
+              console.log('****SEND REQUEST FIRING FOR REQUEST NAME: **** ', request.apiName)
+              await this.socket.write(requestPayload.buffer)
+              console.log('****SEND REQEUEST - AFTER WRITE AWAIT*****')
             },
           });
         } catch (e) {
@@ -447,8 +447,11 @@ export default class Connection {
   /**
    * @private
    */
-  processData(rawData: any) {
+  processData(rd: any) {
+    const rawData = Buffer.from(rd)
+    console.log('****RAW DATA****', rawData)
     if (this.authHandlers && !this.authExpectResponse) {
+      console.log('process data, inside weird if block')
       return this.authHandlers.onSuccess(rawData);
     }
 

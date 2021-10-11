@@ -22,7 +22,7 @@ const apiVersion = (decoder: any) => ({
 });
 //deno-lint-ignore require-await
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData);
+  const decoder = await new Decoder(rawData);
   const errorCode = decoder.readInt16();
 
   failIfVersionNotSupported(errorCode);
