@@ -32,7 +32,7 @@ export class Runner extends EventEmitter {
   eachBatch: any;
   eachBatchAutoResolve: any;
   eachMessage: any;
-  emit: any;
+  //emit: any;
   heartbeatInterval: any;
   instrumentationEmitter: any;
   logger: any;

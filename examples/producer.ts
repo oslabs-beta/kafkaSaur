@@ -25,7 +25,7 @@ const kafka = new Kafka({
   // },
 });
 
-const topic = 'jesus-help';
+const topic = 'topic-test';
 const producer = kafka.producer();
 
 const getRandomNumber = () => Math.round(Math.random() * 1000);
