@@ -6,26 +6,26 @@ import process from 'https://deno.land/std@0.110.0/node/process.ts';
 import { Kafka, CompressionTypes, logLevel } from '../index.ts';
 import PrettyConsoleLogger from './prettyConsoleLogger.js';
 
-const host = 'localhost';
+const host = '127.0.0.1';
 
 const kafka = new Kafka({
   logLevel: logLevel.INFO,
   logCreator: PrettyConsoleLogger,
-  brokers: [`${host}:9093`],
+  brokers: [`${host}:9092`],
   clientId: 'example-producer',
-  ssl: {
-    servername: 'localhost',
-    rejectUnauthorized: false,
-    ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], //'uft-8' was in readFileSync for dinner
-  },
-  sasl: {
-    mechanism: 'plain',
-    username: 'test',
-    password: 'testtest',
-  },
+  // ssl: {
+  //   servername: 'localhost',
+  //   rejectUnauthorized: false,
+  //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], 
+  // },
+  // sasl: {
+  //   mechanism: 'plain',
+  //   username: 'test',
+  //   password: 'testtest',
+  // },
 });
 
-const topic = 'topic-test';
+const topic = 'jesus-help';
 const producer = kafka.producer();
 
 const getRandomNumber = () => Math.round(Math.random() * 1000);
@@ -50,7 +50,7 @@ const sendMessage = () => {
   return producer
     .send({
       topic,
-      compression: CompressionTypes.GZIP,
+      //compression: CompressionTypes.GZIP,
       messages,
     })
     .then((response: any) => {
@@ -72,31 +72,35 @@ const run = async () => {
   intervalId = setInterval(sendMessage, 3000);
 };
 
-run().catch((e) =>
+run().catch((e) => {
   kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
+}
 );
+// console.log('line 80')
+// await producer.disconnect()
+// console.log('line 82')
 
 const errorTypes = ['unhandledRejection', 'uncaughtException'];
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
 
-errorTypes.map((type) => {
-  process.on(type, async (e: any) => {
-    try {
-      kafka.logger().info(`process.on ${type}`);
-      kafka.logger().error(e.message, { stack: e.stack });
-      await producer.disconnect();
-      process.exit(0);
-    } catch (_) {
-      process.exit(1);
-    }
-  });
-});
+// errorTypes.map((type) => {
+//   process.on(type, async (e: any) => {
+//     try {
+//       kafka.logger().info(`process.on ${type}`);
+//       kafka.logger().error(e.message, { stack: e.stack });
+//       await producer.disconnect();
+//       process.exit(0);
+//     } catch (_) {
+//       process.exit(1);
+//     }
+//   });
+// });
 
-signalTraps.map((type) => {
-  process.once(type, async () => {
-    console.log('');
-    kafka.logger().info('[example/producer] disconnecting');
-    clearInterval(intervalId);
-    await producer.disconnect();
-  });
-});
+// signalTraps.map((type) => {
+//   process.once(type, async () => {
+//     console.log('');
+//     kafka.logger().info('[example/producer] disconnecting');
+//     clearInterval(intervalId);
+//     await producer.disconnect();
+//   });
+// });

@@ -15,7 +15,7 @@ import response from '../v1/response.ts';
  *   throttle_time_ms => INT32
  */
 const { parse }: any = response.parse;
-const { decodeV1 }: any = response.decode;
+const decodeV1: any = response.decode;
 const decode = async (rawData: any) => {
   const decoded = await decodeV1(rawData);
 

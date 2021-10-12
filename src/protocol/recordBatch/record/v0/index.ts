@@ -1,5 +1,5 @@
 /** @format */
-import { Buffer } from 'https://deno.land/std@0.110.0/io/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 import { Encoder } from '../../../encoder.ts';
 import Header from '../../header/v0/index.ts';
 
@@ -58,9 +58,9 @@ const sizeOfHeaders = (headersArray: any) => {
   let size = Encoder.sizeOfVarInt(headersArray.length);
 
   for (const header of headersArray) {
-    //@ts-ignore because
+    
     const keySize = Buffer.byteLength(header.key);
-    //@ts-ignore because
+    
     const valueSize = Buffer.byteLength(header.value);
 
     size += Encoder.sizeOfVarInt(keySize) + keySize;

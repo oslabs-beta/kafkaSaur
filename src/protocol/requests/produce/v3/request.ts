@@ -39,6 +39,7 @@ export default ({
   apiName: 'Produce',
   expectResponse: () => acks !== 0,
   encode: async () => {
+    console.log('i am trying to encode')
     const encodeTopic = topicEncoder(compression)
     const encodedTopicData = []
 
@@ -47,6 +48,7 @@ export default ({
         await encodeTopic({ ...data, transactionalId, producerId, producerEpoch })
       )
     }
+    console.log('i encoded successfully')
 
     return new Encoder()
       .writeString(transactionalId)
