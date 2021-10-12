@@ -164,12 +164,8 @@ export class Broker {
       }
       this.authenticatedAt = null;
       await this.connection.connect();
-      console.log('this.connection, ', this.connection)
-      console.log('this.versions', this.versions)
       if (!this.versions) {
-        console.log('inside !this.versions')
         this.versions = await this.apiVersions();
-        console.log('after this.versions check - this.versions is ', this.versions)
       }
       this.lookupRequest = lookup(this.versions);
       if (this.supportAuthenticationProtocol === null) {

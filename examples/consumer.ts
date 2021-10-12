@@ -11,16 +11,16 @@ const kafka = new Kafka({
   logCreator: PrettyConsoleLogger,
   brokers: [`${host}:9092`],
   clientId: 'example-consumer',
-  ssl: {
-    servername: 'localhost',
-    rejectUnauthorized: false,
-    ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')],
-  },
-  sasl: {
-    mechanism: 'plain',
-    username: 'test',
-    password: 'testtest',
-  },
+  // ssl: {
+  //   servername: 'localhost',
+  //   rejectUnauthorized: false,
+  //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')],
+  // },
+  // sasl: {
+  //   mechanism: 'plain',
+  //   username: 'test',
+  //   password: 'testtest',
+  // },
 })
 
 const topic = 'topic-test'
