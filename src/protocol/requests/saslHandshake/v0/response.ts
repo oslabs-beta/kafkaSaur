@@ -27,7 +27,7 @@ const parse = async (data: any) => {
   return data
 }
 
-export default {
+export {
   decode,
   parse,
 }
