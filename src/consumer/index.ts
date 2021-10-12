@@ -14,7 +14,7 @@ import {
 } from './instrumentationEvents.ts';
 import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts';
 import { KafkaJSNonRetriableError } from '../errors.ts';
-import roundRobin from './assigners/index.ts';
+import { roundRobin } from './assigners/index.ts';
 import Constants from '../constants.ts';
 import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
 
@@ -89,7 +89,7 @@ export default ({
   const logger = rootLogger.namespace('Consumer');
   const instrumentationEmitter =
     rootInstrumentationEmitter || new InstrumentationEventEmitter();
-  const assigners = partitionAssigners.map((createAssigner: any) =>
+  const assigners = partitionAssigners.map((createAssigner: any) => 
     createAssigner({ groupId, logger, cluster })
   );
 

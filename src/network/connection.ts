@@ -146,21 +146,17 @@ export default class Connection {
       let timeoutId: any;
 
       const onConnect = () => {
-        console.log('inside onConnect, before cleartimeout')
         clearTimeout(timeoutId);
-        console.log('inside onConnect, after cleartimeout')
         this.connectionStatus = CONNECTION_STATUS.CONNECTED;
         this.requestQueue.scheduleRequestTimeoutCheck();
         resolve(true);
       };
 
       const onData = (data: any) => {
-        console.log('inside onData')
         this.processData(data);
       };
 
       const onEnd = async () => {
-        console.log('inside onEnd')
         clearTimeout(timeoutId);
 
         const wasConnected = this.connected;
@@ -199,7 +195,6 @@ export default class Connection {
       };
 
       const onTimeout = async () => {
-        console.log('INSIDE ONTIMEOUT')
         const error = new KafkaJSConnectionError('Connection timeout', {
           broker: `${this.host}:${this.port}`,
         });
@@ -333,20 +328,18 @@ export default class Connection {
     const sendRequest = async () => {
       const { clientId } = this;
       const correlationId = this.nextCorrelationId();
-      console.log('BEFORE SUSPECT AWAIT!!!!!!!!!!')
       const requestPayload = await createRequest({
         request,
         correlationId,
         clientId,
       });
-      console.log('AFTER SUSPECT AWAIT!!!!!!!!!!!!!!!')
       const { apiKey, apiName, apiVersion } = request;
       this.logDebug(`Request ${requestInfo(request)}`, {
         correlationId,
         expectResponse,
         size: Buffer.byteLength(requestPayload.buffer),
       });
-      console.log('\n****CREATING NEW REQUEST PAYLOAD FOR REQUEST ', apiName, ' REQUEST PAYLOAD IS: \n', requestPayload)
+      console.log('\n****CREATING NEW REQUEST PAYLOAD FOR REQUEST ', apiName)
       return new Promise((resolve: any, reject: any) => {
         try {
           this.failIfNotConnected();
@@ -448,9 +441,7 @@ export default class Connection {
    */
   processData(rd: any) {
     const rawData = Buffer.from(rd)
-    console.log('****RAW DATA****', rawData)
     if (this.authHandlers && !this.authExpectResponse) {
-      console.log('process data, inside weird if block')
       return this.authHandlers.onSuccess(rawData);
     }
 

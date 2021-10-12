@@ -106,9 +106,7 @@ export default class BrokerPool {
 
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        console.log('inside brokerpool retrier callback 1')
         await this.seedBroker.connect();
-        console.log('inside brokerpool retrier callback 2')
         this.versions = this.seedBroker.versions;
       } catch (e: any) {
         if (

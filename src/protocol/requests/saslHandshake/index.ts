@@ -1,5 +1,5 @@
 import requestV0 from './v0/request.ts'
-import responseV0 from './v0/response.ts'
+import responseV0 from './v1/response.ts'
 import requestV1 from './v1/request.ts'
 import responseV1 from './v1/response.ts'
 

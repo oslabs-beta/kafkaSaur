@@ -2,6 +2,6 @@
 
 import roundRobin from './roundRobinAssigner/index.ts';
 
-export default {
+export {
   roundRobin,
 };

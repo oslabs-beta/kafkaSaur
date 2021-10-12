@@ -25,7 +25,7 @@ const kafka = new Kafka({
   // },
 });
 
-const topic = 'jesus-help';
+const topic = 'topic-test';
 const producer = kafka.producer();
 
 const getRandomNumber = () => Math.round(Math.random() * 1000);
@@ -76,9 +76,7 @@ run().catch((e) => {
   kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
 }
 );
-// console.log('line 80')
-// await producer.disconnect()
-// console.log('line 82')
+
 
 const errorTypes = ['unhandledRejection', 'uncaughtException'];
 const signalTraps = ['SIGTERM', 'SIGINT', 'SIGUSR2'];
