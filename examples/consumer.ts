@@ -23,7 +23,7 @@ const kafka = new Kafka({
   // },
 })
 
-const topic = 'jesus-help'
+const topic = 'topic-test'
 const consumer = kafka.consumer({ groupId: 'test-group' })
 
 let msgNumber = 0
