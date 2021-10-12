@@ -1,7 +1,8 @@
+/** @format */
 
-import {Decoder} from '../../../decoder'
+import { Decoder } from '../../../decoder.ts';
 
-import { failure, createErrorFromCode } from '../../../error'
+import { failure, createErrorFromCode } from '../../../error.ts';
 
 /**
  * CreateAcls Response (Version: 0) => throttle_time_ms [creation_responses]
@@ -13,37 +14,30 @@ import { failure, createErrorFromCode } from '../../../error'
 
 const decodeCreationResponse = (decoder: any) => ({
   errorCode: decoder.readInt16(),
-  errorMessage: decoder.readString()
-})
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+  errorMessage: decoder.readString(),
+});
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const creationResponses = decoder.readArray(decodeCreationResponse)
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const creationResponses = decoder.readArray(decodeCreationResponse);
 
   return {
     throttleTime,
     creationResponses,
-  }
-}
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+  };
+};
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
-  const creationResponsesWithError = data.creationResponses.filter(({
-    errorCode
-  }: any) =>
-    failure(errorCode)
-  )
+  const creationResponsesWithError = data.creationResponses.filter(
+    ({ errorCode }: any) => failure(errorCode)
+  );
 
   if (creationResponsesWithError.length > 0) {
-    throw createErrorFromCode(creationResponsesWithError[0].errorCode)
+    throw createErrorFromCode(creationResponsesWithError[0].errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-export {
-  decode,
-  parse,
-}
+export default { decode, parse };

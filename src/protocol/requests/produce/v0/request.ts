@@ -1,10 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Produce: apiKey } = require('../../apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSet = require('../../../messageSet')
+/** @format */
 
+import { Encoder } from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+import MessageSet from '../../../messageSet/index.ts';
+
+const apiKey = apiKeys.Produce;
 /**
  * Produce Request (Version: 0) => acks timeout [topic_data]
  *   acks => INT16
@@ -63,39 +63,30 @@ const MessageSet = require('../../../messageSet')
  *
  * @param topicData {Array}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
-  acks,
-  timeout,
-  topicData
-}: any) => ({
+export default ({ acks, timeout, topicData }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'Produce',
   expectResponse: () => acks !== 0,
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeInt16(acks)
       .writeInt32(timeout)
-      .writeArray(topicData.map(encodeTopic))
+      .writeArray(topicData.map(encodeTopic));
   },
-})
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
-const encodeTopic = ({
-  topic,
-  partitions
-}: any) => {
-  return new Encoder().writeString(topic).writeArray(partitions.map(encodePartitions))
-}
+const encodeTopic = ({ topic, partitions }: any) => {
+  return new Encoder()
+    .writeString(topic)
+    .writeArray(partitions.map(encodePartitions));
+};
 
-const encodePartitions = ({
-  partition,
-  messages
-}: any) => {
-  const messageSet = MessageSet({ messageVersion: 0, entries: messages })
+const encodePartitions = ({ partition, messages }: any) => {
+  const messageSet = MessageSet({ messageVersion: 0, entries: messages });
   return new Encoder()
     .writeInt32(partition)
     .writeInt32(messageSet.size())
-    .writeEncoder(messageSet)
-}
+    .writeEncoder(messageSet);
+};

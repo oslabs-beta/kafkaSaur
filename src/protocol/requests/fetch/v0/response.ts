@@ -1,13 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSOff... Remove this comment to see the full error message
-const { KafkaJSOffsetOutOfRange } = require('../../../../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode, errorCodes } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../../utils/flatten')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'MessageSet... Remove this comment to see the full error message
-const MessageSetDecoder = require('../../../messageSet/decoder')
+import {Decoder} from '../../../decoder.ts'
+import { KafkaJSOffsetOutOfRange } from '../../../../errors.ts'
+import { failure, createErrorFromCode, errorCodes } from '../../../error.ts'
+import flatten from '../../../../utils/flatten.ts'
+import MessageSetDecoder from '../../../messageSet/decoder.ts'
 
 /**
  * Fetch Response (Version: 0) => [responses]
@@ -21,7 +16,6 @@ const MessageSetDecoder = require('../../../messageSet/decoder')
  *       record_set => RECORDS
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
 const decodePartition = async (decoder: any) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
@@ -29,13 +23,11 @@ const decodePartition = async (decoder: any) => ({
   messages: await MessageSetDecoder(decoder)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeResp... Remove this comment to see the full error message
 const decodeResponse = async (decoder: any) => ({
   topicName: decoder.readString(),
   partitions: await decoder.readArrayAsync(decodePartition)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const responses = await decoder.readArrayAsync(decodeResponse)
@@ -45,11 +37,10 @@ const decode = async (rawData: any) => {
   }
 }
 
-const { code: OFFSET_OUT_OF_RANGE_ERROR_CODE } = errorCodes.find(
+const { code : OFFSET_OUT_OF_RANGE_ERROR_CODE } : any = errorCodes.find(
   (e: any) => e.type === 'OFFSET_OUT_OF_RANGE'
 )
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const partitionsWithError = data.responses.map(({
     topicName,
@@ -57,7 +48,6 @@ const parse = async (data: any) => {
   }: any) => {
     return partitions
       .filter((partition: any) => failure(partition.errorCode))
-      // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
       .map((partition: any) => Object.assign({}, partition, { topic: topicName }));
   })
 
@@ -74,8 +64,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

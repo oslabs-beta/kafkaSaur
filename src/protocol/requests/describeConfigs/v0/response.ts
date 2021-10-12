@@ -1,11 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ConfigSour... Remove this comment to see the full error message
-const ConfigSource = require('../../../configSource')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ConfigReso... Remove this comment to see the full error message
-const ConfigResourceTypes = require('../../../configResourceTypes')
+import {Decoder} from '../../../decoder.ts';
+
+import { failure, createErrorFromCode } from '../../../error.ts'
+import ConfigSource from '../../../configSource.ts'
+import ConfigResourceTypes from '../../../configResourceTypes.ts'
 
 /**
  * DescribeConfigs Response (Version: 0) => throttle_time_ms [resources]
@@ -23,7 +20,6 @@ const ConfigResourceTypes = require('../../../configResourceTypes')
  *       is_sensitive => BOOLEAN
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeConf... Remove this comment to see the full error message
 const decodeConfigEntries = (decoder: any, resourceType: any) => {
   const configName = decoder.readString()
   const configValue = decoder.readString()
@@ -61,7 +57,6 @@ const decodeConfigEntries = (decoder: any, resourceType: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeReso... Remove this comment to see the full error message
 const decodeResources = (decoder: any) => {
   const errorCode = decoder.readInt16()
   const errorMessage = decoder.readString()
@@ -77,8 +72,7 @@ const decodeResources = (decoder: any) => {
     configEntries,
   }
 }
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -89,8 +83,7 @@ const decode = async (rawData: any) => {
     resources,
   }
 }
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const resourcesWithError = data.resources.filter(({
     errorCode
@@ -102,8 +95,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

@@ -3,7 +3,7 @@
 import Long from '../utils/long.ts';
 import createRetry from '../retry/index.ts';
 
-import * as Default from '../retry/defaults.ts';
+import defaultObj from '../retry/defaults.ts';
 
 import { ConsumerGroup } from './consumerGroup.ts';
 import { Runner } from './runner.ts';
@@ -14,13 +14,13 @@ import {
 } from './instrumentationEvents.ts';
 import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts';
 import { KafkaJSNonRetriableError } from '../errors.ts';
-import { roundRobin } from './assigners/index.ts';
+import roundRobin from './assigners/index.ts';
 import Constants from '../constants.ts';
 import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 
-const { initialRetryTime } = Default.initialRetryTime;
+const { initialRetryTime } = defaultObj;
 
 const { keys, values } = Object;
 const { CONNECT, DISCONNECT, STOP, CRASH } = events;
@@ -89,12 +89,11 @@ export default ({
   const logger = rootLogger.namespace('Consumer');
   const instrumentationEmitter =
     rootInstrumentationEmitter || new InstrumentationEventEmitter();
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'createAssigner' implicitly has an 'any'... Remove this comment to see the full error message
-  const assigners = partitionAssigners.map((createAssigner) =>
+  const assigners = partitionAssigners.map((createAssigner: any) =>
     createAssigner({ groupId, logger, cluster })
   );
 
-  const topics = {};
+  const topics: {[index: string]: any} = {};
   let runner: any = null;
   let consumerGroup: any = null;
 
@@ -210,8 +209,7 @@ export default ({
       const topicRegExp = topic;
       const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
-        // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'topicName' implicitly has an 'any... Remove this comment to see the full error message
-        .map(({ topic: topicName }) => topicName)
+        .map(({ topic: topicName}: any) => topicName)
         .filter((topicName: any) => topicRegExp.test(topicName));
 
       logger.debug('Subscription based on RegExp', {
@@ -226,7 +224,6 @@ export default ({
     }
 
     for (const t of topicsToSubscribe) {
-      // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
       topics[t] = { fromBeginning };
     }
 
@@ -242,7 +239,7 @@ export default ({
     partitionsConsumedConcurrently = 1,
     eachBatch = null,
     eachMessage = null,
-  } = {}) => {
+  }: any = {}) => {
     if (consumerGroup) {
       logger.warn(
         'consumer#run was called, but the consumer is already running',
@@ -361,8 +358,9 @@ export default ({
    * @param topicPartitions
    *   Example: [{ topic: 'topic-name', partition: 0, offset: '1', metadata: 'event-id-3' }]
    */
+  // deno-lint-ignore require-await
   const commitOffsets = async (topicPartitions = []) => {
-    const commitsByTopic = topicPartitions.reduce(
+    const commitsByTopic: {[key: string]: any} = topicPartitions.reduce(
       (payload, { topic, partition, offset, metadata = null }) => {
         if (!topic) {
           throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
@@ -416,7 +414,6 @@ export default ({
       topics: topics.map((topic) => {
         return {
           topic,
-          // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
           partitions: commitsByTopic[topic],
         };
       }),
@@ -479,7 +476,7 @@ export default ({
    * @param topicPartitions
    *   Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
-  const pause = (topicPartitions = []) => {
+  const pause = (topicPartitions: any = []) => {
     for (const topicPartition of topicPartitions) {
       if (!topicPartition || !(topicPartition as any).topic) {
         throw new KafkaJSNonRetriableError(

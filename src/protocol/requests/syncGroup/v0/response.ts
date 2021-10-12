@@ -1,15 +1,12 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode, failIfVersionNotSupported } = require('../../../error')
+import { Decoder } from '../../../decoder.ts'
+import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../../error.ts'
 
 /**
  * SyncGroup Response (Version: 0) => error_code member_assignment
  *   error_code => INT16
  *   member_assignment => BYTES
  */
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const errorCode = decoder.readInt16()
@@ -21,8 +18,7 @@ const decode = async (rawData: any) => {
     memberAssignment: decoder.readBytes(),
   }
 }
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
     throw createErrorFromCode(data.errorCode)
@@ -31,8 +27,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

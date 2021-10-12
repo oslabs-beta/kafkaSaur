@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSDel... Remove this comment to see the full error message
-const { KafkaJSDeleteTopicRecordsError } = require('../../../../errors')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import {Decoder} from '../../../decoder.ts'
+import { KafkaJSDeleteTopicRecordsError } from '../../../../errors.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
 
 /**
  * DeleteRecords Response (Version: 0) => throttle_time_ms [topics]
@@ -16,10 +13,8 @@ const { failure, createErrorFromCode } = require('../../../error')
  *      error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicNameC... Remove this comment to see the full error message
 const topicNameComparator = (a: any, b: any) => a.topic.localeCompare(b.topic)
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -38,7 +33,6 @@ const decode = async (rawData: any) => {
   };
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = (requestTopics: any) => async (data: any) => {
   const topicsWithErrors = data.topics
     .map(({
@@ -75,8 +69,7 @@ const parse = (requestTopics: any) => async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default({
   topics
 }: any) => ({
   decode,

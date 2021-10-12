@@ -1,5 +1,6 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import ACLResourceTypes from './aclResourceTypes'
+/** @format */
+
+import ACLResourceTypes from './aclResourceTypes.ts';
 
 /**
  * @deprecated
@@ -7,5 +8,4 @@ import ACLResourceTypes from './aclResourceTypes'
  *
  * Use ConfigResourceTypes or AclResourceTypes instead.
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export default {ACLResourceTypes}
+export default { ACLResourceTypes };

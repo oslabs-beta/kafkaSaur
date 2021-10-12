@@ -1,16 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-const Long = require('../../../../utils/long')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { Produce: apiKey } = require('../../apiKeys')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Types'.
-const { Types } = require('../../../message/compression')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const Record = require('../../../recordBatch/record/v0')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'RecordBatc... Remove this comment to see the full error message
-const { RecordBatch } = require('../../../recordBatch/v0')
-
+import Long from '../../../../utils/long.ts'
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+import compression from '../../../message/compression/index.ts'
+import Record from '../../../recordBatch/record/v0/index.ts'
+import { RecordBatch } from '../../../recordBatch/v0/index.ts'
+const {Types} = compression
+const apiKey = apiKeys.Produce;
 /**
  * Produce Request (Version: 3) => transactional_id acks timeout [topic_data]
  *   transactional_id => NULLABLE_STRING
@@ -30,8 +25,7 @@ const { RecordBatch } = require('../../../recordBatch/v0')
  * @param [compression=CompressionTypes.None] {CompressionTypes}
  * @param topicData {Array}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   acks,
   timeout,
   transactionalId = null,
@@ -45,6 +39,7 @@ export ({
   apiName: 'Produce',
   expectResponse: () => acks !== 0,
   encode: async () => {
+    console.log('i am trying to encode')
     const encodeTopic = topicEncoder(compression)
     const encodedTopicData = []
 
@@ -53,6 +48,7 @@ export ({
         await encodeTopic({ ...data, transactionalId, producerId, producerEpoch })
       )
     }
+    console.log('i encoded successfully')
 
     return new Encoder()
       .writeString(transactionalId)
@@ -62,7 +58,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicEncod... Remove this comment to see the full error message
 const topicEncoder = (compression: any) => async ({
   topic,
   partitions,
@@ -82,7 +77,6 @@ const topicEncoder = (compression: any) => async ({
   return new Encoder().writeString(topic).writeArray(encodedPartitions)
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partitions... Remove this comment to see the full error message
 const partitionsEncoder = (compression: any) => async ({
   partition,
   messages,

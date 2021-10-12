@@ -1,7 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../../error'
+/** @format */
+
+import {Decoder} from '../../../decoder.ts';
+import {
+  failure,
+  createErrorFromCode,
+  failIfVersionNotSupported,
+} from '../../../error.ts';
 
 /**
  * ApiVersionResponse => ApiVersions
@@ -13,37 +17,30 @@ import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../.
  *       MaxVersion = INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiVersion... Remove this comment to see the full error message
 const apiVersion = (decoder: any) => ({
   apiKey: decoder.readInt16(),
   minVersion: decoder.readInt16(),
-  maxVersion: decoder.readInt16()
-})
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+  maxVersion: decoder.readInt16(),
+});
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
   return {
     errorCode,
     apiVersions: decoder.readArray(apiVersion),
-  }
-}
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+  };
+};
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  decode,
-  parse,
-}
+export default { decode, parse };

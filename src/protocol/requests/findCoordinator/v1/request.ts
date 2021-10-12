@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { GroupCoordinator: apiKey } = require('../../apiKeys')
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
+
+const apiKey = apiKeys.GroupCoordinator;
 
 /**
  * FindCoordinator Request (Version: 1) => coordinator_key coordinator_type
@@ -9,14 +9,14 @@ const { GroupCoordinator: apiKey } = require('../../apiKeys')
  *   coordinator_type => INT8
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   coordinatorKey,
   coordinatorType
 }: any) => ({
   apiKey,
   apiVersion: 1,
   apiName: 'GroupCoordinator',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeString(coordinatorKey).writeInt8(coordinatorType)
   },

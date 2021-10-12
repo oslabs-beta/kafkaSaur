@@ -1,10 +1,10 @@
-import sleep from './sleep'
+import sleep from './sleep.ts'
 
-import KafkaJSTimeout  from '../src/errors.ts'
+import {KafkaJSTimeout}  from '../errors.ts'
 
 export default (
   fn: any,
-  { delay = 50, maxWait = 10000, timeoutMessage = 'Timeout', ignoreTimeout = false } = {}
+  { delay = 50, maxWait = 10000, timeoutMessage = 'Timeout', ignoreTimeout = false } : any = {}
 ) => {
   let timeoutId: any
   let totalWait = 0

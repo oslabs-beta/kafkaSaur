@@ -1,5 +1,5 @@
 import Connection from '../network/connection.ts'
-import { KafkaJSConnectionError, KafkaJSNonRetriableError } from '../errors.ts'
+import {KafkaJSConnectionError, KafkaJSNonRetriableError} from '../errors.ts'
 
 /**
  * @typedef {Object} ConnectionBuilder

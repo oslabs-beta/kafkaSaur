@@ -1,5 +1,7 @@
-const Encoder = require('../../../encoder')
-const { CreatePartitions: apiKey } = require('../../apiKeys')
+
+
+import {Encoder} from '../../../encoder.ts' 
+import apiKeys from '../../apiKeys.ts'
 
 /**
  * CreatePartitions Request (Version: 0) => [topic_partitions] timeout validate_only
@@ -11,7 +13,7 @@ const { CreatePartitions: apiKey } = require('../../apiKeys')
  *   timeout => INT32
  *   validate_only => BOOLEAN
  */
-
+const apiKey = apiKeys.CreatePartitions
 export default({
   topicPartitions,
   validateOnly = false,
@@ -20,6 +22,7 @@ export default({
   apiKey,
   apiVersion: 0,
   apiName: 'CreatePartitions',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeArray(topicPartitions.map(encodeTopicPartitions))
@@ -33,10 +36,10 @@ const encodeTopicPartitions = ({
   count,
   assignments = []
 }: any) => {
-  return new Encoder()
+  return new Encoder() 
     .writeString(topic)
     .writeInt32(count)
-    .writeNullableArray(assignments.map(encodeAssignments))
+    .writeNullableArray(assignments.map(encodeAssignments) )
 }
 
 const encodeAssignments = (brokerIds: any) => {

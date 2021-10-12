@@ -5,7 +5,6 @@
  * also known as CRC32 Castagnoli
  * based on: https://github.com/ashi009/node-fast-crc32c/blob/master/impls/js_crc32c.js
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'crc32C'.
 const crc32C = (buffer: any) => {
   let crc = 0 ^ -1
   for (let i = 0; i < buffer.length; i++) {
@@ -15,7 +14,6 @@ const crc32C = (buffer: any) => {
   return (crc ^ -1) >>> 0
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export default crc32C
 
 // prettier-ignore

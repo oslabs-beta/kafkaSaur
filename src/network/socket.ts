@@ -22,11 +22,22 @@ export default ({
   onTimeout
 }: any) => {
   const socket = socketFactory({ host, port, ssl, onConnect })
-
+  
+  
   socket.on('data', onData)
   socket.on('end', onEnd)
   socket.on('error', onError)
   socket.on('timeout', onTimeout)
 
+  socket.on('connect', onConnect)
+
+  socket.on('connect', ()=>console.log('****connect event triggered****'))
+  socket.on('data', ()=> console.log('****data event triggered****'))
+  socket.on('end', ()=>console.log('****end event triggered****'))
+  socket.on('error', ()=>console.log('****error event triggered****'))
+  socket.on('timeout', ()=>console.log('****timeout event triggered****'))
+
+  socket.connect()
+  
   return socket
 }

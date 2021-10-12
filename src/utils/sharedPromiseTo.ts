@@ -6,8 +6,7 @@
  * Function that may invoke asyncFunction if there is not a currently executing invocation.
  * Returns promise from the currently executing invocation.
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export (asyncFunction: any) => {
+export default (asyncFunction: any) => {
   let promise: any = null
 
   return (...args: any[]) => {

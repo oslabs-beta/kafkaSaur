@@ -1,8 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'responseV0... Remove this comment to see the full error message
-const responseV0 = require('../v0/response')
+/** @format */
+import {Buffer} from 'https://deno.land/std@0.110.0/node/buffer.ts'
+import responseV0 from '../v0/response.ts';
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
+import {Decoder }from '../../../decoder.ts';
 
 /**
  * ListGroups Response (Version: 1) => error_code [groups]
@@ -13,22 +13,21 @@ const Decoder = require('../../../decoder')
  *     protocol_type => STRING
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const errorCode = decoder.readInt16()
-  const groups = decoder.readArray(responseV0.decodeGroup)
+//deno-lint-ignore require-await
+const decode = async (rawData: Buffer) => {
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const errorCode = decoder.readInt16();
+  const groups = decoder.readArray(responseV0.decodeGroup);
 
   return {
     throttleTime,
     errorCode,
     groups,
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse: responseV0.parse,
-}
+};

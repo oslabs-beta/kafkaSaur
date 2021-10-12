@@ -6,7 +6,6 @@ import sleep from './sleep'
 import concurrency from './concurrency'
 
 const after = async (delay: any, fn: any) =>
-  // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
   new Promise((resolve: any) => setTimeout(() => {
     resolve(fn())
   }, delay)
@@ -50,7 +49,6 @@ describe('Utils > concurrency', () => {
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
       [jest.fn().mockReturnValue(4), 10],
     ]
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const result = await Promise.all(
       input.map(([fn, delay]) => sequentially(async () => after(delay, fn)))
     )
@@ -79,7 +77,6 @@ describe('Utils > concurrency', () => {
       [jest.fn().mockReturnValue(3), 10],
     ]
 
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const result = await Promise.all(
       input.map(([fn, delay]) => concurrently(async () => after(delay, fn)))
     )

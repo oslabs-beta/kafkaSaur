@@ -1,5 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV2'... Remove this comment to see the full error message
-const requestV2 = require('../v2/request')
+
+import requestV2 from '../v2/request.ts'
 
 /**
  * CreateTopics Request (Version: 3) => [create_topic_requests] timeout validate_only
@@ -17,11 +17,9 @@ const requestV2 = require('../v2/request')
  *   validate_only => BOOLEAN
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default({
  topics,
  validateOnly,
  timeout
 }: any) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(requestV2({ topics, validateOnly, timeout }), { apiVersion: 3 })

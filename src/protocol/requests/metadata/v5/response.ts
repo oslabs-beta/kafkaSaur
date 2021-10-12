@@ -1,8 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
+/** @format */
 
+import { Decoder } from '../../../decoder.ts';
+import response from '../v0/response.ts';
+
+const parseV0 = response.parse;
 /**
  * Metadata Response (Version: 5) => throttle_time_ms [brokers] cluster_id controller_id [topic_metadata]
  *   throttle_time_ms => INT32
@@ -26,46 +27,41 @@ const { parse: parseV0 } = require('../v0/response')
  *       offline_replicas => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'broker'.
 const broker = (decoder: any) => ({
   nodeId: decoder.readInt32(),
   host: decoder.readString(),
   port: decoder.readInt32(),
-  rack: decoder.readString()
-})
+  rack: decoder.readString(),
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicMetad... Remove this comment to see the full error message
 const topicMetadata = (decoder: any) => ({
   topicErrorCode: decoder.readInt16(),
   topic: decoder.readString(),
   isInternal: decoder.readBoolean(),
-  partitionMetadata: decoder.readArray(partitionMetadata)
-})
+  partitionMetadata: decoder.readArray(partitionMetadata),
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partitionM... Remove this comment to see the full error message
 const partitionMetadata = (decoder: any) => ({
   partitionErrorCode: decoder.readInt16(),
   partitionId: decoder.readInt32(),
   leader: decoder.readInt32(),
   replicas: decoder.readArray((d: any) => d.readInt32()),
   isr: decoder.readArray((d: any) => d.readInt32()),
-  offlineReplicas: decoder.readArray((d: any) => d.readInt32())
-})
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+  offlineReplicas: decoder.readArray((d: any) => d.readInt32()),
+});
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
+  const decoder = new Decoder(rawData);
   return {
     throttleTime: decoder.readInt32(),
     brokers: decoder.readArray(broker),
     clusterId: decoder.readString(),
     controllerId: decoder.readInt32(),
     topicMetadata: decoder.readArray(topicMetadata),
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse: parseV0,
-}
+};

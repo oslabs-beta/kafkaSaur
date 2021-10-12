@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV1'... Remove this comment to see the full error message
-const requestV1 = require('../v1/request')
+import requestV1 from '../v1/request.ts'
 
 /**
  * DescribeConfigs Request (Version: 1) => [resources] include_synonyms
@@ -14,10 +13,8 @@ const requestV1 = require('../v1/request')
  * @param {Array} resources An array of config resources to be returned
  * @param [includeSynonyms=false]
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
  resources,
  includeSynonyms
 }: any) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(requestV1({ resources, includeSynonyms }), { apiVersion: 2 })

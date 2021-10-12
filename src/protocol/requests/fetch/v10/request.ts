@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('../../../isolationLevel')
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const requestV9 = require('../v9/request')
+import ISOLATION_LEVEL from '../../../isolationLevel.ts'
+import requestV9 from '../v9/request.ts'
 
 /**
  * ZStd Compression
@@ -30,8 +28,7 @@ const requestV9 = require('../v9/request')
  *     partitions => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   replicaId,
   maxWaitTime,
   minBytes,
@@ -44,7 +41,6 @@ export ({
   // Topics to remove from the fetch session
   forgottenTopics = []
 }: any) =>
-  // @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
   Object.assign(
     requestV9({
       replicaId,

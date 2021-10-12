@@ -1,7 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
+import {Decoder} from '../../../decoder.ts';
+import { failure, createErrorFromCode } from '../../../error.ts'
 
 /**
  * DeleteTopics Response (Version: 0) => [topic_error_codes]
@@ -10,24 +8,20 @@ const { failure, createErrorFromCode } = require('../../../error')
  *     error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicNameC... Remove this comment to see the full error message
 const topicNameComparator = (a: any, b: any) => a.topic.localeCompare(b.topic)
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicError... Remove this comment to see the full error message
 const topicErrors = (decoder: any) => ({
   topic: decoder.readString(),
   errorCode: decoder.readInt16()
 })
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
     topicErrors: decoder.readArray(topicErrors).sort(topicNameComparator),
   }
 }
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithError = data.topicErrors.filter(({
     errorCode
@@ -39,8 +33,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

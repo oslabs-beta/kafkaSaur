@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const awsIam = require('../../protocol/sasl/awsIam')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'KafkaJSSAS... Remove this comment to see the full error message
-const { KafkaJSSASLAuthenticationError } = require('../../errors')
+import awsIam from '../../protocol/sasl/awsIam/index.ts';
+import { KafkaJSSASLAuthenticationError } from '../../errors.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export class AWSIAMAuthenticator {
   connection: any;
   logger: any;
@@ -17,15 +14,12 @@ export class AWSIAMAuthenticator {
   async authenticate() {
     const { sasl } = this.connection
     if (!sasl.authorizationIdentity) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError('SASL AWS-IAM: Missing authorizationIdentity')
     }
     if (!sasl.accessKeyId) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError('SASL AWS-IAM: Missing accessKeyId')
     }
     if (!sasl.secretAccessKey) {
-      // @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
       throw new KafkaJSSASLAuthenticationError('SASL AWS-IAM: Missing secretAccessKey')
     }
     if (!sasl.sessionToken) {
@@ -43,7 +37,6 @@ export class AWSIAMAuthenticator {
       this.logger.debug('SASL AWS-IAM authentication successful', { broker })
     } catch (e) {
       const error = new KafkaJSSASLAuthenticationError(        
-// @ts-expect-error ts-migrate(2554) FIXME: Expected 0 arguments, but got 1.
 
         `SASL AWS-IAM authentication failed: ${e.message}`
       )

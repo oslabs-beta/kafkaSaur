@@ -1,19 +1,16 @@
-import Broker from '../broker'
-import createRetry from '../retry'
-import shuffle from '../utils/shuffle.ts'
-import arrayDiff from '../utils/arrayDiff.ts'
-import { KafkaJSBrokerNotFound, KafkaJSProtocolError } from '../errors.ts'
+/** @format */
 
+import { Broker } from '../broker/index.ts';
+import createRetry from '../retry/index.ts';
+import shuffle from '../utils/shuffle.ts';
+import arrayDiff from '../utils/arrayDiff.ts';
+import { KafkaJSBrokerNotFound, KafkaJSProtocolError } from '../errors.ts';
 
-const { keys, assign, values } = Object
-const hasBrokerBeenReplaced = (broker: any, {
-  host,
-  port,
-  rack
-}: any) =>
+const { keys, assign, values } = Object;
+const hasBrokerBeenReplaced = (broker: any, { host, port, rack }: any) =>
   broker.connection.host !== host ||
   broker.connection.port !== port ||
-  broker.connection.rack !== rack
+  broker.connection.rack !== rack;
 
 export default class BrokerPool {
   brokers: any;
@@ -45,29 +42,30 @@ export default class BrokerPool {
     allowAutoTopicCreation,
     authenticationTimeout,
     reauthenticationThreshold,
-    metadataMaxAge
+    metadataMaxAge,
   }: any) {
-    this.rootLogger = logger
-    this.connectionBuilder = connectionBuilder
-    this.metadataMaxAge = metadataMaxAge || 0
-    this.logger = logger.namespace('BrokerPool')
-    this.retrier = createRetry(assign({}, retry))
+    this.rootLogger = logger;
+    this.connectionBuilder = connectionBuilder;
+    this.metadataMaxAge = metadataMaxAge || 0;
+    this.logger = logger.namespace('BrokerPool');
+    this.retrier = createRetry(assign({}, retry));
 
-    this.createBroker = (options: any) => new Broker({
-      allowAutoTopicCreation,
-      authenticationTimeout,
-      reauthenticationThreshold,
-      ...options,
-    })
+    this.createBroker = (options: any) =>
+      new Broker({
+        allowAutoTopicCreation,
+        authenticationTimeout,
+        reauthenticationThreshold,
+        ...options,
+      });
 
-    this.brokers = {}
+    this.brokers = {};
     /** @type {Broker | undefined} */
-    this.seedBroker = undefined
+    this.seedBroker = undefined;
     /** @type {import("../../types").BrokerMetadata | null} */
-    this.metadata = null
-    this.metadataExpireAt = null
-    this.versions = null
-    this.supportAuthenticationProtocol = null
+    this.metadata = null;
+    this.metadataExpireAt = null;
+    this.versions = null;
+    this.supportAuthenticationProtocol = null;
   }
 
   /**
@@ -75,21 +73,22 @@ export default class BrokerPool {
    * @returns {Boolean}
    */
   hasConnectedBrokers() {
-    const brokers = values(this.brokers)
-    return !!brokers.find((broker: any) => broker.isConnected()) ||
-    (this.seedBroker ? this.seedBroker.isConnected() : false);
+    const brokers = values(this.brokers);
+    return (
+      !!brokers.find((broker: any) => broker.isConnected()) ||
+      (this.seedBroker ? this.seedBroker.isConnected() : false)
+    );
   }
 
-  
   async createSeedBroker() {
     if (this.seedBroker) {
-      await this.seedBroker.disconnect()
+      await this.seedBroker.disconnect();
     }
 
     this.seedBroker = this.createBroker({
       connection: await this.connectionBuilder.build(),
       logger: this.rootLogger,
-    })
+    });
   }
 
   /**
@@ -98,32 +97,36 @@ export default class BrokerPool {
    */
   async connect() {
     if (this.hasConnectedBrokers()) {
-      return
+      return;
     }
 
     if (!this.seedBroker) {
-      await this.createSeedBroker()
+      await this.createSeedBroker();
     }
 
-    
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        await this.seedBroker.connect()
-        this.versions = this.seedBroker.versions
-      } catch (e : any) {
-        if (e.name === 'KafkaJSConnectionError' || e.type === 'ILLEGAL_SASL_STATE') {
+        console.log('inside brokerpool retrier callback 1')
+        await this.seedBroker.connect();
+        console.log('inside brokerpool retrier callback 2')
+        this.versions = this.seedBroker.versions;
+      } catch (e: any) {
+        if (
+          e.name === 'KafkaJSConnectionError' ||
+          e.type === 'ILLEGAL_SASL_STATE'
+        ) {
           // Connection builder will always rotate the seed broker
-          await this.createSeedBroker()
+          await this.createSeedBroker();
           this.logger.error(
             `Failed to connect to seed broker, trying another broker from the list: ${e.message}`,
             { retryCount, retryTime }
-          )
+          );
         } else {
-          this.logger.error(e.message, { retryCount, retryTime })
+          this.logger.error(e.message, { retryCount, retryTime });
         }
 
-        if (e.retriable) throw e
-        bail(e)
+        if (e.retriable) throw e;
+        bail(e);
       }
     });
   }
@@ -133,14 +136,16 @@ export default class BrokerPool {
    * @returns {Promise}
    */
   async disconnect() {
-    this.seedBroker && (await this.seedBroker.disconnect())
-    
-    await Promise.all(values(this.brokers).map((broker: any) => broker.disconnect()))
+    this.seedBroker && (await this.seedBroker.disconnect());
 
-    this.brokers = {}
-    this.metadata = null
-    this.versions = null
-    this.supportAuthenticationProtocol = null
+    await Promise.all(
+      values(this.brokers).map((broker: any) => broker.disconnect())
+    );
+
+    this.brokers = {};
+    this.metadata = null;
+    this.versions = null;
+    this.supportAuthenticationProtocol = null;
   }
 
   /**
@@ -149,20 +154,18 @@ export default class BrokerPool {
    * @param {string} destination.host
    * @param {number} destination.port
    */
-  removeBroker({
-    host,
-    port
-  }: any) {
-    const removedBroker:any = values(this.brokers).find(
-      (broker: any) => broker.connection.host === host && broker.connection.port === port
-    )
+  removeBroker({ host, port }: any) {
+    const removedBroker: any = values(this.brokers).find(
+      (broker: any) =>
+        broker.connection.host === host && broker.connection.port === port
+    );
 
     if (removedBroker) {
-      delete this.brokers[removedBroker.nodeId]
-      this.metadataExpireAt = null
+      delete this.brokers[removedBroker.nodeId];
+      this.metadataExpireAt = null;
 
       if (this.seedBroker.nodeId === removedBroker.nodeId) {
-        this.seedBroker = shuffle(values(this.brokers))[0]
+        this.seedBroker = shuffle(values(this.brokers))[0];
       }
     }
   }
@@ -173,75 +176,82 @@ export default class BrokerPool {
    * @returns {Promise<null>}
    */
   async refreshMetadata(topics: any) {
-    const broker = await this.findConnectedBroker()
-    const { host: seedHost, port: seedPort } = this.seedBroker.connection
+    const broker = await this.findConnectedBroker();
+    const { host: seedHost, port: seedPort } = this.seedBroker.connection;
 
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        this.metadata = await broker.metadata(topics)
-        this.metadataExpireAt = Date.now() + this.metadataMaxAge
+        this.metadata = await broker.metadata(topics);
+        this.metadataExpireAt = Date.now() + this.metadataMaxAge;
 
-        const replacedBrokers: any = []
+        const replacedBrokers: any = [];
 
         this.brokers = await this.metadata.brokers.reduce(
-          async (resultPromise: any, {
-            nodeId,
-            host,
-            port,
-            rack
-          }: any) => {
-            const result = await resultPromise
+          async (resultPromise: any, { nodeId, host, port, rack }: any) => {
+            const result = await resultPromise;
 
             if (result[nodeId]) {
-              if (!hasBrokerBeenReplaced(result[nodeId], { host, port, rack })) {
-                return result
+              if (
+                !hasBrokerBeenReplaced(result[nodeId], { host, port, rack })
+              ) {
+                return result;
               }
 
-              replacedBrokers.push(result[nodeId])
+              replacedBrokers.push(result[nodeId]);
             }
 
             if (host === seedHost && port === seedPort) {
-              this.seedBroker.nodeId = nodeId
-              this.seedBroker.connection.rack = rack
+              this.seedBroker.nodeId = nodeId;
+              this.seedBroker.connection.rack = rack;
               return assign(result, {
                 [nodeId]: this.seedBroker,
-              })
+              });
             }
 
             return assign(result, {
               [nodeId]: this.createBroker({
                 logger: this.rootLogger,
                 versions: this.versions,
-                supportAuthenticationProtocol: this.supportAuthenticationProtocol,
-                connection: await this.connectionBuilder.build({ host, port, rack }),
+                supportAuthenticationProtocol:
+                  this.supportAuthenticationProtocol,
+                connection: await this.connectionBuilder.build({
+                  host,
+                  port,
+                  rack,
+                }),
                 nodeId,
               }),
-            })
+            });
           },
           this.brokers
-        )
+        );
 
-        const freshBrokerIds = this.metadata.brokers.map(({
-          nodeId
-        }: any) => `${nodeId}`).sort()
-        const currentBrokerIds = keys(this.brokers).sort()
-        const unusedBrokerIds = arrayDiff(currentBrokerIds, freshBrokerIds)
+        const freshBrokerIds = this.metadata.brokers
+          .map(({ nodeId }: any) => `${nodeId}`)
+          .sort();
+        const currentBrokerIds = keys(this.brokers).sort();
+        const unusedBrokerIds = arrayDiff(currentBrokerIds, freshBrokerIds);
 
         const brokerDisconnects = unusedBrokerIds.map((nodeId: any) => {
-          const broker = this.brokers[nodeId]
+          const broker = this.brokers[nodeId];
           return broker.disconnect().then(() => {
-            delete this.brokers[nodeId]
-          })
-        })
+            delete this.brokers[nodeId];
+          });
+        });
 
-        const replacedBrokersDisconnects = replacedBrokers.map((broker: any) => broker.disconnect())
-        await Promise.all([...brokerDisconnects, ...replacedBrokersDisconnects])
-      } catch (e:any) {
+        const replacedBrokersDisconnects = replacedBrokers.map((broker: any) =>
+          broker.disconnect()
+        );
+        await Promise.all([
+          ...brokerDisconnects,
+          ...replacedBrokersDisconnects,
+        ]);
+      } catch (e: any) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
-          throw e
+          throw e;
         }
 
-        bail(e)
+        bail(e);
       }
     });
   }
@@ -258,11 +268,14 @@ export default class BrokerPool {
       this.metadata == null ||
       this.metadataExpireAt == null ||
       Date.now() > this.metadataExpireAt ||
-      !topics.every((topic: any) => this.metadata.topicMetadata.some((topicMetadata: any) => topicMetadata.topic === topic)
-      )
+      !topics.every((topic: any) =>
+        this.metadata.topicMetadata.some(
+          (topicMetadata: any) => topicMetadata.topic === topic
+        )
+      );
 
     if (shouldRefresh) {
-      return this.refreshMetadata(topics)
+      return this.refreshMetadata(topics);
     }
   }
 
@@ -272,17 +285,17 @@ export default class BrokerPool {
    * @param {string} options.nodeId
    * @returns {Promise<Broker>}
    */
-  async findBroker({
-    nodeId
-  }: any) {
-    const broker = this.brokers[nodeId]
+  async findBroker({ nodeId }: any) {
+    const broker = this.brokers[nodeId];
 
     if (!broker) {
-      throw new KafkaJSBrokerNotFound(`Broker ${nodeId} not found in the cached metadata`)
+      throw new KafkaJSBrokerNotFound(
+        `Broker ${nodeId} not found in the cached metadata`
+      );
     }
 
-    await this.connectBroker(broker)
-    return broker
+    await this.connectBroker(broker);
+    return broker;
   }
 
   /**
@@ -292,19 +305,19 @@ export default class BrokerPool {
    * @template T
    */
   async withBroker(callback: any) {
-    const brokers = shuffle(keys(this.brokers))
+    const brokers = shuffle(keys(this.brokers));
     if (brokers.length === 0) {
-      throw new KafkaJSBrokerNotFound('No brokers in the broker pool')
+      throw new KafkaJSBrokerNotFound('No brokers in the broker pool');
     }
 
     for (const nodeId of brokers) {
-      const broker = await this.findBroker({ nodeId })
+      const broker = await this.findBroker({ nodeId });
       try {
-        return await callback({ nodeId, broker })
+        return await callback({ nodeId, broker });
       } catch (e) {}
     }
 
-    return null
+    return null;
   }
 
   /**
@@ -312,23 +325,25 @@ export default class BrokerPool {
    * @returns {Promise<Broker>}
    */
   async findConnectedBroker() {
-    const nodeIds = shuffle(keys(this.brokers))
-    const connectedBrokerId = nodeIds.find((nodeId: any) => this.brokers[nodeId].isConnected())
+    const nodeIds = shuffle(keys(this.brokers));
+    const connectedBrokerId = nodeIds.find((nodeId: any) =>
+      this.brokers[nodeId].isConnected()
+    );
 
     if (connectedBrokerId) {
-      return await this.findBroker({ nodeId: connectedBrokerId })
+      return await this.findBroker({ nodeId: connectedBrokerId });
     }
 
     // Cycle through the nodes until one connects
     for (const nodeId of nodeIds) {
       try {
-        return await this.findBroker({ nodeId })
+        return await this.findBroker({ nodeId });
       } catch (e) {}
     }
 
     // Failed to connect to all known brokers, metadata might be old
-    await this.connect()
-    return this.seedBroker
+    await this.connect();
+    return this.seedBroker;
   }
 
   /**
@@ -338,21 +353,24 @@ export default class BrokerPool {
    */
   async connectBroker(broker: any) {
     if (broker.isConnected()) {
-      return
+      return;
     }
 
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
-        await broker.connect()
-      } catch (e : any) {
-        if (e.name === 'KafkaJSConnectionError' || e.type === 'ILLEGAL_SASL_STATE') {
-          await broker.disconnect()
+        await broker.connect();
+      } catch (e: any) {
+        if (
+          e.name === 'KafkaJSConnectionError' ||
+          e.type === 'ILLEGAL_SASL_STATE'
+        ) {
+          await broker.disconnect();
         }
 
         // To avoid reconnecting to an unavailable host, we bail on connection errors
         // and refresh metadata on a higher level before reconnecting
         if (e.name === 'KafkaJSConnectionError') {
-          return bail(e)
+          return bail(e);
         }
 
         if (e.type === 'ILLEGAL_SASL_STATE') {
@@ -361,15 +379,18 @@ export default class BrokerPool {
             host: broker.connection.host,
             port: broker.connection.port,
             rack: broker.connection.rack,
-          })
+          });
 
-          this.logger.error(`Failed to connect to broker, reconnecting`, { retryCount, retryTime })
-          throw new KafkaJSProtocolError(e, { retriable: true })
+          this.logger.error(`Failed to connect to broker, reconnecting`, {
+            retryCount,
+            retryTime,
+          });
+          throw new KafkaJSProtocolError(e, { retriable: true });
         }
 
-        if (e.retriable) throw e
-        this.logger.error(e, { retryCount, retryTime, stack: e.stack })
-        bail(e)
+        if (e.retriable) throw e;
+        this.logger.error(e, { retryCount, retryTime, stack: e.stack });
+        bail(e);
       }
     });
   }

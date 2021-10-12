@@ -1,7 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
+import {Decoder} from '../../../decoder.ts';
+import  response from '../v0/response.ts'
+const parseV0 = response.parse
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
@@ -26,7 +25,6 @@ const { parse: parseV0 } = require('../v0/response')
  *       permission_type => INT8
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeMatc... Remove this comment to see the full error message
 const decodeMatchingAcls = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
@@ -39,14 +37,12 @@ const decodeMatchingAcls = (decoder: any) => ({
   permissionType: decoder.readInt8()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeFilt... Remove this comment to see the full error message
 const decodeFilterResponse = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
   matchingAcls: decoder.readArray(decodeMatchingAcls)
 })
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+// deno-lint-ignore require-await 
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -59,8 +55,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse: parseV0,
 }

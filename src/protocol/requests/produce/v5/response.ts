@@ -1,7 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV3'.
-const { parse: parseV3 } = require('../v3/response')
+import { Decoder } from '../../../decoder.ts'
+import response  from '../v3/response.ts'
+
+const {parse} = response;
+
 
 /**
  * Produce Response (Version: 5) => [responses] throttle_time_ms
@@ -16,7 +17,6 @@ const { parse: parseV3 } = require('../v3/response')
  *   throttle_time_ms => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partition'... Remove this comment to see the full error message
 const partition = (decoder: any) => ({
   partition: decoder.readInt32(),
   errorCode: decoder.readInt16(),
@@ -24,8 +24,7 @@ const partition = (decoder: any) => ({
   logAppendTime: decoder.readInt64().toString(),
   logStartOffset: decoder.readInt64().toString()
 })
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const topics = decoder.readArray((decoder: any) => ({
@@ -41,8 +40,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
-  parse: parseV3,
+  parse
 }

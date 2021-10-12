@@ -1,5 +1,5 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'groupMessa... Remove this comment to see the full error message
-const groupMessagesPerPartition = require('./groupMessagesPerPartition')
+
+import groupMessagesPerPartition from './groupMessagesPerPartition.ts'
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createModP... Remove this comment to see the full error message
 const { createModPartitioner } = require('testHelpers')
 
