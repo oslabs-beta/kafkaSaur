@@ -16,7 +16,7 @@ const kafka = new Kafka({
   // ssl: {
   //   servername: 'localhost',
   //   rejectUnauthorized: false,
-  //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')], 
+  //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')],
   // },
   // sasl: {
   //   mechanism: 'plain',
@@ -50,7 +50,7 @@ const sendMessage = () => {
   return producer
     .send({
       topic,
-      //compression: CompressionTypes.GZIP,
+      // compression: CompressionTypes.GZIP,
       messages,
     })
     .then((response: any) => {
@@ -73,9 +73,8 @@ const run = async () => {
 };
 
 run().catch((e) => {
-  kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack })
-}
-);
+  kafka.logger().error(`[example/producer] ${e.message}`, { stack: e.stack });
+});
 // console.log('line 80')
 // await producer.disconnect()
 // console.log('line 82')

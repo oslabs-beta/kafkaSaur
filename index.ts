@@ -17,7 +17,7 @@ import { LEVELS } from './src/loggers/index.ts';
 const logLevel = LEVELS;
 const CompressionTypes = Compression.Types;
 const CompressionCodecs = Compression.Codecs;
-const PartitionAssigners = roundRobin
+const PartitionAssigners = roundRobin;
 
 export {
   Kafka,

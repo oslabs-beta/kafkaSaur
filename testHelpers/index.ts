@@ -12,15 +12,15 @@ import {
 //import fs from 'fs' - don't need - use Deno.readFileSync
 //import execa from 'execa' - replaced with Deno.run inside of addpartitions
 //import uuid from 'uuid/v4' - replaced with deno std below
-import { v4 } from 'https://deno.land/std@0.110.0/uuid/mod.ts';
+import { v4 } from 'https://deno.land/std@0.111.0/uuid/mod.ts';
 //import semver from 'semver' - replaced w deno version of same package below
-import semver from 'https://deno.land/x/semver/mod.ts';
+import * as semver from 'https://deno.land/x/semver/mod.ts';
 import crypto from 'https://deno.land/std@0.110.0/node/crypto.ts';
 import process from 'https://deno.land/std@0.110.0/node/process.ts';
 
 //import jwt from 'jsonwebtoken' - replaced with 3rd part djwt, modified below usage slightly
 import { create } from 'https://deno.land/x/djwt@v2.4/mod.ts';
-import Buffer from 'https://deno.land/std@0.110.0/node/buffer.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 //END NEED DENO REPLACEMENTS
 
 import { Cluster } from '../src/cluster/index.ts';
@@ -54,7 +54,7 @@ const getHost = () => 'localhost';
 const secureRandom = (length = 10) =>
   `${(crypto as any).randomBytes(length).toString('hex')}-${
     process.pid
-  }-${v4()}`;
+  }-${v4.generate()}`;
 
 const plainTextBrokers = (host = getHost()) => [
   `${host}:9092`,
@@ -82,142 +82,143 @@ const connectionOpts = (opts = {}) => ({
   ...opts,
 });
 
-const sslConnectionOpts = () =>
-  Object.assign(connectionOpts(), {
-    port: 9093,
-    ssl: {
-      servername: 'localhost',
-      rejectUnauthorized: false,
-      ca: [Deno.readFileSync('./testHelpers/certs/cert-signed', 'utf-8')],
-    },
-  });
+// const sslConnectionOpts = () =>
+//   Object.assign(connectionOpts(), {
+//     port: 9093,
+//     ssl: {
+//       servername: 'localhost',
+//       rejectUnauthorized: false,
+//       ca: [Deno.readFileSync('./testHelpers/certs/cert-signed', 'utf-8')],
+//     },
+//   });
 
-const saslConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'plain',
-      username: 'test',
-      password: 'testtest',
-    },
-  });
+// const saslConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'plain',
+//       username: 'test',
+//       password: 'testtest',
+//     },
+//   });
 
-const saslWrongConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'plain',
-      username: 'wrong',
-      password: 'wrong',
-    },
-  });
+// const saslWrongConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'plain',
+//       username: 'wrong',
+//       password: 'wrong',
+//     },
+//   });
 
-const saslSCRAM256ConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'scram-sha-256',
-      username: 'testscram',
-      password: 'testtestscram=256',
-    },
-  });
+// const saslSCRAM256ConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'scram-sha-256',
+//       username: 'testscram',
+//       password: 'testtestscram=256',
+//     },
+//   });
 
-const saslSCRAM256WrongConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'scram-sha-256',
-      username: 'wrong',
-      password: 'wrong',
-    },
-  });
+// const saslSCRAM256WrongConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'scram-sha-256',
+//       username: 'wrong',
+//       password: 'wrong',
+//     },
+//   });
 
-const saslSCRAM512ConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'scram-sha-512',
-      username: 'testscram',
-      password: 'testtestscram=512',
-    },
-  });
+// const saslSCRAM512ConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'scram-sha-512',
+//       username: 'testscram',
+//       password: 'testtestscram=512',
+//     },
+//   });
 
-const saslSCRAM512WrongConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'scram-sha-512',
-      username: 'wrong',
-      password: 'wrong',
-    },
-  });
+// const saslSCRAM512WrongConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'scram-sha-512',
+//       username: 'wrong',
+//       password: 'wrong',
+//     },
+//   });
 
-const saslOAuthBearerConnectionOpts = () =>
-  Object.assign(sslConnectionOpts(), {
-    port: 9094,
-    sasl: {
-      mechanism: 'oauthbearer',
-      oauthBearerProvider: async () => {
-        //const token = jwt.sign({ sub: 'test' }, 'abc', { algorithm: 'none' })
-        const token = await create(
-          { alg: 'none', typ: 'JWT' },
-          { sub: 'test' },
-          'abc'
-        );
+// const saslOAuthBearerConnectionOpts = () =>
+//   Object.assign(sslConnectionOpts(), {
+//     port: 9094,
+//     sasl: {
+//       mechanism: 'oauthbearer',
+//       oauthBearerProvider: async () => {
+//         //const token = jwt.sign({ sub: 'test' }, 'abc', { algorithm: 'none' });
+//         const token = await create(
+//           { alg: 'none', typ: 'JWT' },
+//           { sub: 'test' },
+//           'abc'
+//         );
 
-        return {
-          value: token,
-        };
-      },
-    },
-  });
+//         return {
+//           value: token,
+//         };
+//       },
+//     },
+//   });
 
 /**
  * List of the possible SASL setups.
  * OAUTHBEARER must be enabled as a special case.
  */
-const saslEntries = [];
-if (process.env['OAUTHBEARER_ENABLED'] !== '1') {
-  saslEntries.push({
-    name: 'PLAIN',
-    opts: saslConnectionOpts,
-    wrongOpts: saslWrongConnectionOpts,
-    expectedErr: /SASL PLAIN authentication failed/,
-  });
+// const saslEntries = [];
+// if (process.env['OAUTHBEARER_ENABLED'] !== '1') {
+//   saslEntries.push({
+//     name: 'PLAIN',
+//     opts: saslConnectionOpts,
+//     wrongOpts: saslWrongConnectionOpts,
+//     expectedErr: /SASL PLAIN authentication failed/,
+//   });
 
-  saslEntries.push({
-    name: 'SCRAM 256',
-    opts: saslSCRAM256ConnectionOpts,
-    wrongOpts: saslSCRAM256WrongConnectionOpts,
-    expectedErr: /SASL SCRAM SHA256 authentication failed/,
-  });
+//   saslEntries.push({
+//     name: 'SCRAM 256',
+//     opts: saslSCRAM256ConnectionOpts,
+//     wrongOpts: saslSCRAM256WrongConnectionOpts,
+//     expectedErr: /SASL SCRAM SHA256 authentication failed/,
+//   });
 
-  saslEntries.push({
-    name: 'SCRAM 512',
-    opts: saslSCRAM512ConnectionOpts,
-    wrongOpts: saslSCRAM512WrongConnectionOpts,
-    expectedErr: /SASL SCRAM SHA512 authentication failed/,
-  });
-} else {
-  saslEntries.push({
-    name: 'OAUTHBEARER',
-    opts: saslOAuthBearerConnectionOpts,
-  });
-}
+//   saslEntries.push({
+//     name: 'SCRAM 512',
+//     opts: saslSCRAM512ConnectionOpts,
+//     wrongOpts: saslSCRAM512WrongConnectionOpts,
+//     expectedErr: /SASL SCRAM SHA512 authentication failed/,
+//   });
+// }
+// else {
+//    saslEntries.push({
+//      name: 'OAUTHBEARER',
+//      opts: saslOAuthBearerConnectionOpts,
+//   // });
+// }
 
 const createConnection = (opts = {}) =>
   new Connection(Object.assign(connectionOpts(), opts));
 
-const createConnectionBuilder = (opts = {}, brokers = plainTextBrokers()) => {
-  return connectionBuilder({
-    socketFactory,
-    logger: newLogger(),
-    brokers,
-    connectionTimeout: 1000,
-    ...connectionOpts(),
-    ...opts,
-  });
-};
+// const createConnectionBuilder = (opts = {}, brokers = plainTextBrokers()) => {
+//   return connectionBuilder({
+//     socketFactory,
+//     logger: newLogger(),
+//     brokers,
+//     connectionTimeout: 1000,
+//     ,
+//     ...opts,
+//   });
+// };
 
 const createCluster = (opts = {}, brokers = plainTextBrokers()) =>
   new Cluster(Object.assign(connectionOpts(), opts, { brokers }));
@@ -231,7 +232,7 @@ const createModPartitioner =
   };
 
 const testWaitFor = async (fn: any, opts = {}) =>
-  waitFor(fn, { ignoreTimeout: true, ...opts });
+  await waitFor(fn, { ignoreTimeout: true, ...opts });
 
 /**
  * @param {import("../types").KafkaJSError} errorType
@@ -362,7 +363,7 @@ const testIfKafkaVersion = (version: any, versionComparator: any) => {
   };
 
   scopedTest.only = (description: any, callback: any) =>
-    scopedTest(description, callback, it.only);
+    scopedTest(description, callback, it.only as any);
 
   return scopedTest;
 };
@@ -379,9 +380,9 @@ const testIfKafkaAtLeast_1_1_0 = testIfKafkaVersionGTE('1.1');
 const flakyTest = (description: any, callback: any, testFn = it) =>
   testFn(`[flaky] ${description}`, callback);
 flakyTest.skip = (description: any, callback: any) =>
-  flakyTest(description, callback, it.skip);
+  flakyTest(description, callback, it.skip as any);
 flakyTest.only = (description: any, callback: any) =>
-  flakyTest(description, callback, it.only);
+  flakyTest(description, callback, it.only as any);
 const describeIfEnv =
   (key: any, value: any) =>
   (description: any, callback: any, describeFn = describe) => {
@@ -410,9 +411,9 @@ const describeIfOauthbearerDisabled = describeIfNotEnv(
 );
 
 const unsupportedVersionResponse = () =>
-  Buffer.from({ type: 'Buffer', data: [0, 35, 0, 0, 0, 0] });
+  Buffer.from({ type: 'Buffer', data: [0, 35, 0, 0, 0, 0] } as any);
 const unsupportedVersionResponseWithTimeout = () =>
-  Buffer.from({ type: 'Buffer', data: [0, 0, 0, 0, 0, 35] });
+  Buffer.from({ type: 'Buffer', data: [0, 0, 0, 0, 0, 35] } as any);
 
 const generateMessages = (options: any) => {
   const { prefix, number = 100 } = options || {};
@@ -431,36 +432,36 @@ const generateMessages = (options: any) => {
 
 export {
   secureRandom,
-  connectionOpts,
-  sslConnectionOpts,
-  saslConnectionOpts,
-  saslSCRAM256ConnectionOpts,
-  saslSCRAM512ConnectionOpts,
-  saslOAuthBearerConnectionOpts,
-  saslEntries,
-  createConnection,
-  createConnectionBuilder,
+  // connectionOpts,
+  // sslConnectionOpts,
+  // saslConnectionOpts,
+  // saslSCRAM256ConnectionOpts,
+  // saslSCRAM512ConnectionOpts,
+  // saslOAuthBearerConnectionOpts,
+  // saslEntries,
+  // createConnection,
+  // createConnectionBuilder,
   createCluster,
   createModPartitioner,
-  plainTextBrokers,
-  sslBrokers,
-  saslBrokers,
+  // plainTextBrokers,
+  // sslBrokers,
+  // saslBrokers,
   newLogger,
-  retryProtocol,
+  // retryProtocol,
   createTopic,
   //waitFor: testWaitFor,
-  testWaitFor,
+  // testWaitFor,
   waitForMessages,
-  waitForNextEvent,
+  // waitForNextEvent,
   waitForConsumerToJoinGroup,
-  testIfKafkaAtMost_0_10,
-  testIfKafkaAtLeast_0_11,
-  testIfKafkaAtLeast_1_1_0,
-  flakyTest,
-  describeIfOauthbearerEnabled,
-  describeIfOauthbearerDisabled,
-  addPartitions,
-  unsupportedVersionResponse,
-  generateMessages,
-  unsupportedVersionResponseWithTimeout,
+  // testIfKafkaAtMost_0_10,
+  // testIfKafkaAtLeast_0_11,
+  // testIfKafkaAtLeast_1_1_0,
+  // flakyTest,
+  // describeIfOauthbearerEnabled,
+  // describeIfOauthbearerDisabled,
+  // addPartitions,
+  // unsupportedVersionResponse,
+  // generateMessages,
+  // unsupportedVersionResponseWithTimeout,
 };
