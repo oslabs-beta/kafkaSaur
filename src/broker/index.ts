@@ -155,10 +155,8 @@ export class Broker {
    * @returns {Promise}
    */
   async connect() {
-    console.log('inside broker/connect - top level')
     try {
       await this.lock.acquire();
-      console.log('inside broker/connect - after lock acquire')
       if (this.isConnected()) {
         return;
       }
@@ -169,7 +167,6 @@ export class Broker {
       }
       this.lookupRequest = lookup(this.versions);
       if (this.supportAuthenticationProtocol === null) {
-        console.log('supportAuthenticationProtocol is null - inside if block')
         try {
           this.lookupRequest(
             apiKeys.SaslAuthenticate,
@@ -185,22 +182,18 @@ export class Broker {
         });
       }
       if (this.authenticatedAt == null && this.connection.sasl) {
-        console.log('this.authenticatedAt == null && this.connection.sasl')
         const authenticator = new SASLAuthenticator(
           this.connection,
           this.rootLogger,
           this.versions,
           this.supportAuthenticationProtocol
         );
-        console.log('before authenticator.authenticate()')
         await authenticator.authenticate();
-        console.log('after authenticator.authenticate()')
         this.authenticatedAt = process.hrtime();
         this.sessionLifetime = Long.fromValue(authenticator.sessionLifetime);
       }
     } finally {
       await this.lock.release();
-      console.log('*****lock released*****')
     }
   }
   /**
@@ -1066,8 +1059,6 @@ export class Broker {
    */
   async [(PRIVATE as any).SEND_REQUEST](protocolRequest: any) {
     try {
-      //return await this.connection.send(protocolRequest);
-      console.log('UPCOMING REQUEST IS', protocolRequest)
       return await this.connection.send(protocolRequest);
     } catch (e: any) {
       if (e.name === 'KafkaJSConnectionClosedError') {

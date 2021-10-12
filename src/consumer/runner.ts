@@ -90,7 +90,6 @@ export class Runner extends EventEmitter {
   }
 
   set consuming(value) {
-    console.log('**** RUNNER THIS', this)
     if (this._consuming !== value) {
       this._consuming = value;
       this.emit(value ? CONSUMING_START : CONSUMING_STOP);

@@ -89,7 +89,6 @@ export default ({
   const logger = rootLogger.namespace('Consumer');
   const instrumentationEmitter =
     rootInstrumentationEmitter || new InstrumentationEventEmitter();
-  console.log(partitionAssigners)
   const assigners = partitionAssigners.map((createAssigner: any) => 
     createAssigner({ groupId, logger, cluster })
   );

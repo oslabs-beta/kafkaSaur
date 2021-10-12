@@ -31,7 +31,6 @@ export class Client extends EventEmitter{
       this.isOpen = true;
       this.conn = conn;
       this.emit('connect', this);
-      console.log('inside open, this.conn', conn)
       
       for await (const buffer of iter(conn)) {
         this.emit('data', buffer)
