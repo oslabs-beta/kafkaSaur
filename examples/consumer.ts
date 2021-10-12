@@ -17,7 +17,7 @@ const kafka = new Kafka({
   //   ca: [Deno.readFileSync('./testHelpers/certs/cert-signed')],
   // },
   // sasl: {
-  //   mechanism: 'plain',
+  //   mechanism: 'scram-sha-256',
   //   username: 'test',
   //   password: 'testtest',
   // },
