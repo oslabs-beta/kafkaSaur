@@ -9,11 +9,12 @@ import apiKeys from '../protocol/requests/apiKeys.ts';
 import { SASLAuthenticator } from './saslAuthenticator/index.ts';
 import shuffle from '../utils/shuffle.ts';
 import process from 'https://deno.land/std@0.110.0/node/process.ts';
+import Connection from '../network/connection.ts'
+import {Logger, ApiVersions} from '../../index.d.ts'
 
 const { Types } = CompressionObj;
 
 const PRIVATE = {
-  //typed as key of broker in order to index broker class
   SHOULD_REAUTHENTICATE: Symbol(
     'private:Broker:shouldReauthenticate'
   ) as unknown as keyof Broker,
@@ -25,52 +26,6 @@ const notInitializedLookup = () => {
   throw new Error('Broker not connected');
 };
 
-//HARDCODED VERSIONS BELOW
-let tempVersions = {
-  '0': { minVersion: 0, maxVersion: 5 },
-  '1': { minVersion: 0, maxVersion: 7 },
-  '2': { minVersion: 0, maxVersion: 2 },
-  '3': { minVersion: 0, maxVersion: 5 },
-  '4': { minVersion: 0, maxVersion: 1 },
-  '5': { minVersion: 0, maxVersion: 0 },
-  '6': { minVersion: 0, maxVersion: 4 },
-  '7': { minVersion: 0, maxVersion: 1 },
-  '8': { minVersion: 0, maxVersion: 3 },
-  '9': { minVersion: 0, maxVersion: 3 },
-  '10': { minVersion: 0, maxVersion: 1 },
-  '11': { minVersion: 0, maxVersion: 2 },
-  '12': { minVersion: 0, maxVersion: 1 },
-  '13': { minVersion: 0, maxVersion: 1 },
-  '14': { minVersion: 0, maxVersion: 1 },
-  '15': { minVersion: 0, maxVersion: 1 },
-  '16': { minVersion: 0, maxVersion: 1 },
-  '17': { minVersion: 0, maxVersion: 1 },
-  '18': { minVersion: 0, maxVersion: 1 },
-  '19': { minVersion: 0, maxVersion: 2 },
-  '20': { minVersion: 0, maxVersion: 1 },
-  '21': { minVersion: 0, maxVersion: 0 },
-  '22': { minVersion: 0, maxVersion: 0 },
-  '23': { minVersion: 0, maxVersion: 0 },
-  '24': { minVersion: 0, maxVersion: 0 },
-  '25': { minVersion: 0, maxVersion: 0 },
-  '26': { minVersion: 0, maxVersion: 0 },
-  '27': { minVersion: 0, maxVersion: 0 },
-  '28': { minVersion: 0, maxVersion: 0 },
-  '29': { minVersion: 0, maxVersion: 0 },
-  '30': { minVersion: 0, maxVersion: 0 },
-  '31': { minVersion: 0, maxVersion: 0 },
-  '32': { minVersion: 0, maxVersion: 1 },
-  '33': { minVersion: 0, maxVersion: 0 },
-  '34': { minVersion: 0, maxVersion: 0 },
-  '35': { minVersion: 0, maxVersion: 0 },
-  '36': { minVersion: 0, maxVersion: 0 },
-  '37': { minVersion: 0, maxVersion: 0 },
-  '38': { minVersion: 0, maxVersion: 0 },
-  '39': { minVersion: 0, maxVersion: 0 },
-  '40': { minVersion: 0, maxVersion: 0 },
-  '41': { minVersion: 0, maxVersion: 0 },
-  '42': { minVersion: 0, maxVersion: 0 }
-}
 
 /**
  * Each node in a Kafka cluster is called broker. This class contains
@@ -79,22 +34,7 @@ let tempVersions = {
  * @type {import("../../types").Broker}
  */
 
-export class Broker {
-  allowAutoTopicCreation: any;
-  authenticatedAt: any;
-  authenticationTimeout: any;
-  brokerAddress: any;
-  connection: any;
-  lock: any;
-  logger: any;
-  lookupRequest: any;
-  nodeId: any;
-  reauthenticationThreshold: any;
-  rootLogger: any;
-  sessionLifetime: any;
-  supportAuthenticationProtocol: any;
-  versions: any;
-  /**
+ /**
    * @param {Object} options
    * @param {import("../network/connection")} options.connection
    * @param {import("../../types").Logger} options.logger
@@ -108,6 +48,34 @@ export class Broker {
    *                                                fetching metadata.
    * @param {boolean} [options.supportAuthenticationProtocol=null] If the server supports the SASLAuthenticate protocol
    */
+
+interface BrokerOptions {
+  connection: Connection;
+  logger: Logger;
+  nodeId: number | null;
+  versions: ApiVersions | null;
+  authenticationTimeout: number;
+  reauthenticationThreshold: number;
+  allowAutoTopicCreation: boolean;
+  supportAuthenticationProtocol: boolean | null;
+}
+
+export class Broker {
+  allowAutoTopicCreation: boolean;
+  authenticatedAt: [number, number] | null;
+  authenticationTimeout: number;
+  brokerAddress: string;
+  connection: Connection;
+  lock: Lock;
+  logger: Logger;
+  lookupRequest: any;
+  nodeId: number | null;
+  reauthenticationThreshold: number;
+  rootLogger: Logger;
+  sessionLifetime: any;
+  supportAuthenticationProtocol: boolean | null;
+  versions: ApiVersions | null;
+ 
   constructor({
     connection,
     logger,
@@ -117,12 +85,13 @@ export class Broker {
     reauthenticationThreshold = 10000,
     allowAutoTopicCreation = true,
     supportAuthenticationProtocol = null,
-  }: any) {
+  }: BrokerOptions) {
+
     this.connection = connection;
     this.nodeId = nodeId;
     this.rootLogger = logger;
     this.logger = logger.namespace('Broker');
-    this.versions = null;
+    this.versions = versions;
     this.authenticationTimeout = authenticationTimeout;
     this.reauthenticationThreshold = reauthenticationThreshold;
     this.allowAutoTopicCreation = allowAutoTopicCreation;
