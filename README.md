@@ -1,13 +1,12 @@
 
 [![deno version](https://img.shields.io/badge/version-v0.01-green)](https://deno.land/x)  
 <p align="center">
-  <h3 align="center"> KafkaSaur</h3> 
+   <img src="https://github.com/oslabs-beta/kafkaSaur/blob/b8fdcfff957dd1bf9ca13973029e1f7d70165775/static_images/003365-vgrad.png" alt="Logo" >
     <p align="center">
-       <a href="#">
-         <img src="https://github.com/oslabs-beta/kafkaSaur/blob/c98ad5bac8562f320d55c51d2ea5481dcadaea8e/static_images/sirdeno.jpg" alt="Logo" width="355" height="423">
-      
-   </p> 
-</p>  
+       <a href="#" >
+         <img src="https://github.com/oslabs-beta/kafkaSaur/blob/b8fdcfff957dd1bf9ca13973029e1f7d70165775/static_images/sirdeno-modified.png" alt="Logo" >
+  </p> 
+</p> 
 
 ## Table of Contents
 - [About the project](#about)
@@ -20,28 +19,41 @@
 - [Acknowledgements](#acknowledgements)
 
 ## <a name="about"></a> About the Project
-
+ KafkaSaur an Apache Kafka client for deno 
 ### <a name="getting-started"></a>
 Getting Started
 ```sh
-https://deno.land/x
+https://deno.land/x/
 ```
 ### Prerequisites
-Deno 
+ >deno - https://deno.land/manual/getting_started/installation
+ >
+ >docker -https://www.docker.com/
+ 
 
 
 #### <a name="usage"></a> Usage
-```typescript
-
+```sh
+docker-compose up
 ```
+```typescript
+import {Kafkasaur} from "https://deno.land/x/kafkasaur/index.ts"
 
+const kafkasaur = new Kafkasaur({
+  clientId: 'my-app',
+  brokers: ['kafka1:9092']
+})
+```
+## Features
+- 🛠 Built with [TypeScript][Deno]
+- 🎬 Producer
+-🍴 Consumer
+ -🤝 interactive producer with consumer 
+-💂 deno's built in security; No file, network, or environment access, unless explicitly enabled
+  
+## Developers
 
-### <a name="features"></a> Features
-  *
-  >
-## <a name="Developers"></a> Developers
-
-<table>
+<table align="center">
   <tr>
     <td align="center"><a href="https://www.linkedin.com/in/samarnold723"><img src="https://media-exp1.licdn.com/dms/image/C4D03AQFJP-ywhKqpBg/profile-displayphoto-shrink_800_800/0/1615175949915?e=1639008000&v=beta&t=WylZ_LOJwbiey8Jicg0X-ODhSKqwAROCrZEDFOWxiYY" width="100px;" alt=""/><br /><sub><b>Sam Arnold</b></sub></a></td>
     <td align="center"><a href="https://www.linkedin.com/in/wesley-appleget"><img src="https://media-exp1.licdn.com/dms/image/C4E03AQG5AUxEE14WUw/profile-displayphoto-shrink_800_800/0/1517013766994?e=1639008000&v=beta&t=FKH576OIcSS6k2QwckD5LbqxOZMtqVCm527ql8FLv-M" width="100px;" alt=""/><br /><sub><b>Wesley Appleget</b></sub></a></td>
@@ -63,3 +75,8 @@ This is an open source product.
 This product is accelerated by [OS Labs](https://opensourcelabs.io/).
 
 ### <a name="acknowledgements"></a> Acknowledgements
+
+## Feedback
+
+If you have any feedback, please reach out to us
+
