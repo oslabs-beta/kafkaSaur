@@ -1,3 +1,5 @@
+/** @format */
+
 export default {
   Produce: 0,
   Fetch: 1,
@@ -43,4 +45,4 @@ export default {
   DescribeDelegationToken: 41,
   DeleteGroups: 42, // ApiVersions v2 on Kafka 1.0
   ElectPreferredLeaders: 43,
-}
+};

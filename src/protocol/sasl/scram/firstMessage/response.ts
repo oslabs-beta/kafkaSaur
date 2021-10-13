@@ -1,29 +1,34 @@
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
+/**
+ * /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }]
+ *
+ * @format
+ */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
+import { Decoder } from '../../../decoder.ts';
 
-const ENTRY_REGEX = /^([rsiev])=(.*)$/
+const ENTRY_REGEX = /^([rsiev])=(.*)$/;
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
+  //@ts-ignore
   decode: async (rawData: any) => {
-    return new Decoder(rawData).readBytes()
+    return new Decoder(rawData).readBytes();
   },
   parse: async (data: any) => {
     const processed = data
       .toString()
       .split(',')
       .map((str: any) => {
-        const [_, key, value] = str.match(ENTRY_REGEX)
-        return [key, value]
+        const [_, key, value] = str.match(ENTRY_REGEX);
+        return [key, value];
       })
-      // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'obj' implicitly has an 'any' type.
-      .reduce((obj, entry) => ({
-      ...obj,
-      [entry[0]]: entry[1]
-    }), {})
+      .reduce(
+        (obj: any, entry: any) => ({
+          ...obj,
+          [entry[0]]: entry[1],
+        }),
+        {}
+      );
 
-    return { original: data.toString(), ...processed }
+    return { original: data.toString(), ...processed };
   },
-}
+};

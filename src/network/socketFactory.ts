@@ -1,27 +1,16 @@
-const KEEP_ALIVE_DELAY = 60000 // in ms
-
+//const KEEP_ALIVE_DELAY = 60000 // in ms
+//keepalive?
 /**
  * @returns {import("../../types").ISocketFactory}
  */
+
+ import { Client } from './socketClass.ts'
+
 export default () => {
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  const net = require('net')
-  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-  const tls = require('tls')
 
-  return ({
-    host,
-    port,
-    ssl,
-    onConnect
-  }: any) => {
-    const socket = ssl
-      // deno.connect()
-       ? tls.connect(Object.assign({ host, port, servername: host }, ssl), onConnect)
-       : net.connect({ host, port }, onConnect)
-
-    socket.setKeepAlive(true, KEEP_ALIVE_DELAY)
-
-    return socket
+  return ({ host, port, ssl, onConnect}: any) => { 
+    
+    const socket = new Client({hostname: host, port: port, ssl: ssl})  
+    return socket;
   };
 }

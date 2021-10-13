@@ -1,5 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
-const { parse, decode: decodeV2 } = require('../v2/response')
+/** @format */
+
+import response from '../v2/response.ts';
+const parse = response.parse;
+const decodeV2 = response.decode;
 
 /**
  * Starting in version 3, on quota violation, brokers send out responses
@@ -17,19 +20,17 @@ const { parse, decode: decodeV2 } = require('../v2/response')
  *     member_id => STRING
  *     member_metadata => BYTES
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
 const decode = async (rawData: any) => {
-  const decoded = await decodeV2(rawData)
+  const decoded = await decodeV2(rawData);
 
   return {
     ...decoded,
     throttleTime: 0,
     clientSideThrottleTime: decoded.throttleTime,
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
-}
+};

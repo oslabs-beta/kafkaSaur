@@ -1,6 +1,9 @@
-const Encoder = require('../../../encoder')
-const { CreateAcls: apiKey } = require('../../apiKeys')
-//steph
+/** @format */
+
+import { Encoder } from '../../../encoder.ts';
+
+import apiKeys from '../../apiKeys.ts';
+
 /**
  * CreateAcls Request (Version: 1) => [creations]
  *   creations => resource_type resource_name resource_pattern_type principal host operation permission_type
@@ -13,6 +16,8 @@ const { CreateAcls: apiKey } = require('../../apiKeys')
  *     permission_type => INT8
  */
 
+const apiKey = apiKeys.CreateAcls;
+
 const encodeCreations = ({
   resourceType,
   resourceName,
@@ -20,7 +25,7 @@ const encodeCreations = ({
   principal,
   host,
   operation,
-  permissionType
+  permissionType,
 }: any) => {
   return new Encoder()
     .writeInt8(resourceType)
@@ -29,17 +34,15 @@ const encodeCreations = ({
     .writeString(principal)
     .writeString(host)
     .writeInt8(operation)
-    .writeInt8(permissionType)
-}
+    .writeInt8(permissionType);
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
-  creations
-}: any) => ({
+export default ({ creations }: any) => ({
   apiKey,
   apiVersion: 1,
   apiName: 'CreateAcls',
+  //deno-lint-ignore require-await
   encode: async () => {
-    return new Encoder().writeArray(creations.map(encodeCreations))
+    return new Encoder().writeArray(creations.map(encodeCreations));
   },
-})
+});

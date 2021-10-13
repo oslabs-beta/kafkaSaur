@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder'
+import { Encoder } from '../../../encoder.ts'
 
 /**
  * v0
@@ -8,7 +7,6 @@ import Encoder from '../../../encoder'
  *   Value => varInt|bytes
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
 export default({
  key,
  value

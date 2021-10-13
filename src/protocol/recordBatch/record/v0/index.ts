@@ -1,7 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import Header from '../../header/v0'
+/** @format */
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
+import { Encoder } from '../../../encoder.ts';
+import Header from '../../header/v0/index.ts';
 
 /**
  * v0
@@ -24,18 +24,17 @@ import Header from '../../header/v0'
  * @param value {Buffer}
  * @param [headers={}] {Object}
  */
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export default({
+export default ({
   offsetDelta = 0,
   timestampDelta = 0,
   key,
   value,
-  headers = {}
+  headers = {},
 }: any) => {
-  const headersArray = Object.keys(headers).map(headerKey => ({
+  const headersArray = Object.keys(headers).map((headerKey) => ({
     key: headerKey,
     value: headers[headerKey],
-  }))
+  }));
 
   const sizeOfBody =
     1 + // always one byte for attributes
@@ -43,7 +42,7 @@ export default({
     Encoder.sizeOfVarInt(offsetDelta) +
     Encoder.sizeOfVarIntBytes(key) +
     Encoder.sizeOfVarIntBytes(value) +
-    sizeOfHeaders(headersArray)
+    sizeOfHeaders(headersArray);
 
   return new Encoder()
     .writeVarInt(sizeOfBody)
@@ -52,26 +51,26 @@ export default({
     .writeVarInt(offsetDelta)
     .writeVarIntBytes(key)
     .writeVarIntBytes(value)
-    .writeVarIntArray(headersArray.map(Header))
-}
+    .writeVarIntArray(headersArray.map(Header), 'string');
+};
 
 const sizeOfHeaders = (headersArray: any) => {
-  let size = Encoder.sizeOfVarInt(headersArray.length)
+  let size = Encoder.sizeOfVarInt(headersArray.length);
 
   for (const header of headersArray) {
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-    const keySize = Buffer.byteLength(header.key)
-    // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-    const valueSize = Buffer.byteLength(header.value)
+    
+    const keySize = Buffer.byteLength(header.key);
+    
+    const valueSize = Buffer.byteLength(header.value);
 
-    size += Encoder.sizeOfVarInt(keySize) + keySize
+    size += Encoder.sizeOfVarInt(keySize) + keySize;
 
     if (header.value === null) {
-      size += Encoder.sizeOfVarInt(-1)
+      size += Encoder.sizeOfVarInt(-1);
     } else {
-      size += Encoder.sizeOfVarInt(valueSize) + valueSize
+      size += Encoder.sizeOfVarInt(valueSize) + valueSize;
     }
   }
 
-  return size
-}
+  return size;
+};

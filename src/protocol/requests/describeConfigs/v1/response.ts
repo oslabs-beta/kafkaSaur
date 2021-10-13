@@ -1,9 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'DEFAULT_CO... Remove this comment to see the full error message
-const { DEFAULT_CONFIG } = require('../../../configSource')
+import {Decoder} from '../../../decoder.ts';
+import response from '../v0/response.ts'
+const parse = response.parse
+import  DEFAULT_CONFIG  from '../../../configSource.ts'
 
 /**
  * DescribeConfigs Response (Version: 1) => throttle_time_ms [resources]
@@ -31,7 +29,6 @@ const decodeSynonyms = (decoder: any) => ({
   configSource: decoder.readInt8()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeConf... Remove this comment to see the full error message
 const decodeConfigEntries = (decoder: any) => {
   const configName = decoder.readString()
   const configValue = decoder.readString()
@@ -51,7 +48,6 @@ const decodeConfigEntries = (decoder: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeReso... Remove this comment to see the full error message
 const decodeResources = (decoder: any) => ({
   errorCode: decoder.readInt16(),
   errorMessage: decoder.readString(),
@@ -59,8 +55,7 @@ const decodeResources = (decoder: any) => ({
   resourceName: decoder.readString(),
   configEntries: decoder.readArray(decodeConfigEntries)
 })
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const throttleTime = decoder.readInt32()
@@ -72,8 +67,7 @@ const decode = async (rawData: any) => {
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
-  parse: parseV0,
+  parse
 }

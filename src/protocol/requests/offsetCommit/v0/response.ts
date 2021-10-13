@@ -1,9 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../../utils/flatten')
+/** @format */
+
+import { Decoder } from '../../../decoder.ts';
+import { failure, createErrorFromCode } from '../../../error.ts';
+import flatten from '../../../../utils/flatten.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
 /**
  * OffsetCommit Response (Version: 0) => [responses]
@@ -13,41 +13,37 @@ const flatten = require('../../../../utils/flatten')
  *       partition => INT32
  *       error_code => INT16
  */
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
-const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
+//deno-lint-ignore require-await
+const decode = async (rawData: Buffer) => {
+  const decoder = new Decoder(rawData);
   return {
     responses: decoder.readArray(decodeResponses),
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodeResp... Remove this comment to see the full error message
-const decodeResponses = (decoder: any) => ({
+const decodeResponses = (decoder: Decoder) => ({
   topic: decoder.readString(),
-  partitions: decoder.readArray(decodePartitions)
-})
+  partitions: decoder.readArray(decodePartitions),
+});
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decodePart... Remove this comment to see the full error message
-const decodePartitions = (decoder: any) => ({
+const decodePartitions = (decoder: Decoder) => ({
   partition: decoder.readInt32(),
-  errorCode: decoder.readInt16()
-})
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+  errorCode: decoder.readInt16(),
+});
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
-  const partitionsWithError = data.responses.map((response: any) => response.partitions.filter((partition: any) => failure(partition.errorCode))
-  )
-  const partitionWithError = flatten(partitionsWithError)[0]
+  const partitionsWithError = data.responses.map((response: any) =>
+    response.partitions.filter((partition: any) => failure(partition.errorCode))
+  );
+  const partitionWithError: Record<any, any> = flatten(partitionsWithError)[0];
   if (partitionWithError) {
-    throw createErrorFromCode(partitionWithError.errorCode)
+    throw createErrorFromCode(partitionWithError.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
-}
+};

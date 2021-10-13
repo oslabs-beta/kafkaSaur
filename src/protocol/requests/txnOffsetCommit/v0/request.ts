@@ -1,8 +1,7 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-import { TxnOffsetCommit as apiKey } from '../../apiKeys'
+import {Encoder} from '../../../encoder.ts'
+import apiKeys from '../../apiKeys.ts'
 
+const apiKey = apiKeys.TxnOffsetCommit;
 /**
  * TxnOffsetCommit Request (Version: 0) => transactional_id group_id producer_id producer_epoch [topics]
  *   transactional_id => STRING
@@ -17,8 +16,7 @@ import { TxnOffsetCommit as apiKey } from '../../apiKeys'
  *       metadata => NULLABLE_STRING
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   transactionalId,
   groupId,
   producerId,
@@ -28,6 +26,7 @@ export ({
   apiKey,
   apiVersion: 0,
   apiName: 'TxnOffsetCommit',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(transactionalId)
@@ -38,7 +37,6 @@ export ({
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
 const encodeTopic = ({
   topic,
   partitions
@@ -46,7 +44,6 @@ const encodeTopic = ({
   return new Encoder().writeString(topic).writeArray(partitions.map(encodePartition))
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodePart... Remove this comment to see the full error message
 const encodePartition = ({
   partition,
   offset,

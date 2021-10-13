@@ -1,17 +1,19 @@
-import { EventEmitter } from "https://deno.land/std@0.109.0/node/events.ts";
-import { SocketRequest } from './socketRequest.ts'
-import events from '../instrumentationEvents.ts'
-import { KafkaJSInvariantViolation } from '../../errors.ts'
+/** @format */
+
+import { EventEmitter } from 'https://deno.land/std@0.110.0/node/events.ts';
+import { SocketRequest } from './socketRequest.ts';
+import events from '../instrumentationEvents.ts';
+import { KafkaJSInvariantViolation } from '../../errors.ts';
 
 const PRIVATE = {
-  EMIT_QUEUE_SIZE_EVENT: Symbol('private:RequestQueue:emitQueueSizeEvent'),
-  EMIT_REQUEST_QUEUE_EMPTY: Symbol('private:RequestQueue:emitQueueEmpty'),
-}
+  EMIT_QUEUE_SIZE_EVENT: Symbol('private:RequestQueue:emitQueueSizeEvent') as unknown as string,
+  EMIT_REQUEST_QUEUE_EMPTY: Symbol('private:RequestQueue:emitQueueEmpty') as unknown as string,
+};
 
-const REQUEST_QUEUE_EMPTY = 'requestQueueEmpty'
+const REQUEST_QUEUE_EMPTY = 'requestQueueEmpty';
 
 export class RequestQueue extends EventEmitter {
-  [key: string | number | symbol]: any;
+  [key: string]: any;
   /**
    * @param {Object} options
    * @param {number} options.maxInFlightRequests
@@ -31,20 +33,20 @@ export class RequestQueue extends EventEmitter {
     clientId,
     broker,
     logger,
-    isConnected = () => true
+    isConnected = () => true,
   }: any) {
-    super()
-    this.instrumentationEmitter = instrumentationEmitter
-    this.maxInFlightRequests = maxInFlightRequests
-    this.requestTimeout = requestTimeout
-    this.enforceRequestTimeout = enforceRequestTimeout
-    this.clientId = clientId
-    this.broker = broker
-    this.logger = logger
-    this.isConnected = isConnected
+    super();
+    this.instrumentationEmitter = instrumentationEmitter;
+    this.maxInFlightRequests = maxInFlightRequests;
+    this.requestTimeout = requestTimeout;
+    this.enforceRequestTimeout = enforceRequestTimeout;
+    this.clientId = clientId;
+    this.broker = broker;
+    this.logger = logger;
+    this.isConnected = isConnected;
 
-    this.inflight = new Map()
-    this.pending = []
+    this.inflight = new Map();
+    this.pending = [];
 
     /**
      * Until when this request queue is throttled and shouldn't send requests
@@ -54,34 +56,33 @@ export class RequestQueue extends EventEmitter {
      *
      * @type {number}
      */
-    this.throttledUntil = -1
+    this.throttledUntil = -1;
 
     /**
      * Timeout id if we have scheduled a check for pending requests due to client-side throttling
      *
      * @type {null|NodeJS.Timeout}
      */
-    this.throttleCheckTimeoutId = null
+    this.throttleCheckTimeoutId = null;
 
     this[(PRIVATE as any).EMIT_REQUEST_QUEUE_EMPTY] = () => {
-    if (this.pending.length === 0 && this.inflight.size === 0) {
+      if (this.pending.length === 0 && this.inflight.size === 0) {
         this.emit(REQUEST_QUEUE_EMPTY);
-    }
-};
+      }
+    };
 
     this[(PRIVATE as any).EMIT_QUEUE_SIZE_EVENT] = () => {
-    instrumentationEmitter &&
+      instrumentationEmitter &&
         instrumentationEmitter.emit(events.NETWORK_REQUEST_QUEUE_SIZE, {
-            broker: this.broker,
-            clientId: this.clientId,
-            queueSize: this.pending.length,
+          broker: this.broker,
+          clientId: this.clientId,
+          queueSize: this.pending.length,
         });
-    this[PRIVATE.EMIT_REQUEST_QUEUE_EMPTY]();
-};
+      this[PRIVATE.EMIT_REQUEST_QUEUE_EMPTY]();
+    };
 
-      this[(PRIVATE as any).EMIT_REQUEST_QUEUE_EMPTY]();
-    }
-  
+    this[(PRIVATE as any).EMIT_REQUEST_QUEUE_EMPTY]();
+  }
 
   /**
    * @public
@@ -89,26 +90,29 @@ export class RequestQueue extends EventEmitter {
 
   scheduleRequestTimeoutCheck() {
     if (this.enforceRequestTimeout) {
-      this.destroy()
+      this.destroy();
 
       this.requestTimeoutIntervalId = setInterval(() => {
         this.inflight.forEach((request: any) => {
           if (Date.now() - request.sentAt > request.requestTimeout) {
-            request.timeoutRequest()
+            request.timeoutRequest();
           }
-        })
+        });
 
         if (!this.isConnected()) {
-          this.destroy()
+          this.destroy();
         }
-      }, Math.min(this.requestTimeout, 100))
+      }, Math.min(this.requestTimeout, 100));
     }
   }
 
   maybeThrottle(clientSideThrottleTime: any) {
     if (clientSideThrottleTime) {
-      const minimumThrottledUntil = Date.now() + clientSideThrottleTime
-      this.throttledUntil = Math.max(minimumThrottledUntil, this.throttledUntil)
+      const minimumThrottledUntil = Date.now() + clientSideThrottleTime;
+      this.throttledUntil = Math.max(
+        minimumThrottledUntil,
+        this.throttledUntil
+      );
     }
   }
 
@@ -123,13 +127,16 @@ export class RequestQueue extends EventEmitter {
    * @param {PushedRequest} pushedRequest
    */
   push(pushedRequest: any) {
-    const { correlationId } = pushedRequest.entry
-    const defaultRequestTimeout = this.requestTimeout
-    const customRequestTimeout = pushedRequest.requestTimeout
+    const { correlationId } = pushedRequest.entry;
+    const defaultRequestTimeout = this.requestTimeout;
+    const customRequestTimeout = pushedRequest.requestTimeout;
 
     // Some protocol requests have custom request timeouts (e.g JoinGroup, Fetch, etc). The custom
     // timeouts are influenced by user configurations, which can be lower than the default requestTimeout
-    const requestTimeout = Math.max(defaultRequestTimeout, customRequestTimeout || 0)
+    const requestTimeout = Math.max(
+      defaultRequestTimeout,
+      customRequestTimeout || 0
+    );
 
     const socketRequest = new SocketRequest({
       entry: pushedRequest.entry,
@@ -140,30 +147,30 @@ export class RequestQueue extends EventEmitter {
       requestTimeout,
       send: () => {
         if (this.inflight.has(correlationId)) {
-          throw new KafkaJSInvariantViolation('Correlation id already exists')
+          throw new KafkaJSInvariantViolation('Correlation id already exists');
         }
-        this.inflight.set(correlationId, socketRequest)
-        pushedRequest.sendRequest()
+        this.inflight.set(correlationId, socketRequest);
+        pushedRequest.sendRequest();
       },
       timeout: () => {
-        this.inflight.delete(correlationId)
-        this.checkPendingRequests()
+        this.inflight.delete(correlationId);
+        this.checkPendingRequests();
       },
-    })
+    });
 
     if (this.canSendSocketRequestImmediately()) {
-      this.sendSocketRequest(socketRequest)
-      return
+      this.sendSocketRequest(socketRequest);
+      return;
     }
 
-    this.pending.push(socketRequest)
-    this.scheduleCheckPendingRequests()
+    this.pending.push(socketRequest);
+    this.scheduleCheckPendingRequests();
 
     this.logger.debug(`Request enqueued`, {
       clientId: this.clientId,
       broker: this.broker,
       correlationId,
-    })
+    });
 
     this[(PRIVATE as any).EMIT_QUEUE_SIZE_EVENT]();
   }
@@ -172,17 +179,20 @@ export class RequestQueue extends EventEmitter {
    * @param {SocketRequest} socketRequest
    */
   sendSocketRequest(socketRequest: any) {
-    socketRequest.send()
+    socketRequest.send();
 
     if (!socketRequest.expectResponse) {
-      this.logger.debug(`Request does not expect a response, resolving immediately`, {
-        clientId: this.clientId,
-        broker: this.broker,
-        correlationId: socketRequest.correlationId,
-      })
+      this.logger.debug(
+        `Request does not expect a response, resolving immediately`,
+        {
+          clientId: this.clientId,
+          broker: this.broker,
+          correlationId: socketRequest.correlationId,
+        }
+      );
 
-      this.inflight.delete(socketRequest.correlationId)
-      socketRequest.completed({ size: 0, payload: null })
+      this.inflight.delete(socketRequest.correlationId);
+      socketRequest.completed({ size: 0, payload: null });
     }
   }
 
@@ -193,23 +203,19 @@ export class RequestQueue extends EventEmitter {
    * @param {Buffer} response.payload
    * @param {number} response.size
    */
-  fulfillRequest({
-    correlationId,
-    payload,
-    size
-  }: any) {
-    const socketRequest = this.inflight.get(correlationId)
-    this.inflight.delete(correlationId)
-    this.checkPendingRequests()
+  fulfillRequest({ correlationId, payload, size }: any) {
+    const socketRequest = this.inflight.get(correlationId);
+    this.inflight.delete(correlationId);
+    this.checkPendingRequests();
 
     if (socketRequest) {
-      socketRequest.completed({ size, payload })
+      socketRequest.completed({ size, payload });
     } else {
       this.logger.warn(`Response without match`, {
         clientId: this.clientId,
         broker: this.broker,
         correlationId,
-      })
+      });
     }
 
     this[(PRIVATE as any).EMIT_REQUEST_QUEUE_EMPTY]();
@@ -220,15 +226,15 @@ export class RequestQueue extends EventEmitter {
    * @param {Error} error
    */
   rejectAll(error: any) {
-    const requests = [...this.inflight.values(), ...this.pending]
+    const requests = [...this.inflight.values(), ...this.pending];
 
     for (const socketRequest of requests) {
-      socketRequest.rejected(error)
-      this.inflight.delete(socketRequest.correlationId)
+      socketRequest.rejected(error);
+      this.inflight.delete(socketRequest.correlationId);
     }
 
-    this.pending = []
-    this.inflight.clear()
+    this.pending = [];
+    this.inflight.clear();
     this[(PRIVATE as any).EMIT_QUEUE_SIZE_EVENT]();
   }
 
@@ -238,7 +244,7 @@ export class RequestQueue extends EventEmitter {
   waitForPendingRequests() {
     return new Promise((resolve: any) => {
       if (this.pending.length === 0 && this.inflight.size === 0) {
-        return resolve()
+        return resolve();
       }
 
       this.logger.debug('Waiting for pending requests', {
@@ -246,9 +252,9 @@ export class RequestQueue extends EventEmitter {
         broker: this.broker,
         currentInflightRequests: this.inflight.size,
         currentPendingQueueSize: this.pending.length,
-      })
+      });
 
-      this.once(REQUEST_QUEUE_EMPTY, () => resolve())
+      this.once(REQUEST_QUEUE_EMPTY, () => resolve());
     });
   }
 
@@ -256,17 +262,18 @@ export class RequestQueue extends EventEmitter {
    * @public
    */
   destroy() {
-    clearInterval(this.requestTimeoutIntervalId)
-    clearTimeout(this.throttleCheckTimeoutId)
-    this.throttleCheckTimeoutId = null
+    clearInterval(this.requestTimeoutIntervalId);
+    clearTimeout(this.throttleCheckTimeoutId);
+    this.throttleCheckTimeoutId = null;
   }
 
   canSendSocketRequestImmediately() {
     const shouldEnqueue =
-      (this.maxInFlightRequests != null && this.inflight.size >= this.maxInFlightRequests) ||
-      this.throttledUntil > Date.now()
+      (this.maxInFlightRequests != null &&
+        this.inflight.size >= this.maxInFlightRequests) ||
+      this.throttledUntil > Date.now();
 
-    return !shouldEnqueue
+    return !shouldEnqueue;
   }
 
   /**
@@ -277,8 +284,8 @@ export class RequestQueue extends EventEmitter {
    */
   checkPendingRequests() {
     while (this.pending.length > 0 && this.canSendSocketRequestImmediately()) {
-      const pendingRequest = this.pending.shift() // first in first out
-      this.sendSocketRequest(pendingRequest)
+      const pendingRequest = this.pending.shift(); // first in first out
+      this.sendSocketRequest(pendingRequest);
 
       this.logger.debug(`Consumed pending request`, {
         clientId: this.clientId,
@@ -286,12 +293,12 @@ export class RequestQueue extends EventEmitter {
         correlationId: pendingRequest.correlationId,
         pendingDuration: pendingRequest.pendingDuration,
         currentPendingQueueSize: this.pending.length,
-      })
+      });
 
       this[(PRIVATE as any).EMIT_QUEUE_SIZE_EVENT]();
     }
 
-    this.scheduleCheckPendingRequests()
+    this.scheduleCheckPendingRequests();
   }
 
   /**
@@ -306,12 +313,12 @@ export class RequestQueue extends EventEmitter {
     // will be fine, and potentially fix up a new timeout if needed at that time.
     // Note that if we're merely "overloaded" by having too many inflight requests
     // we will anyways check the queue when one of them gets fulfilled.
-    const timeUntilUnthrottled = this.throttledUntil - Date.now()
+    const timeUntilUnthrottled = this.throttledUntil - Date.now();
     if (timeUntilUnthrottled > 0 && !this.throttleCheckTimeoutId) {
       this.throttleCheckTimeoutId = setTimeout(() => {
-        this.throttleCheckTimeoutId = null
-        this.checkPendingRequests()
-      }, timeUntilUnthrottled)
+        this.throttleCheckTimeoutId = null;
+        this.checkPendingRequests();
+      }, timeUntilUnthrottled);
     }
   }
 }

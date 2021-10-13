@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failure'.
-const { failure, createErrorFromCode } = require('../../../error')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'flatten'.
-const flatten = require('../../../../utils/flatten')
+import {Decoder} from '../../../decoder.ts'
+import { failure, createErrorFromCode } from '../../../error.ts'
+import flatten from '../../../../utils/flatten.ts'
 
 /**
  * Metadata Response (Version: 0) => [brokers] [topic_metadata]
@@ -22,21 +19,18 @@ const flatten = require('../../../../utils/flatten')
  *       isr => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'broker'.
 const broker = (decoder: any) => ({
   nodeId: decoder.readInt32(),
   host: decoder.readString(),
   port: decoder.readInt32()
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'topicMetad... Remove this comment to see the full error message
 const topicMetadata = (decoder: any) => ({
   topicErrorCode: decoder.readInt16(),
   topic: decoder.readString(),
   partitionMetadata: decoder.readArray(partitionMetadata)
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'partitionM... Remove this comment to see the full error message
 const partitionMetadata = (decoder: any) => ({
   partitionErrorCode: decoder.readInt16(),
   partitionId: decoder.readInt32(),
@@ -48,8 +42,7 @@ const partitionMetadata = (decoder: any) => ({
   replicas: decoder.readArray((d: any) => d.readInt32()),
   isr: decoder.readArray((d: any) => d.readInt32())
 })
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   return {
@@ -57,8 +50,7 @@ const decode = async (rawData: any) => {
     topicMetadata: decoder.readArray(topicMetadata),
   }
 }
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
+//deno-lint-ignore require-await
 const parse = async (data: any) => {
   const topicsWithErrors = data.topicMetadata.filter((topic: any) => failure(topic.topicErrorCode))
   if (topicsWithErrors.length > 0) {
@@ -79,8 +71,7 @@ const parse = async (data: any) => {
   return data
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   decode,
   parse,
 }

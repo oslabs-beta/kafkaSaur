@@ -18,7 +18,7 @@ const wrappedEvents = {
   [events.REQUEST_QUEUE_SIZE]: networkEvents.NETWORK_REQUEST_QUEUE_SIZE,
 }
 
-const reversedWrappedEvents = swapObject(wrappedEvents)
+const reversedWrappedEvents: any = swapObject(wrappedEvents)
 const unwrap = (eventName: any) => wrappedEvents[eventName] || eventName
 const wrap = (eventName: any) => reversedWrappedEvents[eventName] || eventName
 

@@ -1,9 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Long'.
-import Long from '../../../../utils/long'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import HeaderDecoder from '../../header/v0/decoder'
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'TimestampT... Remove this comment to see the full error message
-import TimestampTypes from '../../../timestampTypes'
+/** @format */
+
+import Long from '../../../../utils/long.ts';
+import HeaderDecoder from '../../header/v0/decoder.ts';
+import TimestampTypes from '../../../timestampTypes.ts';
 
 /**
  * v0
@@ -19,52 +18,35 @@ import TimestampTypes from '../../../timestampTypes'
  *     HeaderValue => VarInt|Bytes
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export default(decoder: any, batchContext = {}) => {
+export default (decoder: any, batchContext: any = {}) => {
   const {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'firstOffset' does not exist on type '{}'... Remove this comment to see the full error message
     firstOffset,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'firstTimestamp' does not exist on type '... Remove this comment to see the full error message
     firstTimestamp,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'magicByte' does not exist on type '{}'.
     magicByte,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'isControlBatch' does not exist on type '... Remove this comment to see the full error message
     isControlBatch = false,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'timestampType' does not exist on type '{... Remove this comment to see the full error message
     timestampType,
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'maxTimestamp' does not exist on type '{}... Remove this comment to see the full error message
     maxTimestamp,
-  } = batchContext
-  const attributes = decoder.readInt8()
+  }: any = batchContext;
+  const attributes = decoder.readInt8();
 
-  const timestampDelta = decoder.readVarLong()
+  const timestampDelta = decoder.readVarLong();
   const timestamp =
     timestampType === TimestampTypes.LOG_APPEND_TIME && maxTimestamp
       ? maxTimestamp
-      : Long.fromValue(firstTimestamp)
-          .add(timestampDelta)
-          .toString()
+      : Long.fromValue(firstTimestamp).add(timestampDelta).toString();
 
-  const offsetDelta = decoder.readVarInt()
-  const offset = Long.fromValue(firstOffset)
-    .add(offsetDelta)
-    .toString()
+  const offsetDelta = decoder.readVarInt();
+  const offset = Long.fromValue(firstOffset).add(offsetDelta).toString();
 
-  const key = decoder.readVarIntBytes()
-  const value = decoder.readVarIntBytes()
-  const headers = decoder
-    .readVarIntArray(HeaderDecoder)
-    .reduce((
-    // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'obj' implicitly has an 'any' type.
-    obj,
-    {
-      key,
-      value
-    }: any
-  ) => ({
-    ...obj,
-    [key]: value
-  }), {})
+  const key = decoder.readVarIntBytes();
+  const value = decoder.readVarIntBytes();
+  const headers = decoder.readVarIntArray(HeaderDecoder).reduce(
+    (obj: any, { key, value }: any) => ({
+      ...obj,
+      [key]: value,
+    }),
+    {}
+  );
 
   return {
     magicByte,
@@ -76,5 +58,5 @@ export default(decoder: any, batchContext = {}) => {
     headers,
     isControlRecord: isControlBatch,
     batchContext,
-  }
-}
+  };
+};

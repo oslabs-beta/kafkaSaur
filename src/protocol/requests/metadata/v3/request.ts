@@ -1,13 +1,11 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV0'... Remove this comment to see the full error message
-const requestV0 = require('../v0/request')
+/** @format */
+
+import requestV0 from '../v0/request.ts';
 
 /**
  * Metadata Request (Version: 3) => [topics]
  *   topics => STRING
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
- topics
-// @ts-expect-error ts-migrate(2550) FIXME: Property 'assign' does not exist on type 'ObjectCo... Remove this comment to see the full error message
-}: any) => Object.assign(requestV0({ topics }), { apiVersion: 3 })
+export default ({ topics }: any) =>
+  Object.assign(requestV0({ topics }), { apiVersion: 3 });

@@ -1,3 +1,6 @@
+/** @format */
+
+// deno-lint-ignore-file require-await
 /**
  * http://www.ietf.org/rfc/rfc5801.txt
  *
@@ -23,43 +26,47 @@
  * The server will verify the authentication token and verify that the
  * authentication credentials permit the client to login as the authorization
  * identity. If both steps succeed, the user is logged in.
+ *
+ * @format
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../encoder'
+import { Encoder } from '../../encoder.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 
-const SEPARATOR = '\u0001' // SOH - Start Of Header ASCII
+const SEPARATOR = '\u0001'; // SOH - Start Of Header ASCII
 
 function formatExtensions(extensions: any) {
-  let msg = ''
+  let msg = '';
 
   if (extensions == null) {
-    return msg
+    return msg;
   }
 
-  let prefix = ''
+  let prefix = '';
   for (const k in extensions) {
-    msg += `${prefix}${k}=${extensions[k]}`
-    prefix = SEPARATOR
+    msg += `${prefix}${k}=${extensions[k]}`;
+    prefix = SEPARATOR;
   }
 
-  return msg
+  return msg;
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export default async ({ authorizationIdentity = null }, oauthBearerToken: any) => {
-  const authzid = authorizationIdentity == null ? '' : `"a=${authorizationIdentity}`
-  let ext = formatExtensions(oauthBearerToken.extensions)
+export default async (
+  { authorizationIdentity = null },
+  oauthBearerToken: any
+) => {
+  const authzid =
+    authorizationIdentity == null ? '' : `"a=${authorizationIdentity}`;
+  let ext = formatExtensions(oauthBearerToken.extensions);
   if (ext.length > 0) {
-    ext = `${SEPARATOR}${ext}`
+    ext = `${SEPARATOR}${ext}`;
   }
 
-  const oauthMsg = `n,${authzid},${SEPARATOR}auth=Bearer ${oauthBearerToken.value}${ext}${SEPARATOR}${SEPARATOR}`
+  const oauthMsg = `n,${authzid},${SEPARATOR}auth=Bearer ${oauthBearerToken.value}${ext}${SEPARATOR}${SEPARATOR}`;
 
   return {
     encode: async () => {
-      // @ts-expect-error ts-migrate(2552) FIXME: Cannot find name 'Buffer'. Did you mean 'buffer'?
-      return new Encoder().writeBytes(Buffer.from(oauthMsg))
+      return new Encoder().writeBytes(Buffer.from(oauthMsg));
     },
-  }
-}
+  };
+};

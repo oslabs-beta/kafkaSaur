@@ -1,14 +1,28 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'versions'.
-const versions = {
+import requestV0 from "./v0/request.ts"
+import responseV0 from "./v0/response.ts"
+import requestV1 from "./v1/request.ts"
+import responseV1 from "./v1/response.ts"
+import requestV2 from "./v2/request.ts"
+import responseV2 from "./v2/response.ts"
+import requestV3 from "./v3/request.ts"
+import responseV3 from "./v3/response.ts"
+import requestV4 from "./v4/request.ts"
+import responseV4 from "./v4/response.ts"
+import requestV5 from "./v5/request.ts"
+import responseV5 from "./v5/response.ts"
+import requestV6 from "./v6/request.ts"
+import responseV6 from "./v6/response.ts"
+import requestV7 from "./v7/request.ts"
+import responseV7 from "./v7/response.ts"
+
+const versions: Record<number, any> = {
   0: ({
     acks,
     timeout,
     topicData
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v0/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v0/response')
+    const request = requestV0;
+    const response = responseV0;
     return { request: request({ acks, timeout, topicData }), response }
   },
   1: ({
@@ -16,10 +30,8 @@ const versions = {
     timeout,
     topicData
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v1/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v1/response')
+    const request = requestV1;
+    const response = responseV1;
     return { request: request({ acks, timeout, topicData }), response }
   },
   2: ({
@@ -28,10 +40,8 @@ const versions = {
     topicData,
     compression
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v2/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v2/response')
+    const request = requestV2;
+    const response = responseV2;
     return { request: request({ acks, timeout, compression, topicData }), response }
   },
   3: ({
@@ -43,10 +53,8 @@ const versions = {
     producerId,
     producerEpoch
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v3/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v3/response')
+    const request = requestV3
+    const response = responseV3
     return {
       request: request({
         acks,
@@ -69,10 +77,8 @@ const versions = {
     producerId,
     producerEpoch
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v4/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v4/response')
+    const request = requestV4;
+    const response = responseV4;
     return {
       request: request({
         acks,
@@ -95,10 +101,8 @@ const versions = {
     producerId,
     producerEpoch
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v5/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v5/response')
+    const request = requestV5
+    const response = responseV5
     return {
       request: request({
         acks,
@@ -121,10 +125,9 @@ const versions = {
     producerId,
     producerEpoch
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v6/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v6/response')
+    
+    const request = requestV6
+    const response = responseV6
     return {
       request: request({
         acks,
@@ -147,10 +150,8 @@ const versions = {
     producerId,
     producerEpoch
   }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v7/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v7/response')
+    const request = requestV7;
+    const response = responseV7
     return {
       request: request({
         acks,
@@ -166,11 +167,9 @@ const versions = {
   },
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default {
   versions: Object.keys(versions),
   protocol: ({
     version
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   }: any) => versions[version],
 }

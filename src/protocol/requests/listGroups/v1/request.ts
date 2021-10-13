@@ -1,9 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'requestV0'... Remove this comment to see the full error message
-const requestV0 = require('../v0/request')
+/** @format */
+
+import requestV0 from '../v0/request.ts';
 
 /**
  * ListGroups Request (Version: 1)
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export () => Object.assign(requestV0(), { apiVersion: 1 })
+export default () => Object.assign(requestV0(), { apiVersion: 1 });

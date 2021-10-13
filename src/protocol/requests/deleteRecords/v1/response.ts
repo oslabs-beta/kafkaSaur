@@ -1,5 +1,4 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'responseV0... Remove this comment to see the full error message
-const responseV0 = require('../v0/response')
+import responseV0 from '../v0/response.ts'
 
 /**
  * Starting in version 1, on quota violation, brokers send out responses before throttling.
@@ -15,8 +14,7 @@ const responseV0 = require('../v0/response')
  *      error_code => INT16
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default ({
   topics
 }: any) => {
   const { parse, decode: decodeV0 } = responseV0({ topics })

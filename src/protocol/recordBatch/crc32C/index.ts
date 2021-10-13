@@ -1,5 +1,5 @@
 
-import crc32C from './crc32C'
+import crc32C from './crc32C.ts'
 const unsigned = (value: any) => Uint32Array.from([value])[0]
 
 

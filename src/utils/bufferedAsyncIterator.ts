@@ -1,4 +1,4 @@
-const defaultErrorHandler = (e: any) => {
+const defaultErrorHandler = (e: any): any => {
   throw e
 }
 
@@ -10,7 +10,6 @@ const defaultErrorHandler = (e: any) => {
  * @param {(err: Error) => any} [handleError] optional error handler
  * @returns {Generator<Promise<T>>}
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'BufferedAs... Remove this comment to see the full error message
 function* BufferedAsyncIterator(promises: any, handleError = defaultErrorHandler) {
   /** Queue of promises in order of resolution */
   const promisesQueue: any = []
@@ -23,7 +22,6 @@ function* BufferedAsyncIterator(promises: any, handleError = defaultErrorHandler
     let resolvePromise
     let rejectPromise
     promisesQueue.push(
-      // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
       new Promise((resolve: any, reject: any) => {
         resolvePromise = resolve
         rejectPromise = reject
@@ -38,7 +36,6 @@ function* BufferedAsyncIterator(promises: any, handleError = defaultErrorHandler
         const { resolve } = resolveRejectQueue.pop()
         resolve(result)
       },
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       async (err: any) => {
         const { reject } = resolveRejectQueue.pop()
         try {
@@ -59,5 +56,4 @@ function* BufferedAsyncIterator(promises: any, handleError = defaultErrorHandler
   }
 }
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export BufferedAsyncIterator
+export default BufferedAsyncIterator

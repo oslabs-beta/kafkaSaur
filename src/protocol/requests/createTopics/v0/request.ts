@@ -1,7 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { CreateTopics: apiKey } = require('../../apiKeys')
+import {Encoder} from '../../../encoder.ts'
+import  apiKeys from '../../apiKeys.ts'
+const apiKey = apiKeys.CreateTopics
 
 /**
  * CreateTopics Request (Version: 0) => [create_topic_requests] timeout
@@ -18,20 +17,19 @@ const { CreateTopics: apiKey } = require('../../apiKeys')
  *   timeout => INT32
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
+export default({
   topics,
   timeout = 5000
 }: any) => ({
   apiKey,
   apiVersion: 0,
   apiName: 'CreateTopics',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder().writeArray(topics.map(encodeTopics)).writeInt32(timeout)
   },
 })
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeTopi... Remove this comment to see the full error message
 const encodeTopics = ({
   topic,
   numPartitions = 1,
@@ -47,7 +45,6 @@ const encodeTopics = ({
     .writeArray(configEntries.map(encodeConfigEntries))
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeRepl... Remove this comment to see the full error message
 const encodeReplicaAssignment = ({
   partition,
   replicas
@@ -55,7 +52,6 @@ const encodeReplicaAssignment = ({
   return new Encoder().writeInt32(partition).writeArray(replicas)
 }
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'encodeConf... Remove this comment to see the full error message
 const encodeConfigEntries = ({
   name,
   value

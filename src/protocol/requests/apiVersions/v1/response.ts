@@ -1,8 +1,10 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
-import { failIfVersionNotSupported } from '../../../error'
-import { parse as parseV0 } from '../v0/response'
+/** @format */
 
+import {Decoder} from '../../../decoder.ts';
+import { failIfVersionNotSupported } from '../../../error.ts';
+import response from '../v0/response.ts';
+const {parse} = response
+const parseV0 = parse
 /**
  * ApiVersions Response (Version: 1) => error_code [api_versions] throttle_time_ms
  *   error_code => INT16
@@ -13,21 +15,19 @@ import { parse as parseV0 } from '../v0/response'
  *   throttle_time_ms => INT32
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiVersion... Remove this comment to see the full error message
 const apiVersion = (decoder: any) => ({
   apiKey: decoder.readInt16(),
   minVersion: decoder.readInt16(),
-  maxVersion: decoder.readInt16()
-})
-
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+  maxVersion: decoder.readInt16(),
+});
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const errorCode = decoder.readInt16()
+  const decoder = await new Decoder(rawData);
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
-  const apiVersions = decoder.readArray(apiVersion)
+  const apiVersions = decoder.readArray(apiVersion);
 
   /**
    * The Java client defaults this value to 0 if not present,
@@ -37,16 +37,16 @@ const decode = async (rawData: any) => {
    * See:
    * https://github.com/apache/kafka/blob/trunk/clients/src/main/java/org/apache/kafka/common/protocol/CommonFields.java#L23-L25
    */
-  const throttleTime = decoder.canReadInt32() ? decoder.readInt32() : 0
+  const throttleTime = decoder.canReadInt32() ? decoder.readInt32() : 0;
 
   return {
     errorCode,
     apiVersions,
     throttleTime,
-  }
-}
+  };
+};
 
-export {
+export default {
   decode,
   parse: parseV0,
-}
+};

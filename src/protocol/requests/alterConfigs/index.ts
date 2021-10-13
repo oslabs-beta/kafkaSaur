@@ -1,32 +1,27 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'versions'.
-const versions = {
-  0: ({
-    resources,
-    validateOnly
-  }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v0/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v0/response')
-    return { request: request({ resources, validateOnly }), response }
-  },
-  1: ({
-    resources,
-    validateOnly
-  }: any) => {
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const request = require('./v1/request')
-    // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-    const response = require('./v1/response')
-    return { request: request({ resources, validateOnly }), response }
-  },
-}
+/** @format */
+import requestV0 from './v0/request.ts'
+import responseV0 from './v0/response.ts'
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+import requestV1 from './v1/request.ts'
+import responseV1 from './v1/response.ts'
+
+const versions: any = {
+  0: ({ resources, validateOnly }: any) => {
+    const request = requestV0
+    const response =responseV0 
+    return { request: request({ resources, validateOnly }), response };
+  },
+  1: ({ resources, validateOnly }: any) => {
+    const request = requestV1
+    const response =responseV1 
+    return { request: request({ resources, validateOnly }), response };
+  },
+};
+
+export default {
   versions: Object.keys(versions),
   protocol: ({
-    version
-  // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
-  }: any) => versions[version],
-}
+    version,
+  }: 
+  any) => versions[version],
+};

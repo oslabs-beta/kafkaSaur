@@ -63,7 +63,6 @@ describe('Utils > BufferedAsyncIterator', () => {
     const iterator = BufferedAsyncIterator(promises)
     const testResults = []
 
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     const firstResult = await Promise.all([iterator.next().value, iterator.next().value])
     testResults.push(...firstResult)
 
@@ -91,13 +90,11 @@ describe('Utils > BufferedAsyncIterator', () => {
     let hasRecovered = false
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
     const handleError = jest.fn()
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     const recover = async (e: any) => {
       hasRecovered = true
       throw e
     }
     const iterator = BufferedAsyncIterator(promises, recover)
-    // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
     await Promise.all([iterator.next().value, iterator.next().value, iterator.next().value]).catch(
       handleError
     )

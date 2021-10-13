@@ -1,26 +1,43 @@
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-import { promisify } from 'util'
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-const zlib = require('zlib')
+/** @format */
 
-const gzip = promisify(zlib.gzip)
-const unzip = promisify(zlib.unzip)
+import { promisify } from '../../../utils/promisify.ts';
+import { gzip, gunzip } from 'https://deno.land/x/compress@v0.3.3/mod.ts';
+import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
+import { Encoder } from '../../encoder.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
-  /**
-   * @param {Encoder} encoder
-   * @returns {Promise}
-   */
-  async compress(encoder: any) {
-    return await gzip(encoder.buffer)
+const KafkaGzip: any = promisify(gzip);
+const unzip: any = promisify(gunzip);
+
+const methods = {
+  async compress(encoder: Encoder) {
+    return await KafkaGzip(encoder.buffer);
   },
 
   /**
    * @param {Buffer} buffer
    * @returns {Promise}
    */
-  async decompress(buffer: any) {
-    return await unzip(buffer)
+  async decompress(buffer: Buffer) {
+    return await unzip(buffer);
   },
-}
+};
+
+export default methods;
+
+// export {
+//   /**
+//    * @param {Encoder} encoder
+//    * @returns {Promise}
+//    */
+//   async compress(encoder) {
+//     return await gzip(encoder.buffer)
+//   },
+
+//   /**
+//    * @param {Buffer} buffer
+//    * @returns {Promise}
+//    */
+//   async decompress(buffer: any) {
+//     return await unzip(buffer)
+//   },
+// }

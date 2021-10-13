@@ -1,8 +1,8 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'apiKey'.
-const { LeaveGroup: apiKey } = require('../../apiKeys')
+/** @format */
 
+import { Encoder } from '../../../encoder.ts';
+import apiKeys from '../../apiKeys.ts';
+const apiKey = apiKeys.LeaveGroup;
 /**
  * Version 3 changes leavegroup to operate on a batch of members
  * and adds group_instance_id to identify members across restarts.
@@ -15,24 +15,18 @@ const { LeaveGroup: apiKey } = require('../../apiKeys')
  *     group_instance_id => NULLABLE_STRING
  */
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
-  groupId,
-  members
-}: any) => ({
+export default ({ groupId, members }: any) => ({
   apiKey,
   apiVersion: 3,
   apiName: 'LeaveGroup',
+  //deno-lint-ignore require-await
   encode: async () => {
     return new Encoder()
       .writeString(groupId)
       .writeArray(members.map((member: any) => encodeMember(member)));
   },
-})
+});
 
-const encodeMember = ({
-  memberId,
-  groupInstanceId = null
-}: any) => {
-  return new Encoder().writeString(memberId).writeString(groupInstanceId)
-}
+const encodeMember = ({ memberId, groupInstanceId = null }: any) => {
+  return new Encoder().writeString(memberId).writeString(groupInstanceId);
+};

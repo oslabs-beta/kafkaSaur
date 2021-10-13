@@ -15,4 +15,4 @@ const defaultObj = {
   retries: 5, // max retries
 } 
 
-export defaultObj
+export default defaultObj

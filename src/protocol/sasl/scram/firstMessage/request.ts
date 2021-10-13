@@ -13,14 +13,12 @@
  * or "p"; otherwise, the message is invalid and authentication MUST
  * fail.  This is important, as it allows for GS2 extensibility (e.g.,
  * to add support for security layers).
+ *
+ * @format
  */
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-import Encoder from '../../../encoder'
+import { Encoder } from '../../../encoder.ts';
 
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export ({
- clientFirstMessage
-}: any) => ({
+export default ({ clientFirstMessage }: any) => ({
   encode: async () => new Encoder().writeBytes(clientFirstMessage),
-})
+});

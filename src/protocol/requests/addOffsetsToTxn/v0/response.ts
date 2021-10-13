@@ -1,7 +1,12 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-import Decoder from '../../../decoder'
+/** @format */
 
-import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../../error'
+import {Decoder} from '../../../decoder.ts';
+
+import {
+  failure,
+  createErrorFromCode,
+  failIfVersionNotSupported,
+} from '../../../error.ts';
 
 /**
  * AddOffsetsToTxn Response (Version: 0) => throttle_time_ms error_code
@@ -10,29 +15,24 @@ import { failure, createErrorFromCode, failIfVersionNotSupported } from '../../.
  */
 
 const decode = async (rawData: any) => {
-  const decoder = new Decoder(rawData)
-  const throttleTime = decoder.readInt32()
-  const errorCode = decoder.readInt16()
+  const decoder = new Decoder(rawData);
+  const throttleTime = decoder.readInt32();
+  const errorCode = decoder.readInt16();
 
-  failIfVersionNotSupported(errorCode)
+  failIfVersionNotSupported(errorCode);
 
   return {
     throttleTime,
     errorCode,
-  }
-}
+  };
+};
 
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parse'.
 const parse = async (data: any) => {
   if (failure(data.errorCode)) {
-    throw createErrorFromCode(data.errorCode)
+    throw createErrorFromCode(data.errorCode);
   }
 
-  return data
-}
+  return data;
+};
 
-
-export {
-  decode,
-  parse,
-}
+export default { decode, parse };

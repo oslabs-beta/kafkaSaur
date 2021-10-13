@@ -1,12 +1,9 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Decoder'.
-const Decoder = require('../../../decoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Encoder'.
-const Encoder = require('../../../encoder')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'parseV0'.
-const { parse: parseV0 } = require('../v0/response')
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'failIfVers... Remove this comment to see the full error message
-const { failIfVersionNotSupported } = require('../../../error')
+import {Decoder} from '../../../decoder.ts'
+import {Encoder} from '../../../encoder.ts'
+import response from '../v0/response.ts'
+import { failIfVersionNotSupported } from '../../../error.ts'
 
+const parseV0 = response.parse;
 /**
  * SaslAuthenticate Response (Version: 1) => error_code error_message sasl_auth_bytes
  *   error_code => INT16
@@ -14,7 +11,7 @@ const { failIfVersionNotSupported } = require('../../../error')
  *   sasl_auth_bytes => BYTES
  *   session_lifetime_ms => INT64
  */
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'decode'.
+//deno-lint-ignore require-await
 const decode = async (rawData: any) => {
   const decoder = new Decoder(rawData)
   const errorCode = decoder.readInt16()
@@ -36,8 +33,7 @@ const decode = async (rawData: any) => {
     sessionLifetimeMs,
   }
 }
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'module'. Do you need to install ... Remove this comment to see the full error message
-export {
+export default{
   decode,
-  parse: parseV0,
+  parseV0,
 }

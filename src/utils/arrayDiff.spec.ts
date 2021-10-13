@@ -1,9 +1,6 @@
-// @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'arrayDiff'... Remove this comment to see the full error message
 import arrayDiff from './arrayDiff'
 
-// @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Utils > arrayDiff', () => {
-  // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('returns the elements in A that are not in B', () => {
     const a = [1, 2, 3, 4]
     const b = [2, 3, 4]
@@ -11,7 +8,6 @@ describe('Utils > arrayDiff', () => {
     expect(arrayDiff(a, b)).toEqual([1])
   })
 
-  // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('takes null and undefined in consideration', () => {
     const a = [1, 2, 3, 4, null, undefined]
     const b = [2, 3, 4, 5]
