@@ -10,7 +10,10 @@ import { SASLAuthenticator } from './saslAuthenticator/index.ts';
 import shuffle from '../utils/shuffle.ts';
 import process from 'https://deno.land/std@0.110.0/node/process.ts';
 import Connection from '../network/connection.ts'
-import {Logger, ApiVersions} from '../../index.d.ts'
+import CoordinatorType from '../protocol/coordinatorTypes.ts'
+import 
+  {Logger, ApiVersions, produceRequest, fetchRequest, joinGroupRequest, AclEntry,
+  offsetCommitRequest, offsetFetchRequest, createTopicsRequest, createPartitionsRequest} from '../../index.d.ts'
 
 const { Types } = CompressionObj;
 
@@ -194,7 +197,7 @@ export class Broker {
           requestTimeout: this.connection.connectionTimeout,
         });
         break;
-      } catch (e: any) {
+      } catch (e) {
         if (e.type !== 'UNSUPPORTED_VERSION') {
           throw e;
         }
@@ -279,6 +282,7 @@ export class Broker {
    * @param {import("../../types").CompressionTypes} [request.compression=CompressionTypes.None] Compression codec
    * @returns {Promise}
    */
+
   async produce({
     topicData,
     transactionalId,
@@ -287,7 +291,7 @@ export class Broker {
     acks = -1,
     timeout = 30000,
     compression = Types.None,
-  }: any) {
+  }: produceRequest["request"]) {
     const produce = this.lookupRequest(apiKeys.Produce, requests.Produce);
     return await this[PRIVATE.SEND_REQUEST](
       produce({
@@ -337,7 +341,7 @@ export class Broker {
     maxBytes = 10485760,
     topics,
     rackId = '',
-  }: any) {
+  }: fetchRequest["request"]) {
     // TODO: validate topics not null/empty
     const fetch = this.lookupRequest(apiKeys.Fetch, requests.Fetch);
     // Shuffle topic-partitions to ensure fair response allocation across partitions (KIP-74)
@@ -386,7 +390,8 @@ export class Broker {
    * @param {string} request.memberId The member id assigned by the group coordinator
    * @returns {Promise}
    */
-  async heartbeat({ groupId, groupGenerationId, memberId }: any) {
+  async heartbeat({ groupId, groupGenerationId, memberId }: 
+    {groupId: string, groupGenerationId: number, memberId: string} ) {
     const heartbeat = this.lookupRequest(apiKeys.Heartbeat, requests.Heartbeat);
     return await this[PRIVATE.SEND_REQUEST](
       heartbeat({ groupId, groupGenerationId, memberId })
@@ -399,7 +404,8 @@ export class Broker {
    * @param {import("../protocol/coordinatorTypes").CoordinatorType} request.coordinatorType The type of coordinator to find
    * @returns {Promise}
    */
-  async findGroupCoordinator({ groupId, coordinatorType }: any) {
+  async findGroupCoordinator({ groupId, coordinatorType }: 
+    {groupId: string, coordinatorType: number}) {
     // TODO: validate groupId, mandatory
     const findCoordinator = this.lookupRequest(
       apiKeys.GroupCoordinator,
@@ -430,7 +436,7 @@ export class Broker {
     memberId = '',
     protocolType = 'consumer',
     groupProtocols,
-  }: any) {
+  }: joinGroupRequest["request"]) {
     const joinGroup = this.lookupRequest(apiKeys.JoinGroup, requests.JoinGroup);
     const makeRequest = (assignedMemberId = memberId) =>
       this[PRIVATE.SEND_REQUEST](
@@ -459,7 +465,7 @@ export class Broker {
    * @param {string} request.memberId
    * @returns {Promise}
    */
-  async leaveGroup({ groupId, memberId }: any) {
+  async leaveGroup({ groupId, memberId }: {groupId: string, memberId: string}) {
     const leaveGroup = this.lookupRequest(
       apiKeys.LeaveGroup,
       requests.LeaveGroup
@@ -475,7 +481,8 @@ export class Broker {
    * @param {object} request.groupAssignment
    * @returns {Promise}
    */
-  async syncGroup({ groupId, generationId, memberId, groupAssignment }: any) {
+  async syncGroup({ groupId, generationId, memberId, groupAssignment }:
+    { groupId: string, generationId: number, memberId: string, groupAssignment: any }) {
     const syncGroup = this.lookupRequest(apiKeys.SyncGroup, requests.SyncGroup);
     return await this[PRIVATE.SEND_REQUEST](
       syncGroup({
@@ -504,7 +511,8 @@ export class Broker {
    *
    * @returns {Promise}
    */
-  async listOffsets({ replicaId, isolationLevel, topics }: any) {
+  async listOffsets({ replicaId, isolationLevel, topics }: 
+    { replicaId: number, isolationLevel: number, topics: any }) {
     const listOffsets = this.lookupRequest(
       apiKeys.ListOffsets,
       requests.ListOffsets
@@ -551,7 +559,7 @@ export class Broker {
     memberId,
     retentionTime,
     topics,
-  }: any) {
+  }: offsetCommitRequest["request"]) {
     const offsetCommit = this.lookupRequest(
       apiKeys.OffsetCommit,
       requests.OffsetCommit
@@ -582,7 +590,7 @@ export class Broker {
    *                  ]
    * @returns {Promise}
    */
-  async offsetFetch({ groupId, topics }: any) {
+  async offsetFetch({ groupId, topics }: offsetFetchRequest["request"]) {
     const offsetFetch = this.lookupRequest(
       apiKeys.OffsetFetch,
       requests.OffsetFetch
@@ -621,7 +629,7 @@ export class Broker {
    *                                on the controller node
    * @returns {Promise}
    */
-  async createTopics({ topics, validateOnly = false, timeout = 5000 }: any) {
+  async createTopics({ topics, validateOnly = false, timeout = 5000 }: createTopicsRequest["options"]) {
     const createTopics = this.lookupRequest(
       apiKeys.CreateTopics,
       requests.CreateTopics
@@ -652,7 +660,7 @@ export class Broker {
     topicPartitions,
     validateOnly = false,
     timeout = 5000,
-  }: any) {
+  }: createPartitionsRequest["options"]) {
     const createPartitions = this.lookupRequest(
       apiKeys.CreatePartitions,
       requests.CreatePartitions
@@ -670,7 +678,7 @@ export class Broker {
    *                                immediately
    * @returns {Promise}
    */
-  async deleteTopics({ topics, timeout = 5000 }: any) {
+  async deleteTopics({ topics, timeout = 5000 }: { topics: string[]; timeout?: number }) {
     const deleteTopics = this.lookupRequest(
       apiKeys.DeleteTopics,
       requests.DeleteTopics
@@ -689,7 +697,8 @@ export class Broker {
    * @param {boolean} [request.includeSynonyms=false]
    * @returns {Promise}
    */
-  async describeConfigs({ resources, includeSynonyms = false }: any) {
+  async describeConfigs({ resources, includeSynonyms = false }: 
+    { resources: any, includeSynonyms: boolean }) {
     const describeConfigs = this.lookupRequest(
       apiKeys.DescribeConfigs,
       requests.DescribeConfigs
@@ -715,7 +724,8 @@ export class Broker {
    * @param {boolean} [request.validateOnly=false]
    * @returns {Promise}
    */
-  async alterConfigs({ resources, validateOnly = false }: any) {
+  async alterConfigs({ resources, validateOnly = false }: 
+    { resources: any, validateOnly: boolean}) {
     const alterConfigs = this.lookupRequest(
       apiKeys.AlterConfigs,
       requests.AlterConfigs
@@ -734,7 +744,8 @@ export class Broker {
    * @param {number} [request.transactionalId] The transactional id or null if the producer is not transactional
    * @returns {Promise}
    */
-  async initProducerId({ transactionalId, transactionTimeout }: any) {
+  async initProducerId({ transactionalId, transactionTimeout }:
+    { transactionalId: number, transactionTimeout: number } ) {
     const initProducerId = this.lookupRequest(
       apiKeys.InitProducerId,
       requests.InitProducerId
@@ -766,7 +777,12 @@ export class Broker {
     producerId,
     producerEpoch,
     topics,
-  }: any) {
+  }: {
+    transactionalId: string,
+    producerId: number,
+    producerEpoch: number,
+    topics: any[],
+  }) {
     const addPartitionsToTxn = this.lookupRequest(
       apiKeys.AddPartitionsToTxn,
       requests.AddPartitionsToTxn
@@ -792,7 +808,12 @@ export class Broker {
     producerId,
     producerEpoch,
     groupId,
-  }: any) {
+  }: {
+    transactionalId: string,
+    producerId: number,
+    producerEpoch: number,
+    groupId: string,
+  }) {
     const addOffsetsToTxn = this.lookupRequest(
       apiKeys.AddOffsetsToTxn,
       requests.AddOffsetsToTxn
@@ -831,7 +852,13 @@ export class Broker {
     producerId,
     producerEpoch,
     topics,
-  }: any) {
+  }: {
+    transactionalId: string,
+    groupId: string,
+    producerId: number,
+    producerEpoch: number,
+    topics: any[],
+  }) {
     const txnOffsetCommit = this.lookupRequest(
       apiKeys.TxnOffsetCommit,
       requests.TxnOffsetCommit
@@ -863,7 +890,12 @@ export class Broker {
     producerId,
     producerEpoch,
     transactionResult,
-  }: any) {
+  }: {
+    transactionalId: string,
+    producerId: number,
+    producerEpoch: number,
+    transactionResult: boolean,
+  }) {
     const endTxn = this.lookupRequest(apiKeys.EndTxn, requests.EndTxn);
     return await this[PRIVATE.SEND_REQUEST](
       endTxn({ transactionalId, producerId, producerEpoch, transactionResult })
@@ -887,7 +919,7 @@ export class Broker {
    * @public
    * @returns {Promise}
    */
-  async deleteGroups(groupIds: any) {
+  async deleteGroups(groupIds: string[]) {
     const deleteGroups = this.lookupRequest(
       apiKeys.DeleteGroups,
       requests.DeleteGroups
@@ -954,7 +986,7 @@ export class Broker {
    *                 ]
    * @returns {Promise<void>}
    */
-  async createAcls({ acl }: any) {
+  async createAcls({ acl }: { acl : AclEntry[] }) {
     const createAcls = this.lookupRequest(
       apiKeys.CreateAcls,
       requests.CreateAcls
