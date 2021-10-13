@@ -39,7 +39,7 @@ const createLevel =
       log: assign(
         {
           timestamp: new Date().toISOString(),
-          logger: 'kafkajs',
+          logger: 'kafkaSaur',
           message,
         },
         extra
