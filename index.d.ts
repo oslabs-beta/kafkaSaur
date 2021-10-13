@@ -1,9 +1,8 @@
-/** @format */
+//deno-lint-ignore-file no-explicit-any
+
 
 // <reference types="node" />
 import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
-// import * as tls from 'tls';
-// import * as net from 'net';
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
 type XOR<T, U> = T | U extends object
@@ -22,7 +21,7 @@ export type BrokersFunction = () => string[] | Promise<string[]>;
 
 export interface KafkaConfig {
   brokers: string[] | BrokersFunction;
-  ssl?: tls.ConnectionOptions | boolean;
+  ssl?: boolean;
   sasl?: SASLOptions;
   clientId?: string;
   connectionTimeout?: number;
@@ -36,14 +35,30 @@ export interface KafkaConfig {
   logCreator?: logCreator;
 }
 
+export interface ConnectionOptions {
+  host: string,
+  port: number,
+  logger: Logger,
+  socketFactory: ISocketFactory,
+  requestTimeout: number,
+  rack: string | null,
+  ssl: any,
+  sasl: any,
+  clientId: string,
+  connectionTimeout: number,
+  enforceRequestTimeout: boolean,
+  maxInFlightRequests: number | null,
+  instrumentationEmitter: any,
+}
+
 export interface ISocketFactoryArgs {
   host: string;
   port: number;
-  ssl: tls.ConnectionOptions;
+  ssl: any;
   onConnect: () => void;
 }
 
-export type ISocketFactory = (args: ISocketFactoryArgs) => net.Socket;
+export type ISocketFactory = (args: ISocketFactoryArgs) => any;
 
 export interface OauthbearerProviderResponse {
   value: string;
@@ -587,6 +602,7 @@ export type Logger = {
   error: (message: string, extra?: object) => void;
   warn: (message: string, extra?: object) => void;
   debug: (message: string, extra?: object) => void;
+  demo: (message: string, extra?: object) => void;
 
   namespace: (namespace: string, logLevel?: logLevel) => Logger;
   setLogLevel: (logLevel: logLevel) => void;
@@ -967,6 +983,86 @@ export type Consumer = {
   logger(): Logger;
   readonly events: ConsumerEvents;
 };
+
+export interface produceRequest {
+  request: {
+    topicData: Array<{
+      topic: string;
+      partitions: Array<{
+        partition: number;
+        firstSequence?: number;
+        messages: Message[];
+      }>;
+    }>;
+    transactionalId?: string;
+    producerId?: number;
+    producerEpoch?: number;
+    acks?: number;
+    timeout?: number;
+    compression?: CompressionTypes;
+  }
+}
+
+export interface fetchRequest {
+  request: {
+    replicaId?: number;
+    isolationLevel?: number;
+    maxWaitTime?: number;
+    minBytes?: number;
+    maxBytes?: number;
+    topics: Array<{
+      topic: string;
+      partitions: Array<{
+        partition: number;
+        fetchOffset: string;
+        maxBytes: number;
+      }>;
+    }>;
+    rackId?: string;
+  }
+}
+
+export interface joinGroupRequest {
+  request: {
+    groupId: string
+    sessionTimeout: number
+    rebalanceTimeout: number
+    memberId: string
+    protocolType: string
+    groupProtocols: any[]
+  }
+}
+
+export interface offsetCommitRequest {
+  request: {
+    groupId: string;
+    groupGenerationId: number;
+    memberId: string;
+    retentionTime?: number;
+    topics: TopicOffsets[];
+  }
+}
+
+export interface offsetFetchRequest {
+  request: { groupId: string; topics: TopicOffsets[] }
+}
+
+export interface createTopicsRequest {
+  options: {
+    validateOnly?: boolean;
+    waitForLeaders?: boolean;
+    timeout?: number;
+    topics: ITopicConfig[];
+  }
+}
+
+export interface createPartitionsRequest {
+  options: {
+    validateOnly?: boolean;
+    timeout?: number;
+    topicPartitions: ITopicPartitionConfig[];
+  }
+}
 
 export enum CompressionTypes {
   None = 0,
