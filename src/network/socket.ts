@@ -31,12 +31,6 @@ export default ({
 
   socket.on('connect', onConnect)
 
-  socket.on('connect', ()=>console.log('****connect event triggered****'))
-  socket.on('data', ()=> console.log('****data event triggered****'))
-  socket.on('end', ()=>console.log('****end event triggered****'))
-  socket.on('error', ()=>console.log('****error event triggered****'))
-  socket.on('timeout', ()=>console.log('****timeout event triggered****'))
-
   socket.connect()
   
   return socket

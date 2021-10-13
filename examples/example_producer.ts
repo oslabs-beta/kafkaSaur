@@ -1,4 +1,5 @@
 import { Kafka, logLevel } from '../index.ts';
+import prettyConsolelogger2 from './prettyConsoleLogger2.ts'
 import dinos from './dinosaurs.ts'
 
 //declare host name
@@ -6,7 +7,8 @@ const host = 'localhost'
 
 //intialize broker
 const kafka = new Kafka({
-  logLevel: logLevel.DEBUG,
+  logLevel: logLevel.DEMO,
+  logCreator: prettyConsolelogger2,
   brokers: [`${host}:9092`],
   clientId: 'example_producer',
 })
@@ -29,17 +31,27 @@ const createMessage = (num: number, dino: string) => ({
   },
 })
 
+//counters for logging purposes
+let msgNumber = 0
+let requestNumber = 0
+
 //function for sending messages
 const sendMessage = () => {
-  //create an array of messages
+  //create a randomly sized array of messages
   const messages = Array(getRandomNumber())
     .fill(undefined)
     .map((_) => createMessage(getRandomNumber(), getRandomDino()))
+    //increment the request number
+    const requestId = requestNumber++ 
     //send the messages to the topic
+    kafka.logger().info(`Sending ${messages.length} messages on request number #${requestId}...`)
     return producer 
       .send({
         topic,
         messages
+      })
+      .then(response => {
+        kafka.logger().info(`Message successfully sent to topic: ${response[0].topicName} on partition ${response[0].partition} `)
       })
       .catch((e: Error) => 
       console.log(e)

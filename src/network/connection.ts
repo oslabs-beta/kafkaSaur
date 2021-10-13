@@ -266,7 +266,7 @@ export default class Connection {
      * TODO: rewrite removing the async promise executor
      */
 
-    /* eslint-disable no-async-promise-executor */
+    //deno-lint-ignore no-async-promise-executor
     return new Promise(async (resolve: any, reject: any) => {
       this.authHandlers = {
         onSuccess: (rawData: any) => {
@@ -339,7 +339,7 @@ export default class Connection {
         expectResponse,
         size: Buffer.byteLength(requestPayload.buffer),
       });
-      console.log('\n****CREATING NEW REQUEST PAYLOAD FOR REQUEST ', apiName)
+      
       return new Promise((resolve: any, reject: any) => {
         try {
           this.failIfNotConnected();
@@ -357,7 +357,7 @@ export default class Connection {
             expectResponse,
             requestTimeout,
             sendRequest: async () => {
-              console.log('\n****!!!!!!!!!!!!!!!SEND REQUEST FIRING FOR REQUEST : !!!!!!!!!!!!!!!!!!!**** ', request.apiName)
+              this.logger.demo(`Sending request to broker...${requestInfo(request)}`)
               await this.socket.write(requestPayload.buffer)
             },
           });
@@ -384,6 +384,7 @@ export default class Connection {
 
       const data = await response.parse(payloadDecoded);
       const isFetchApi = entry.apiName === 'Fetch';
+      this.logger.demo(`Response recieved - ${requestInfo(entry)}`)
       this.logDebug(`Response ${requestInfo(entry)}`, {
         correlationId,
         size,
