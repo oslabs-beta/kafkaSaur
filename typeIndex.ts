@@ -35,20 +35,39 @@ export interface KafkaConfig {
   logCreator?: logCreator;
 }
 
-export interface ConnectionOptions {
-  host: string,
-  port: number,
-  logger: Logger,
-  socketFactory: ISocketFactory,
-  requestTimeout: number,
-  rack: string | null,
-  ssl: any,
-  sasl: any,
-  clientId: string,
-  connectionTimeout: number,
-  enforceRequestTimeout: boolean,
-  maxInFlightRequests: number | null,
-  instrumentationEmitter: any,
+export interface Connection {
+  constructor(params: ConnectionParams);
+  connect?(): Promise<void>
+  disconnect?(): Promise<void>
+  authenticate?(obj: any): Promise<void>
+  send?(obj: any): Promise<any>
+}
+
+export interface ConnectionParams {
+  authExpectResponse: any;
+  authHandlers: any;
+  broker: any;
+  bytesBuffered: any;
+  bytesNeeded: any;
+  chunks: any;
+  clientId: any;
+  connectionStatus: any;
+  connectionTimeout: any;
+  correlationId: any;
+  host: any;
+  logDebug: any;
+  logError: any;
+  logger: any;
+  port: any;
+  rack: any;
+  requestQueue: any;
+  requestTimeout: any;
+  sasl: any;
+  shouldLogBuffers: any;
+  shouldLogFetchBuffer: any;
+  socket: any;
+  socketFactory: any;
+  ssl: any;
 }
 
 export interface ISocketFactoryArgs {
@@ -602,7 +621,6 @@ export type Logger = {
   error: (message: string, extra?: object) => void;
   warn: (message: string, extra?: object) => void;
   debug: (message: string, extra?: object) => void;
-  demo: (message: string, extra?: object) => void;
 
   namespace: (namespace: string, logLevel?: logLevel) => Logger;
   setLogLevel: (logLevel: logLevel) => void;

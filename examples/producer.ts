@@ -1,3 +1,4 @@
+//deno-lint-ignore-file
 /** @format */
 
 //const ip = require('ip')

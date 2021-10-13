@@ -4,9 +4,10 @@ const INT_32_MAX_VALUE = Math.pow(2, 32)
 
 
 
-export default{
+export default {
 
   EARLIEST_OFFSET,
   LATEST_OFFSET,
   INT_32_MAX_VALUE,
+  
 }

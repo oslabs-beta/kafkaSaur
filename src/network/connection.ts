@@ -1,5 +1,5 @@
 /** @format */
-
+import { ConnectionOptions, Logger, ISocketFactory } from '../../index.d.ts'
 import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
 import createSocket from './socket.ts';
 import createRequest from '../protocol/request.ts';
@@ -8,39 +8,41 @@ import {
   KafkaJSConnectionError,
   KafkaJSConnectionClosedError,
 } from '../errors.ts';
-import INT_32_MAX_VALUE from '../constants.ts';
+import constants from '../constants.ts';
 import getEnv from '../env.ts';
 import { RequestQueue } from './requestQueue/index.ts';
 import { CONNECTION_STATUS, CONNECTED_STATUS } from './connectionStatus.ts';
 
-const requestInfo = ({ apiName, apiKey, apiVersion }: any) =>
+const INT_32_MAX_VALUE = constants.INT_32_MAX_VALUE
+
+const requestInfo = ({ apiName, apiKey, apiVersion }: {apiName: string, apiKey: number, apiVersion: number}) =>
   `${apiName}(key: ${apiKey}, version: ${apiVersion})`;
 
 export default class Connection {
-  authExpectResponse: any;
+  authExpectResponse: boolean;
   authHandlers: any;
-  broker: any;
-  bytesBuffered: any;
-  bytesNeeded: any;
-  chunks: any;
-  clientId: any;
-  connectionStatus: any;
-  connectionTimeout: any;
-  correlationId: any;
-  host: any;
+  broker: string;
+  bytesBuffered: number;
+  bytesNeeded: number;
+  chunks: Buffer[] | Uint8Array[];
+  clientId: string;
+  connectionStatus: string;
+  connectionTimeout: number;
+  correlationId: number;
+  host: string;
   logDebug: any;
   logError: any;
-  logger: any;
-  port: any;
-  rack: any;
-  requestQueue: any;
-  requestTimeout: any;
-  sasl: any;
+  logger: Logger;
+  port: number;
+  rack: string | null;
+  requestQueue: RequestQueue;
+  requestTimeout: number;
+  sasl: Record<string, unknown> | null;
   shouldLogBuffers: any;
   shouldLogFetchBuffer: any;
   socket: any;
-  socketFactory: any;
-  ssl: any;
+  socketFactory: ISocketFactory;
+  ssl: Record<string, unknown> | null;
   /**
    * @param {Object} options
    * @param {string} options.host
@@ -77,7 +79,8 @@ export default class Connection {
     enforceRequestTimeout = false,
     maxInFlightRequests = null,
     instrumentationEmitter = null,
-  }: any) {
+  }: ConnectionOptions) {
+
     this.host = host;
     this.port = port;
     this.rack = rack;
@@ -113,9 +116,10 @@ export default class Connection {
     this.authExpectResponse = false;
 
     const log =
-      (level: any) =>
-      (message: any, extra = {}) => {
+      (level: keyof Logger) =>
+      (message: string, extra = {}) => {
         const logFn = this.logger[level];
+        //@ts-ignore - function returns never but message should always be string
         logFn(message, { broker: this.broker, clientId, ...extra });
       };
 
@@ -316,6 +320,7 @@ export default class Connection {
    * @param {boolean} [protocol.logResponseError=true] Whether to log errors
    * @returns {Promise<data>} where data is the return of "response#parse"
    */
+  
   async send({
     request,
     response,
@@ -367,7 +372,7 @@ export default class Connection {
       });
     };
 
-    const { correlationId, size, entry, payload }: any = await sendRequest();
+    const { correlationId, size, entry, payload } : any = await sendRequest();
 
     if (!expectResponse) {
       return;
@@ -392,7 +397,7 @@ export default class Connection {
       });
 
       return data;
-    } catch (e: any) {
+    } catch (e) {
       if (logResponseError) {
         this.logError(`Response ${requestInfo(entry)}`, {
           error: e.message,
@@ -440,7 +445,7 @@ export default class Connection {
   /**
    * @private
    */
-  processData(rd: any) {
+  processData(rd: Uint8Array | Buffer) {
     const rawData = Buffer.from(rd)
     if (this.authHandlers && !this.authExpectResponse) {
       return this.authHandlers.onSuccess(rawData);
@@ -455,7 +460,7 @@ export default class Connection {
     while (this.bytesNeeded <= this.bytesBuffered) {
       const buffer =
         this.chunks.length > 1 ? Buffer.concat(this.chunks) : this.chunks[0];
-      const decoder = new Decoder(buffer);
+      const decoder = new Decoder(buffer as Buffer);
       const expectedResponseSize = decoder.readInt32();
 
       // Return early if not enough bytes to read the full response
@@ -465,8 +470,7 @@ export default class Connection {
         this.bytesNeeded = Decoder.int32Size() + expectedResponseSize;
         return;
       }
-
-      // @ts-ignore
+      //@ts-ignore - need to be able to pass null here
       const response = new Decoder(decoder.readBytes(expectedResponseSize));
 
       // Reset the buffered chunks as the rest of the bytes
@@ -495,7 +499,7 @@ export default class Connection {
   /**
    * @private
    */
-  rejectRequests(error: any) {
+  rejectRequests(error: Error) {
     this.requestQueue.rejectAll(error);
   }
 }
