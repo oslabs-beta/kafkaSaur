@@ -31,10 +31,11 @@ const createMessage = (num: number, dino: string) => ({
 
 //function for sending messages
 const sendMessage = () => {
+  //create an array of messages
   const messages = Array(getRandomNumber())
     .fill(undefined)
     .map((_) => createMessage(getRandomNumber(), getRandomDino()))
-
+    //send the messages to the topic
     return producer 
       .send({
         topic,
