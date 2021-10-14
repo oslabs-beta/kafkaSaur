@@ -71,7 +71,13 @@ const kafkasaur = new Kafkasaur({
 
 - 💂 deno's built in security; No file, network, or environment access, unless explicitly enabled
   
-  
+
+
+## Want to Contribute?
+
+If you'd like to contribute and help grow the Deno community, just reach out to one of us via LinkedIn or write some code, and make a PR here! We're super excited about getting the conversation started, and working to bring Kafka to Deno!
+
+
 ## Developers
 
 <table align="center">
