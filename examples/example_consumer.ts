@@ -1,3 +1,4 @@
+//deno-lint-ignore-file require-await
 import { Kafka,logLevel } from '../index.ts';
 import prettyConsolelogger2 from './prettyConsoleLogger2.ts'
 

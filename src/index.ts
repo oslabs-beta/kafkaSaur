@@ -1,3 +1,4 @@
+//deno-lint-ignore-file require-await no-explicit-any ban-unused-ignore
 /** @format */
 
 import { createLogger, LEVELS } from './loggers/index.ts';
@@ -17,6 +18,8 @@ const PRIVATE = {
   LOGGER: Symbol('private:Kafka:logger') as unknown as string,
   OFFSETS: Symbol('private:Kafka:offsets') as unknown as string,
 };
+
+import { KafkaConfig, ProducerConfig, ConsumerConfig } from '../index.d.ts'
 
 
 const DEFAULT_METADATA_MAX_AGE = 300000;
@@ -51,7 +54,7 @@ export default class Client {
     socketFactory = defaultSocketFactory(),
     logLevel = INFO,
     logCreator = LoggerConsole,
-  }: any) {
+  }: KafkaConfig) {
     this[PRIVATE.OFFSETS] = new Map();
     this[PRIVATE.LOGGER] = createLogger({ level: logLevel, logCreator });
     this[PRIVATE.CLUSTER_RETRY] = retry;
@@ -96,7 +99,7 @@ export default class Client {
     transactionalId,
     transactionTimeout,
     maxInFlightRequests,
-  }: any = {}) {
+  }: ProducerConfig = {}) {
     const instrumentationEmitter = new InstrumentationEventEmitter();
     const cluster = this[PRIVATE.CREATE_CLUSTER]({
       metadataMaxAge,
@@ -136,7 +139,7 @@ export default class Client {
     maxInFlightRequests,
     readUncommitted = false,
     rackId = '',
-  }: any = {}) {
+  }: ConsumerConfig = {}) {
     const isolationLevel = readUncommitted
       ? ISOLATION_LEVEL.READ_UNCOMMITTED
       : ISOLATION_LEVEL.READ_COMMITTED;

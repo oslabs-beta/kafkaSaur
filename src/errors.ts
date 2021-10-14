@@ -1,18 +1,5 @@
+//deno-lint-ignore-file no-explicit-any no-unused-vars
 /** @format */
-
-// class KafkaJSError extends Error {
-//   [key: string | number | symbol]: any;
-//   helpUrl: any;
-//   retriable?: Boolean;
-//   constructor(e: any, { retriable = true } = {}, ...args: any[]) {
-//     const superObj: any = super(e);
-//     superObj.captureStackTrace(this, this.constructor);
-//     this.message = e.message || e;
-//     this.name = 'KafkaJSError';
-//     this.retriable = retriable;
-//     this.helpUrl = e.helpUrl;
-//   }
-// }
 
 class KafkaJSError extends Error {
   [key: string]: any
@@ -240,7 +227,7 @@ class KafkaJSDeleteTopicRecordsError extends KafkaJSError {
 }
 
 // const issueUrl = bugs ? bugs.url : null;
-const issueUrl: string = 'google.com';
+const issueUrl= 'google.com';
 
 class KafkaJSInvariantViolation extends KafkaJSNonRetriableError {
   constructor(e: any) {
