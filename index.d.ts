@@ -965,8 +965,8 @@ export type ConsumerRunConfig = {
   autoCommitThreshold?: number | null;
   eachBatchAutoResolve?: boolean;
   partitionsConsumedConcurrently?: number;
-  eachBatch?: (payload: EachBatchPayload) => Promise<void>;
-  eachMessage?: (payload: EachMessagePayload) => Promise<void>;
+  eachBatch?: null | ((payload: EachBatchPayload) => Promise<void>);
+  eachMessage?: null | ((payload: EachMessagePayload) => Promise<void>);
 };
 
 export type ConsumerSubscribeTopic = {

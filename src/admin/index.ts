@@ -588,7 +588,7 @@ export default ({
     if (!partitions || partitions.length === 0) {
       throw new KafkaJSNonRetriableError(`Invalid partitions`);
     }
-
+    //@ts-ignore
     const consumer = createConsumer({
       logger: rootLogger.namespace('Admin', LEVELS.NOTHING),
       cluster,
@@ -612,6 +612,7 @@ export default ({
       consumer
         .run({
           eachBatchAutoResolve: false,
+          //@ts-ignore - fix this type
           eachBatch: async () => true,
         })
         .catch(reject);

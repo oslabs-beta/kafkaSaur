@@ -1,3 +1,4 @@
+//deno-lint-ignore-file no-explicit-any no-unused-vars no-empty
 /** @format */
 
 import Long from '../utils/long.ts';
@@ -17,6 +18,8 @@ import { KafkaJSNonRetriableError } from '../errors.ts';
 import { roundRobin } from './assigners/index.ts';
 import Constants from '../constants.ts';
 import ISOLATION_LEVEL from '../protocol/isolationLevel.ts';
+import { Cluster, RetryOptions, Logger, PartitionAssigner, Consumer, TopicPartitionOffset,
+  ConsumerRunConfig, ConsumerSubscribeTopic, ConsumerEvents, ValueOf } from '../../index.d.ts';
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 
@@ -79,7 +82,25 @@ export default ({
   rackId = '',
   instrumentationEmitter: rootInstrumentationEmitter,
   metadataMaxAge,
-}: any) => {
+}: 
+{
+  cluster: any;
+  groupId: string;
+  retry: any;
+  logger: Logger;
+  partitionAssigners: PartitionAssigner[];
+  sessionTimeout: number;
+  rebalanceTimeout: number;
+  heartbeatInterval: number;
+  maxBytesPerPartition: number;
+  minBytes: number;
+  maxBytes: number;
+  maxWaitTimeInMs: number;
+  isolationLevel: any
+  rackId: string
+  instrumentationEmitter: any
+  metadataMaxAge: number
+}) => {
   if (!groupId) {
     throw new KafkaJSNonRetriableError(
       'Consumer groupId must be a non-empty string.'
@@ -94,8 +115,8 @@ export default ({
   );
 
   const topics: {[index: string]: any} = {};
-  let runner: any = null;
-  let consumerGroup: any = null;
+  let runner: Runner|null = null;
+  let consumerGroup: ConsumerGroup|null = null;
 
   if (heartbeatInterval >= sessionTimeout) {
     throw new KafkaJSNonRetriableError(
@@ -186,7 +207,7 @@ export default ({
   };
 
   /** @type {import("../../types").Consumer["subscribe"]} */
-  const subscribe = async ({ topic, fromBeginning = false }: any) => {
+  const subscribe = async ({ topic, fromBeginning = false }: ConsumerSubscribeTopic) => {
     if (consumerGroup) {
       throw new KafkaJSNonRetriableError(
         'Cannot subscribe to topic while consumer is running'
@@ -209,8 +230,8 @@ export default ({
       const topicRegExp = topic;
       const metadata = await cluster.metadata();
       const matchedTopics = metadata.topicMetadata
-        .map(({ topic: topicName}: any) => topicName)
-        .filter((topicName: any) => topicRegExp.test(topicName));
+        .map(({ topic: topicName}: Record<string, string>) => topicName)
+        .filter((topicName: string) => topicRegExp.test(topicName));
 
       logger.debug('Subscription based on RegExp', {
         groupId,
@@ -239,7 +260,7 @@ export default ({
     partitionsConsumedConcurrently = 1,
     eachBatch = null,
     eachMessage = null,
-  }: any = {}) => {
+  }: ConsumerRunConfig = {}) => {
     if (consumerGroup) {
       logger.warn(
         'consumer#run was called, but the consumer is already running',
@@ -332,7 +353,7 @@ export default ({
   };
 
   /** @type {import("../../types").Consumer["on"]} */
-  const on = (eventName: any, listener: any) => {
+  const on = (eventName: string, listener: (...args: any[]) => void) => {
     if (!eventNames.includes(eventName)) {
       throw new KafkaJSNonRetriableError(
         `Event name should be one of ${eventKeys}`
@@ -343,7 +364,7 @@ export default ({
       unwrapEvent(eventName),
       (event: any) => {
         event.type = wrapEvent(event.type);
-        Promise.resolve(listener(event)).catch((e: any) => {
+        Promise.resolve(listener(event)).catch((e) => {
           logger.error(`Failed to execute listener: ${e.message}`, {
             eventName,
             stack: e.stack,
@@ -410,6 +431,7 @@ export default ({
 
     const topics = Object.keys(commitsByTopic);
 
+    //@ts-ignore - null ok
     return runner.commitOffsets({
       topics: topics.map((topic) => {
         return {
@@ -421,7 +443,7 @@ export default ({
   };
 
   /** @type {import("../../types").Consumer["seek"]} */
-  const seek = ({ topic, partition, offset }: any) => {
+  const seek = ({ topic, partition, offset }: TopicPartitionOffset) => {
     if (!topic) {
       throw new KafkaJSNonRetriableError(`Invalid topic ${topic}`);
     }
@@ -476,22 +498,22 @@ export default ({
    * @param topicPartitions
    *   Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
-  const pause = (topicPartitions: any = []) => {
+  const pause = (topicPartitions: Array<{ topic: string; partitions?: number[] }> = []) => {
     for (const topicPartition of topicPartitions) {
-      if (!topicPartition || !(topicPartition as any).topic) {
+      if (!topicPartition || !(topicPartition).topic) {
         throw new KafkaJSNonRetriableError(
           `Invalid topic ${
-            (topicPartition && (topicPartition as any).topic) || topicPartition
+            (topicPartition && (topicPartition).topic) || topicPartition
           }`
         );
       } else if (
-        typeof (topicPartition as any).partitions !== 'undefined' &&
-        (!Array.isArray((topicPartition as any).partitions) ||
-          (topicPartition as any).partitions.some(isNaN))
+        typeof (topicPartition).partitions !== 'undefined' &&
+        (!Array.isArray((topicPartition).partitions) ||
+          (topicPartition).partitions.some(isNaN))
       ) {
         throw new KafkaJSNonRetriableError(
           `Array of valid partitions required to pause specific partitions instead of ${
-            (topicPartition as any).partitions
+            (topicPartition).partitions
           }`
         );
       }
@@ -524,22 +546,22 @@ export default ({
    * @param topicPartitions
    *  Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
-  const resume = (topicPartitions = []) => {
+  const resume = (topicPartitions:Array<{ topic: string; partitions?: number[] }> = []) => {
     for (const topicPartition of topicPartitions) {
-      if (!topicPartition || !(topicPartition as any).topic) {
+      if (!topicPartition || !(topicPartition).topic) {
         throw new KafkaJSNonRetriableError(
           `Invalid topic ${
-            (topicPartition && (topicPartition as any).topic) || topicPartition
+            (topicPartition && (topicPartition).topic) || topicPartition
           }`
         );
       } else if (
-        typeof (topicPartition as any).partitions !== 'undefined' &&
-        (!Array.isArray((topicPartition as any).partitions) ||
-          (topicPartition as any).partitions.some(isNaN))
+        typeof (topicPartition).partitions !== 'undefined' &&
+        (!Array.isArray((topicPartition).partitions) ||
+          (topicPartition).partitions.some(isNaN))
       ) {
         throw new KafkaJSNonRetriableError(
           `Array of valid partitions required to resume specific partitions instead of ${
-            (topicPartition as any).partitions
+            (topicPartition).partitions
           }`
         );
       }
