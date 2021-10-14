@@ -1,6 +1,5 @@
 import { Kafka, logLevel } from '../index.ts';
 import prettyConsolelogger2 from './prettyConsoleLogger2.ts'
-import dinos from './dinosaurs.ts'
 
 //declare host name
 const host = 'localhost'
@@ -20,12 +19,11 @@ const producer = kafka.producer()
 
 //helper functions for creating our randomized message
 const getRandomNumber = () => Math.round(Math.random() * 1000);
-const getRandomDino = () => dinos[Math.floor(Math.random() * (dinos.length - 1))]
 
 //function for creating randomized message
-const createMessage = (num: number, dino: string) => ({
+const createMessage = (num: number) => ({
   key: `key-${num}`,
-  value: `value-${num}-${dino}-${new Date().toISOString()}`,
+  value: `value-${num}-${new Date().toISOString()}`,
   headers: {
     'correlation-id': `${num}-${Date.now()}`,
   },
@@ -39,7 +37,7 @@ const sendMessage = () => {
   //create a randomly sized array of messages
   const messages = Array(getRandomNumber())
     .fill(undefined)
-    .map((_) => createMessage(getRandomNumber(), getRandomDino()))
+    .map((_) => createMessage(getRandomNumber()))
     //increment the request number
     const requestId = requestNumber++ 
     //send the messages to the topic
