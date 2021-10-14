@@ -45,7 +45,9 @@ const kafkasaur = new Kafkasaur({
 })
 ```
 ## Features
+<br>
 - 🛠 Built with [TypeScript][Deno]
+<br>
 - 🎬 Producer
 -🍴 Consumer
 -🤝 interactive producer with consumer
