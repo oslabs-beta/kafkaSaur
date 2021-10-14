@@ -10,10 +10,9 @@ import { SASLAuthenticator } from './saslAuthenticator/index.ts';
 import shuffle from '../utils/shuffle.ts';
 import process from 'https://deno.land/std@0.110.0/node/process.ts';
 import Connection from '../network/connection.ts'
-import CoordinatorType from '../protocol/coordinatorTypes.ts'
 import 
   {Logger, ApiVersions, produceRequest, fetchRequest, joinGroupRequest, AclEntry,
-  offsetCommitRequest, offsetFetchRequest, createTopicsRequest, createPartitionsRequest} from '../../index.d.ts'
+  BrokerOptions, offsetCommitRequest, offsetFetchRequest, createTopicsRequest, createPartitionsRequest} from '../../index.d.ts'
 
 const { Types } = CompressionObj;
 
@@ -51,17 +50,6 @@ const notInitializedLookup = () => {
    *                                                fetching metadata.
    * @param {boolean} [options.supportAuthenticationProtocol=null] If the server supports the SASLAuthenticate protocol
    */
-
-interface BrokerOptions {
-  connection: Connection;
-  logger: Logger;
-  nodeId: number | null;
-  versions: ApiVersions | null;
-  authenticationTimeout: number;
-  reauthenticationThreshold: number;
-  allowAutoTopicCreation: boolean;
-  supportAuthenticationProtocol: boolean | null;
-}
 
 export class Broker {
   allowAutoTopicCreation: boolean;

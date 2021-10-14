@@ -3,6 +3,7 @@
 
 // <reference types="node" />
 import { Buffer } from 'https://deno.land/std@0.110.0/node/buffer.ts';
+import Connection from './src/network/connection.ts'
 
 type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never };
 type XOR<T, U> = T | U extends object
@@ -673,6 +674,17 @@ export type Broker = {
     compression?: CompressionTypes;
   }): Promise<any>;
 };
+
+export interface BrokerOptions {
+  connection: Connection;
+  logger: Logger;
+  nodeId: number | null;
+  versions: ApiVersions | null;
+  authenticationTimeout: number;
+  reauthenticationThreshold: number;
+  allowAutoTopicCreation: boolean;
+  supportAuthenticationProtocol: boolean | null;
+}
 
 export type KafkaMessage = {
   key: Buffer | null;
