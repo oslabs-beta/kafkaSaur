@@ -1,18 +1,20 @@
+/** @format */
+
 // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-jest.setTimeout(30000)
+jest.setTimeout(30000);
 
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createAdmi... Remove this comment to see the full error message
-const createAdmin = require('../../admin')
+const createAdmin = require('../../admin');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createProd... Remove this comment to see the full error message
-const createProducer = require('../../producer')
+const createProducer = require('../../producer');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'createCons... Remove this comment to see the full error message
-const createConsumer = require('../index')
+const createConsumer = require('../index');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'Types'.
-const { Types } = require('../../protocol/message/compression')
+const { Types } = require('../../protocol/message/compression');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'ISOLATION_... Remove this comment to see the full error message
-const ISOLATION_LEVEL = require('../../protocol/isolationLevel')
+const ISOLATION_LEVEL = require('../../protocol/isolationLevel');
 // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'sleep'.
-const sleep = require('../../utils/sleep')
+const sleep = require('../../utils/sleep');
 
 const {
   // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'secureRand... Remove this comment to see the full error message
@@ -37,74 +39,80 @@ const {
   waitForConsumerToJoinGroup,
   // @ts-expect-error ts-migrate(2451) FIXME: Cannot redeclare block-scoped variable 'generateMe... Remove this comment to see the full error message
   generateMessages,
-// @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
-} = require('testHelpers')
+  // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'require'. Do you need to install... Remove this comment to see the full error message
+} = require('testHelpers');
 
 // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
 describe('Consumer', () => {
-  let topicName: any, groupId: any, cluster: any, producer: any, consumer: any, admin: any
+  let topicName: any,
+    groupId: any,
+    cluster: any,
+    producer: any,
+    consumer: any,
+    admin: any;
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'beforeEach'.
   beforeEach(async () => {
-    topicName = `test-topic-${secureRandom()}`
-    groupId = `consumer-group-id-${secureRandom()}`
+    topicName = `test-topic-${secureRandom()}`;
+    groupId = `consumer-group-id-${secureRandom()}`;
 
-    // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
-    await createTopic({ topic: topicName })
+    await createTopic({ topic: topicName });
 
-    cluster = createCluster()
+    cluster = createCluster();
     admin = createAdmin({
       cluster,
       logger: newLogger(),
-    })
+    });
 
     producer = createProducer({
       cluster,
       createPartitioner: createModPartitioner,
       logger: newLogger(),
-    })
+    });
 
     consumer = createConsumer({
       cluster,
       groupId,
       maxWaitTimeInMs: 100,
       logger: newLogger(),
-    })
-  })
+    });
+  });
 
   // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'afterEach'.
   afterEach(async () => {
-    admin && (await admin.disconnect())
-    consumer && (await consumer.disconnect())
-    producer && (await producer.disconnect())
-  })
+    admin && (await admin.disconnect());
+    consumer && (await consumer.disconnect());
+    producer && (await producer.disconnect());
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('consume messages', async () => {
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-    jest.spyOn(cluster, 'refreshMetadataIfNecessary')
+    jest.spyOn(cluster, 'refreshMetadataIfNecessary');
 
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const messagesConsumed: any = []
-    consumer.run({ eachMessage: async (event: any) => messagesConsumed.push(event) })
-    await waitForConsumerToJoinGroup(consumer)
+    const messagesConsumed: any = [];
+    consumer.run({
+      eachMessage: async (event: any) => messagesConsumed.push(event),
+    });
+    await waitForConsumerToJoinGroup(consumer);
 
     const messages = Array(100)
       // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
       .fill()
       .map(() => {
-        const value = secureRandom()
-        return { key: `key-${value}`, value: `value-${value}` }
-      })
+        const value = secureRandom();
+        return { key: `key-${value}`, value: `value-${value}` };
+      });
 
-    await producer.send({ acks: 1, topic: topicName, messages })
-    await waitForMessages(messagesConsumed, { number: messages.length })
+    await producer.send({ acks: 1, topic: topicName, messages });
+    await waitForMessages(messagesConsumed, { number: messages.length });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled()
+    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled();
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesConsumed[0]).toEqual({
@@ -118,7 +126,7 @@ describe('Consumer', () => {
         value: Buffer.from(messages[0].value),
         offset: '0',
       }),
-    })
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesConsumed[messagesConsumed.length - 1]).toEqual({
@@ -132,155 +140,159 @@ describe('Consumer', () => {
         value: Buffer.from(messages[messages.length - 1].value),
         offset: '99',
       }),
-    })
+    });
 
     // check if all offsets are present
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(messagesConsumed.map(m => m.message.offset)).toEqual(messages.map((_: any, i: any) => `${i}`))
-  })
+    expect(messagesConsumed.map((m) => m.message.offset)).toEqual(
+      messages.map((_: any, i: any) => `${i}`)
+    );
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('consumes messages concurrently', async () => {
-    const partitionsConsumedConcurrently = 2
-    topicName = `test-topic-${secureRandom()}`
+    const partitionsConsumedConcurrently = 2;
+    topicName = `test-topic-${secureRandom()}`;
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     await createTopic({
       topic: topicName,
       partitions: partitionsConsumedConcurrently + 1,
-    })
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    });
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    let inProgress = 0
-    let hitConcurrencyLimit = false
+    let inProgress = 0;
+    let hitConcurrencyLimit = false;
     consumer.on(consumer.events.START_BATCH_PROCESS, () => {
-      inProgress++
+      inProgress++;
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(inProgress).toBeLessThanOrEqual(partitionsConsumedConcurrently)
-      hitConcurrencyLimit = hitConcurrencyLimit || inProgress === partitionsConsumedConcurrently
-    })
-    consumer.on(consumer.events.END_BATCH_PROCESS, () => inProgress--)
+      expect(inProgress).toBeLessThanOrEqual(partitionsConsumedConcurrently);
+      hitConcurrencyLimit =
+        hitConcurrencyLimit || inProgress === partitionsConsumedConcurrently;
+    });
+    consumer.on(consumer.events.END_BATCH_PROCESS, () => inProgress--);
 
-    const messagesConsumed: any = []
+    const messagesConsumed: any = [];
     consumer.run({
       partitionsConsumedConcurrently,
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       eachMessage: async (event: any) => {
-        await sleep(1)
-        messagesConsumed.push(event)
+        await sleep(1);
+        messagesConsumed.push(event);
       },
-    })
+    });
 
-    await waitForConsumerToJoinGroup(consumer)
+    await waitForConsumerToJoinGroup(consumer);
 
     const messages = Array(100)
       // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
       .fill()
       .map(() => {
-        const value = secureRandom()
-        return { key: `key-${value}`, value: `value-${value}` }
-      })
+        const value = secureRandom();
+        return { key: `key-${value}`, value: `value-${value}` };
+      });
 
-    await producer.send({ acks: 1, topic: topicName, messages })
-    await waitForMessages(messagesConsumed, { number: messages.length })
+    await producer.send({ acks: 1, topic: topicName, messages });
+    await waitForMessages(messagesConsumed, { number: messages.length });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(hitConcurrencyLimit).toBeTrue()
-  })
+    expect(hitConcurrencyLimit).toBeTrue();
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('concurrent heartbeats are consolidated and respect heartbeatInterval', async () => {
-    const partitionsConsumedConcurrently = 5
-    const numberPartitions = 10
-    const heartbeatInterval = 50
+    const partitionsConsumedConcurrently = 5;
+    const numberPartitions = 10;
+    const heartbeatInterval = 50;
     consumer = createConsumer({
       cluster,
       groupId,
       maxWaitTimeInMs: 0,
       heartbeatInterval,
       logger: newLogger(),
-    })
-    topicName = `test-topic-${secureRandom()}`
+    });
+    topicName = `test-topic-${secureRandom()}`;
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
     await createTopic({
       topic: topicName,
       partitions: numberPartitions,
-    })
-    await consumer.connect()
-    await producer.connect()
+    });
+    await consumer.connect();
+    await producer.connect();
 
-    let then = Date.now()
-    const heartbeats: any = []
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    let then = Date.now();
+    const heartbeats: any = [];
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
     consumer.on(consumer.events.HEARTBEAT, () => {
-      const now = Date.now()
-      heartbeats.push(now - then)
-      then = now
-    })
+      const now = Date.now();
+      heartbeats.push(now - then);
+      then = now;
+    });
 
-    const messagesConsumed: any = []
+    const messagesConsumed: any = [];
     consumer.run({
       partitionsConsumedConcurrently,
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-      eachBatch: async ({
-        batch: { messages },
-        heartbeat
-      }: any) => {
+      eachBatch: async ({ batch: { messages }, heartbeat }: any) => {
         for (const event of messages) {
           // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
-          await Promise.all([heartbeat(), heartbeat()])
-          await sleep(1)
-          messagesConsumed.push(event)
+          await Promise.all([heartbeat(), heartbeat()]);
+          await sleep(1);
+          messagesConsumed.push(event);
         }
       },
-    })
+    });
 
-    await waitForConsumerToJoinGroup(consumer)
+    await waitForConsumerToJoinGroup(consumer);
 
     const messages = Array(200)
       // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
       .fill()
       .map(() => {
-        const value = secureRandom()
-        return { key: `key-${value}`, value: `value-${value}` }
-      })
+        const value = secureRandom();
+        return { key: `key-${value}`, value: `value-${value}` };
+      });
 
-    await producer.send({ acks: 1, topic: topicName, messages })
-    await waitForMessages(messagesConsumed, { number: messages.length })
+    await producer.send({ acks: 1, topic: topicName, messages });
+    await waitForMessages(messagesConsumed, { number: messages.length });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(messagesConsumed.length).toEqual(messages.length)
+    expect(messagesConsumed.length).toEqual(messages.length);
     for (const deltaTime of heartbeats) {
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(deltaTime).toBeGreaterThanOrEqual(heartbeatInterval)
+      expect(deltaTime).toBeGreaterThanOrEqual(heartbeatInterval);
     }
-  })
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('consume GZIP messages', async () => {
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const messagesConsumed: any = []
-    consumer.run({ eachMessage: async (event: any) => messagesConsumed.push(event) })
-    await waitForConsumerToJoinGroup(consumer)
+    const messagesConsumed: any = [];
+    consumer.run({
+      eachMessage: async (event: any) => messagesConsumed.push(event),
+    });
+    await waitForConsumerToJoinGroup(consumer);
 
-    const key1 = secureRandom()
-    const message1 = { key: `key-${key1}`, value: `value-${key1}` }
-    const key2 = secureRandom()
-    const message2 = { key: `key-${key2}`, value: `value-${key2}` }
+    const key1 = secureRandom();
+    const message1 = { key: `key-${key1}`, value: `value-${key1}` };
+    const key2 = secureRandom();
+    const message2 = { key: `key-${key2}`, value: `value-${key2}` };
 
     await producer.send({
       acks: 1,
       topic: topicName,
       compression: Types.GZIP,
       messages: [message1, message2],
-    })
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    await expect(waitForMessages(messagesConsumed, { number: 2 })).resolves.toEqual([
+    await expect(
+      waitForMessages(messagesConsumed, { number: 2 })
+    ).resolves.toEqual([
       {
         topic: topicName,
         partition: 0,
@@ -305,17 +317,17 @@ describe('Consumer', () => {
           offset: '1',
         }),
       },
-    ])
-  })
+    ]);
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('consume batches', async () => {
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const batchesConsumed: any = []
-    const functionsExposed: any = []
+    const batchesConsumed: any = [];
+    const functionsExposed: any = [];
     consumer.run({
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       eachBatch: async ({
@@ -324,21 +336,31 @@ describe('Consumer', () => {
         heartbeat,
         isRunning,
         isStale,
-        uncommittedOffsets
+        uncommittedOffsets,
       }: any) => {
-        batchesConsumed.push(batch)
-        functionsExposed.push(resolveOffset, heartbeat, isRunning, isStale, uncommittedOffsets)
+        batchesConsumed.push(batch);
+        functionsExposed.push(
+          resolveOffset,
+          heartbeat,
+          isRunning,
+          isStale,
+          uncommittedOffsets
+        );
       },
-    })
+    });
 
-    await waitForConsumerToJoinGroup(consumer)
+    await waitForConsumerToJoinGroup(consumer);
 
-    const key1 = secureRandom()
-    const message1 = { key: `key-${key1}`, value: `value-${key1}` }
-    const key2 = secureRandom()
-    const message2 = { key: `key-${key2}`, value: `value-${key2}` }
+    const key1 = secureRandom();
+    const message1 = { key: `key-${key1}`, value: `value-${key1}` };
+    const key2 = secureRandom();
+    const message2 = { key: `key-${key2}`, value: `value-${key2}` };
 
-    await producer.send({ acks: 1, topic: topicName, messages: [message1, message2] })
+    await producer.send({
+      acks: 1,
+      topic: topicName,
+      messages: [message1, message2],
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     await expect(waitForMessages(batchesConsumed)).resolves.toEqual([
@@ -366,7 +388,7 @@ describe('Consumer', () => {
           }),
         ],
       }),
-    ])
+    ]);
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(functionsExposed).toEqual([
@@ -380,42 +402,48 @@ describe('Consumer', () => {
       expect.any(Function),
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
       expect.any(Function),
-    ])
-  })
+    ]);
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('commits the last offsets processed before stopping', async () => {
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-    jest.spyOn(cluster, 'refreshMetadataIfNecessary')
+    jest.spyOn(cluster, 'refreshMetadataIfNecessary');
 
     // @ts-expect-error ts-migrate(2585) FIXME: 'Promise' only refers to a type, but is being used... Remove this comment to see the full error message
-    await Promise.all([admin.connect(), consumer.connect(), producer.connect()])
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await Promise.all([
+      admin.connect(),
+      consumer.connect(),
+      producer.connect(),
+    ]);
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const messagesConsumed: any = []
-    consumer.run({ eachMessage: async (event: any) => messagesConsumed.push(event) })
-    await waitForConsumerToJoinGroup(consumer)
+    const messagesConsumed: any = [];
+    consumer.run({
+      eachMessage: async (event: any) => messagesConsumed.push(event),
+    });
+    await waitForConsumerToJoinGroup(consumer);
 
     // stop the consumer right after processing the batch, the offsets should be
     // committed in the end
     // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
     consumer.on(consumer.events.END_BATCH_PROCESS, async () => {
-      await consumer.stop()
-    })
+      await consumer.stop();
+    });
 
     const messages = Array(100)
       // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
       .fill()
       .map(() => {
-        const value = secureRandom()
-        return { key: `key-${value}`, value: `value-${value}` }
-      })
+        const value = secureRandom();
+        return { key: `key-${value}`, value: `value-${value}` };
+      });
 
-    await producer.send({ acks: 1, topic: topicName, messages })
-    await waitForMessages(messagesConsumed, { number: messages.length })
+    await producer.send({ acks: 1, topic: topicName, messages });
+    await waitForMessages(messagesConsumed, { number: messages.length });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled()
+    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled();
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesConsumed[0]).toEqual({
@@ -429,7 +457,7 @@ describe('Consumer', () => {
         value: Buffer.from(messages[0].value),
         offset: '0',
       }),
-    })
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesConsumed[messagesConsumed.length - 1]).toEqual({
@@ -443,47 +471,51 @@ describe('Consumer', () => {
         value: Buffer.from(messages[messages.length - 1].value),
         offset: '99',
       }),
-    })
+    });
 
     // check if all offsets are present
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(messagesConsumed.map(m => m.message.offset)).toEqual(messages.map((_: any, i: any) => `${i}`))
-    const [partition] = await admin.fetchOffsets({ groupId, topic: topicName })
+    expect(messagesConsumed.map((m) => m.message.offset)).toEqual(
+      messages.map((_: any, i: any) => `${i}`)
+    );
+    const [partition] = await admin.fetchOffsets({ groupId, topic: topicName });
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(partition.offset).toEqual('100') // check if offsets were committed
-  })
+    expect(partition.offset).toEqual('100'); // check if offsets were committed
+  });
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
   testIfKafkaAtLeast_0_11('consume messages with 0.11 format', async () => {
-    const topicName2 = `test-topic2-${secureRandom()}`
+    const topicName2 = `test-topic2-${secureRandom()}`;
     // @ts-expect-error ts-migrate(2554) FIXME: Expected 2 arguments, but got 1.
-    await createTopic({ topic: topicName2 })
+    await createTopic({ topic: topicName2 });
 
-    cluster = createCluster()
+    cluster = createCluster();
     producer = createProducer({
       cluster,
       createPartitioner: createModPartitioner,
       logger: newLogger(),
-    })
+    });
 
     consumer = createConsumer({
       cluster,
       groupId,
       maxWaitTimeInMs: 100,
       logger: newLogger(),
-    })
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-    jest.spyOn(cluster, 'refreshMetadataIfNecessary')
+    jest.spyOn(cluster, 'refreshMetadataIfNecessary');
 
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
-    await consumer.subscribe({ topic: topicName2, fromBeginning: true })
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
+    await consumer.subscribe({ topic: topicName2, fromBeginning: true });
 
-    const messagesConsumed: any = []
-    consumer.run({ eachMessage: async (event: any) => messagesConsumed.push(event) })
-    await waitForConsumerToJoinGroup(consumer)
+    const messagesConsumed: any = [];
+    consumer.run({
+      eachMessage: async (event: any) => messagesConsumed.push(event),
+    });
+    await waitForConsumerToJoinGroup(consumer);
 
     const generateMessagesWitHeaders = () =>
       // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'message' implicitly has an 'any' type.
@@ -494,11 +526,11 @@ describe('Consumer', () => {
           'header-keyA': `header-valueA-${i}`,
           'header-keyB': `header-valueB-${i}`,
           'header-keyC': `header-valueC-${i}`,
-        }
-      }))
+        },
+      }));
 
-    const messages1 = generateMessagesWitHeaders()
-    const messages2 = generateMessagesWitHeaders()
+    const messages1 = generateMessagesWitHeaders();
+    const messages2 = generateMessagesWitHeaders();
 
     await producer.sendBatch({
       acks: 1,
@@ -506,17 +538,23 @@ describe('Consumer', () => {
         { topic: topicName, messages: messages1 },
         { topic: topicName2, messages: messages2 },
       ],
-    })
+    });
 
-    await waitForMessages(messagesConsumed, { number: messages1.length + messages2.length })
+    await waitForMessages(messagesConsumed, {
+      number: messages1.length + messages2.length,
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled()
+    expect(cluster.refreshMetadataIfNecessary).toHaveBeenCalled();
 
     // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'm' implicitly has an 'any' type.
-    const messagesFromTopic1 = messagesConsumed.filter(m => m.topic === topicName)
+    const messagesFromTopic1 = messagesConsumed.filter(
+      (m) => m.topic === topicName
+    );
     // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'm' implicitly has an 'any' type.
-    const messagesFromTopic2 = messagesConsumed.filter(m => m.topic === topicName2)
+    const messagesFromTopic2 = messagesConsumed.filter(
+      (m) => m.topic === topicName2
+    );
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesFromTopic1[0]).toEqual({
@@ -539,9 +577,9 @@ describe('Consumer', () => {
         magicByte: 2,
         offset: '0',
       }),
-    })
+    });
 
-    const lastMessage1 = messages1[messages1.length - 1]
+    const lastMessage1 = messages1[messages1.length - 1];
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesFromTopic1[messagesFromTopic1.length - 1]).toEqual({
       topic: topicName,
@@ -563,7 +601,7 @@ describe('Consumer', () => {
         magicByte: 2,
         offset: '102',
       }),
-    })
+    });
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesFromTopic2[0]).toEqual({
@@ -586,9 +624,9 @@ describe('Consumer', () => {
         magicByte: 2,
         offset: '0',
       }),
-    })
+    });
 
-    const lastMessage2 = messages2[messages2.length - 1]
+    const lastMessage2 = messages2[messages2.length - 1];
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
     expect(messagesFromTopic2[messagesFromTopic2.length - 1]).toEqual({
       topic: topicName2,
@@ -610,129 +648,148 @@ describe('Consumer', () => {
         magicByte: 2,
         offset: '102',
       }),
-    })
+    });
 
     // check if all offsets are present
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(messagesFromTopic1.map(m => m.message.offset)).toEqual(messages1.map((_: any, i: any) => `${i}`))
+    expect(messagesFromTopic1.map((m) => m.message.offset)).toEqual(
+      messages1.map((_: any, i: any) => `${i}`)
+    );
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(messagesFromTopic2.map(m => m.message.offset)).toEqual(messages2.map((_: any, i: any) => `${i}`))
-  })
+    expect(messagesFromTopic2.map((m) => m.message.offset)).toEqual(
+      messages2.map((_: any, i: any) => `${i}`)
+    );
+  });
 
   // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-  testIfKafkaAtLeast_0_11('consume GZIP messages with 0.11 format', async () => {
-    cluster = createCluster()
-    producer = createProducer({
-      cluster,
-      createPartitioner: createModPartitioner,
-      logger: newLogger(),
-    })
+  testIfKafkaAtLeast_0_11(
+    'consume GZIP messages with 0.11 format',
+    async () => {
+      cluster = createCluster();
+      producer = createProducer({
+        cluster,
+        createPartitioner: createModPartitioner,
+        logger: newLogger(),
+      });
 
-    consumer = createConsumer({
-      cluster,
-      groupId,
-      maxWaitTimeInMs: 100,
-      logger: newLogger(),
-    })
+      consumer = createConsumer({
+        cluster,
+        groupId,
+        maxWaitTimeInMs: 100,
+        logger: newLogger(),
+      });
 
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+      await consumer.connect();
+      await producer.connect();
+      await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const messagesConsumed: any = []
-    consumer.run({ eachMessage: async (event: any) => messagesConsumed.push(event) })
-    await waitForConsumerToJoinGroup(consumer)
+      const messagesConsumed: any = [];
+      consumer.run({
+        eachMessage: async (event: any) => messagesConsumed.push(event),
+      });
+      await waitForConsumerToJoinGroup(consumer);
 
-    const key1 = secureRandom()
-    const message1 = {
-      key: `key-${key1}`,
-      value: `value-${key1}`,
-      headers: { [`header-${key1}`]: `header-value-${key1}` },
-    }
-    const key2 = secureRandom()
-    const message2 = {
-      key: `key-${key2}`,
-      value: `value-${key2}`,
-      headers: { [`header-${key2}`]: `header-value-${key2}` },
-    }
+      const key1 = secureRandom();
+      const message1 = {
+        key: `key-${key1}`,
+        value: `value-${key1}`,
+        headers: { [`header-${key1}`]: `header-value-${key1}` },
+      };
+      const key2 = secureRandom();
+      const message2 = {
+        key: `key-${key2}`,
+        value: `value-${key2}`,
+        headers: { [`header-${key2}`]: `header-value-${key2}` },
+      };
 
-    await producer.send({
-      acks: 1,
-      topic: topicName,
-      compression: Types.GZIP,
-      messages: [message1, message2],
-    })
-
-    // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    await expect(waitForMessages(messagesConsumed, { number: 2 })).resolves.toEqual([
-      {
+      await producer.send({
+        acks: 1,
         topic: topicName,
-        partition: 0,
-        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        message: expect.objectContaining({
-          // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-          key: Buffer.from(message1.key),
-          // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-          value: Buffer.from(message1.value),
-          headers: {
+        compression: Types.GZIP,
+        messages: [message1, message2],
+      });
+
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+      await expect(
+        waitForMessages(messagesConsumed, { number: 2 })
+      ).resolves.toEqual([
+        {
+          topic: topicName,
+          partition: 0,
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+          message: expect.objectContaining({
             // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-            [`header-${key1}`]: Buffer.from(message1.headers[`header-${key1}`]),
-          },
-          magicByte: 2,
-          offset: '0',
-        }),
-      },
-      {
-        topic: topicName,
-        partition: 0,
-        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        message: expect.objectContaining({
-          // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-          key: Buffer.from(message2.key),
-          // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-          value: Buffer.from(message2.value),
-          headers: {
+            key: Buffer.from(message1.key),
             // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
-            [`header-${key2}`]: Buffer.from(message2.headers[`header-${key2}`]),
-          },
-          magicByte: 2,
-          offset: '1',
-        }),
-      },
-    ])
-  })
+            value: Buffer.from(message1.value),
+            headers: {
+              // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
+              [`header-${key1}`]: Buffer.from(
+                message1.headers[`header-${key1}`]
+              ),
+            },
+            magicByte: 2,
+            offset: '0',
+          }),
+        },
+        {
+          topic: topicName,
+          partition: 0,
+          // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+          message: expect.objectContaining({
+            // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
+            key: Buffer.from(message2.key),
+            // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
+            value: Buffer.from(message2.value),
+            headers: {
+              // @ts-expect-error ts-migrate(2580) FIXME: Cannot find name 'Buffer'. Do you need to install ... Remove this comment to see the full error message
+              [`header-${key2}`]: Buffer.from(
+                message2.headers[`header-${key2}`]
+              ),
+            },
+            magicByte: 2,
+            offset: '1',
+          }),
+        },
+      ]);
+    }
+  );
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('stops consuming messages when running = false', async () => {
-    await consumer.connect()
-    await producer.connect()
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await consumer.connect();
+    await producer.connect();
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const sleep = (value: any) => waitFor((delay: any) => delay >= value)
-    let calls = 0
+    const sleep = (value: any) => waitFor((delay: any) => delay >= value);
+    let calls = 0;
 
     consumer.run({
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       eachMessage: async (event: any) => {
-        calls++
-        await sleep(100)
+        calls++;
+        await sleep(100);
       },
-    })
+    });
 
-    await waitForConsumerToJoinGroup(consumer)
+    await waitForConsumerToJoinGroup(consumer);
 
-    const key1 = secureRandom()
-    const message1 = { key: `key-${key1}`, value: `value-${key1}` }
-    const key2 = secureRandom()
-    const message2 = { key: `key-${key2}`, value: `value-${key2}` }
+    const key1 = secureRandom();
+    const message1 = { key: `key-${key1}`, value: `value-${key1}` };
+    const key2 = secureRandom();
+    const message2 = { key: `key-${key2}`, value: `value-${key2}` };
 
-    await producer.send({ acks: 1, topic: topicName, messages: [message1, message2] })
-    await sleep(80) // wait for 1 message
-    await consumer.disconnect() // don't give the consumer the chance to consume the 2nd message
+    await producer.send({
+      acks: 1,
+      topic: topicName,
+      messages: [message1, message2],
+    });
+    await sleep(80); // wait for 1 message
+    await consumer.disconnect(); // don't give the consumer the chance to consume the 2nd message
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(calls).toEqual(1)
-  })
+    expect(calls).toEqual(1);
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
   describe('discarding messages after seeking', () => {
@@ -746,41 +803,43 @@ describe('Consumer', () => {
         // make sure we fetch a batch of messages
         minBytes: 1024,
         maxWaitTimeInMs: 500,
-      })
+      });
 
       const messages = Array(10)
         // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
         .fill()
         .map(() => {
-          const value = secureRandom()
-          return { key: `key-${value}`, value: `value-${value}` }
-        })
+          const value = secureRandom();
+          return { key: `key-${value}`, value: `value-${value}` };
+        });
 
-      await consumer.connect()
-      await producer.connect()
-      await producer.send({ acks: 1, topic: topicName, messages })
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
+      await consumer.connect();
+      await producer.connect();
+      await producer.send({ acks: 1, topic: topicName, messages });
+      await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-      const offsetsConsumed: any = []
+      const offsetsConsumed: any = [];
 
       consumer.run({
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-        eachMessage: async ({
-          message
-        }: any) => {
-          offsetsConsumed.push(message.offset)
+        eachMessage: async ({ message }: any) => {
+          offsetsConsumed.push(message.offset);
 
           if (offsetsConsumed.length === 1) {
-            consumer.seek({ topic: topicName, partition: 0, offset: message.offset })
+            consumer.seek({
+              topic: topicName,
+              partition: 0,
+              offset: message.offset,
+            });
           }
         },
-      })
+      });
 
-      await waitFor(() => offsetsConsumed.length >= 2, { delay: 50 })
+      await waitFor(() => offsetsConsumed.length >= 2, { delay: 50 });
 
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(offsetsConsumed[0]).toEqual(offsetsConsumed[1])
-    })
+      expect(offsetsConsumed[0]).toEqual(offsetsConsumed[1]);
+    });
 
     // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
     it('resolves a batch as stale when seek was called while processing it', async () => {
@@ -792,22 +851,22 @@ describe('Consumer', () => {
         // make sure we fetch a batch of messages
         minBytes: 1024,
         maxWaitTimeInMs: 500,
-      })
+      });
 
       const messages = Array(10)
         // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
         .fill()
         .map(() => {
-          const value = secureRandom()
-          return { key: `key-${value}`, value: `value-${value}` }
-        })
+          const value = secureRandom();
+          return { key: `key-${value}`, value: `value-${value}` };
+        });
 
-      await consumer.connect()
-      await producer.connect()
-      await producer.send({ acks: 1, topic: topicName, messages })
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
+      await consumer.connect();
+      await producer.connect();
+      await producer.send({ acks: 1, topic: topicName, messages });
+      await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-      const offsetsConsumed: any = []
+      const offsetsConsumed: any = [];
 
       consumer.run({
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
@@ -815,28 +874,32 @@ describe('Consumer', () => {
           batch,
           isStale,
           heartbeat,
-          resolveOffset
+          resolveOffset,
         }: any) => {
           for (const message of batch.messages) {
-            if (isStale()) break
+            if (isStale()) break;
 
-            offsetsConsumed.push(message.offset)
+            offsetsConsumed.push(message.offset);
 
             if (offsetsConsumed.length === 1) {
-              consumer.seek({ topic: topicName, partition: 0, offset: message.offset })
+              consumer.seek({
+                topic: topicName,
+                partition: 0,
+                offset: message.offset,
+              });
             }
 
-            resolveOffset(message.offset)
-            await heartbeat()
+            resolveOffset(message.offset);
+            await heartbeat();
           }
         },
-      })
+      });
 
-      await waitFor(() => offsetsConsumed.length >= 2, { delay: 50 })
+      await waitFor(() => offsetsConsumed.length >= 2, { delay: 50 });
 
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(offsetsConsumed[0]).toEqual(offsetsConsumed[1])
-    })
+      expect(offsetsConsumed[0]).toEqual(offsetsConsumed[1]);
+    });
 
     // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
     it('skips messages fetched while seek was called', async () => {
@@ -845,55 +908,56 @@ describe('Consumer', () => {
         groupId,
         maxWaitTimeInMs: 1000,
         logger: newLogger(),
-      })
+      });
 
       const messages = Array(10)
         // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
         .fill()
         .map(() => {
-          const value = secureRandom()
-          return { key: `key-${value}`, value: `value-${value}` }
-        })
-      await producer.connect()
-      await producer.send({ acks: 1, topic: topicName, messages })
+          const value = secureRandom();
+          return { key: `key-${value}`, value: `value-${value}` };
+        });
+      await producer.connect();
+      await producer.send({ acks: 1, topic: topicName, messages });
 
-      await consumer.connect()
+      await consumer.connect();
 
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
+      await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-      const offsetsConsumed: any = []
+      const offsetsConsumed: any = [];
 
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-      const eachBatch = async ({
-        batch,
-        heartbeat
-      }: any) => {
+      const eachBatch = async ({ batch, heartbeat }: any) => {
         for (const message of batch.messages) {
-          offsetsConsumed.push(message.offset)
+          offsetsConsumed.push(message.offset);
         }
 
-        await heartbeat()
-      }
+        await heartbeat();
+      };
 
       consumer.run({
         eachBatch,
-      })
+      });
 
-      await waitForConsumerToJoinGroup(consumer)
+      await waitForConsumerToJoinGroup(consumer);
 
-      await waitFor(() => offsetsConsumed.length === messages.length, { delay: 50 })
-      await waitForNextEvent(consumer, consumer.events.FETCH_START)
+      await waitFor(() => offsetsConsumed.length === messages.length, {
+        delay: 50,
+      });
+      await waitForNextEvent(consumer, consumer.events.FETCH_START);
 
-      const seekedOffset = offsetsConsumed[Math.floor(messages.length / 2)]
-      consumer.seek({ topic: topicName, partition: 0, offset: seekedOffset })
-      await producer.send({ acks: 1, topic: topicName, messages }) // trigger completion of fetch
+      const seekedOffset = offsetsConsumed[Math.floor(messages.length / 2)];
+      consumer.seek({ topic: topicName, partition: 0, offset: seekedOffset });
+      await producer.send({ acks: 1, topic: topicName, messages }); // trigger completion of fetch
 
-      await waitFor(() => offsetsConsumed.length > messages.length, { delay: 50 })
+      await waitFor(() => offsetsConsumed.length > messages.length, {
+        delay: 50,
+      });
 
       // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(offsetsConsumed[messages.length]).toEqual(seekedOffset)
-    })
-  })
+      expect(offsetsConsumed[messages.length]).toEqual(seekedOffset);
+    });
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'it'. Do you need to install type... Remove this comment to see the full error message
   it('discards messages received when pausing while fetch is in-flight', async () => {
@@ -902,276 +966,315 @@ describe('Consumer', () => {
       groupId,
       maxWaitTimeInMs: 200,
       logger: newLogger(),
-    })
+    });
 
     const messages = Array(10)
       // @ts-expect-error ts-migrate(2550) FIXME: Property 'fill' does not exist on type 'any[]'. Do... Remove this comment to see the full error message
       .fill()
       .map(() => {
-        const value = secureRandom()
-        return { key: `key-${value}`, value: `value-${value}` }
-      })
-    await producer.connect()
-    await producer.send({ acks: 1, topic: topicName, messages })
+        const value = secureRandom();
+        return { key: `key-${value}`, value: `value-${value}` };
+      });
+    await producer.connect();
+    await producer.send({ acks: 1, topic: topicName, messages });
 
-    await consumer.connect()
+    await consumer.connect();
 
-    await consumer.subscribe({ topic: topicName, fromBeginning: true })
+    await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-    const offsetsConsumed = []
+    const offsetsConsumed = [];
 
     // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-    const eachBatch = async ({
-      batch,
-      heartbeat
-    }: any) => {
+    const eachBatch = async ({ batch, heartbeat }: any) => {
       for (const message of batch.messages) {
-        offsetsConsumed.push(message.offset)
+        offsetsConsumed.push(message.offset);
       }
 
-      await heartbeat()
-    }
+      await heartbeat();
+    };
 
     consumer.run({
       eachBatch,
-    })
+    });
 
-    await waitForConsumerToJoinGroup(consumer)
-    await waitFor(() => offsetsConsumed.length === messages.length, { delay: 50 })
-    await waitForNextEvent(consumer, consumer.events.FETCH_START)
+    await waitForConsumerToJoinGroup(consumer);
+    await waitFor(() => offsetsConsumed.length === messages.length, {
+      delay: 50,
+    });
+    await waitForNextEvent(consumer, consumer.events.FETCH_START);
 
-    consumer.pause([{ topic: topicName }])
-    await producer.send({ acks: 1, topic: topicName, messages }) // trigger completion of fetch
+    consumer.pause([{ topic: topicName }]);
+    await producer.send({ acks: 1, topic: topicName, messages }); // trigger completion of fetch
 
-    await waitForNextEvent(consumer, consumer.events.FETCH)
+    await waitForNextEvent(consumer, consumer.events.FETCH);
 
     // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-    expect(offsetsConsumed.length).toEqual(messages.length)
-  })
+    expect(offsetsConsumed.length).toEqual(messages.length);
+  });
 
   // @ts-expect-error ts-migrate(2582) FIXME: Cannot find name 'describe'. Do you need to instal... Remove this comment to see the full error message
   describe('transactions', () => {
     // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-    testIfKafkaAtLeast_0_11('accepts messages from an idempotent producer', async () => {
-      cluster = createCluster()
-      producer = createProducer({
-        cluster,
-        createPartitioner: createModPartitioner,
-        logger: newLogger(),
-        transactionalId: `transactional-id-${secureRandom()}`,
-        idempotent: true,
-        maxInFlightRequests: 1,
-      })
-
-      consumer = createConsumer({
-        cluster,
-        groupId,
-        maxWaitTimeInMs: 100,
-        logger: newLogger(),
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-      jest.spyOn(cluster, 'refreshMetadataIfNecessary')
-
-      await consumer.connect()
-      await producer.connect()
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
-
-      const messagesConsumed: any = []
-      const idempotentMessages = generateMessages({ prefix: 'idempotent' })
-
-      consumer.run({
-        eachMessage: async (event: any) => messagesConsumed.push(event),
-      })
-      await waitForConsumerToJoinGroup(consumer)
-
-      await producer.sendBatch({
-        topicMessages: [{ topic: topicName, messages: idempotentMessages }],
-      })
-
-      const number = idempotentMessages.length
-      await waitForMessages(messagesConsumed, {
-        number,
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed).toHaveLength(idempotentMessages.length)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[0].message.value.toString()).toMatch(/value-idempotent-0/)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[99].message.value.toString()).toMatch(/value-idempotent-99/)
-    })
-
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-    testIfKafkaAtLeast_0_11('accepts messages from committed transactions', async () => {
-      cluster = createCluster()
-      producer = createProducer({
-        cluster,
-        createPartitioner: createModPartitioner,
-        logger: newLogger(),
-        transactionalId: `transactional-id-${secureRandom()}`,
-        maxInFlightRequests: 1,
-      })
-
-      consumer = createConsumer({
-        cluster,
-        groupId,
-        maxWaitTimeInMs: 100,
-        logger: newLogger(),
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-      jest.spyOn(cluster, 'refreshMetadataIfNecessary')
-
-      await consumer.connect()
-      await producer.connect()
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
-
-      const messagesConsumed: any = []
-
-      const messages1 = generateMessages({ prefix: 'txn1' })
-      const messages2 = generateMessages({ prefix: 'txn2' })
-      const nontransactionalMessages1 = generateMessages({ prefix: 'nontransactional1', number: 1 })
-      const nontransactionalMessages2 = generateMessages({ prefix: 'nontransactional2', number: 1 })
-
-      consumer.run({
-        eachMessage: async (event: any) => messagesConsumed.push(event),
-      })
-      await waitForConsumerToJoinGroup(consumer)
-
-      // We can send non-transaction messages
-      await producer.sendBatch({
-        topicMessages: [{ topic: topicName, messages: nontransactionalMessages1 }],
-      })
-
-      // We can run a transaction
-      const txn1 = await producer.transaction()
-      await txn1.sendBatch({
-        topicMessages: [{ topic: topicName, messages: messages1 }],
-      })
-      await txn1.commit()
-
-      // We can immediately run another transaction
-      const txn2 = await producer.transaction()
-      await txn2.sendBatch({
-        topicMessages: [{ topic: topicName, messages: messages2 }],
-      })
-      await txn2.commit()
-
-      // We can return to sending non-transaction messages
-      await producer.sendBatch({
-        topicMessages: [{ topic: topicName, messages: nontransactionalMessages2 }],
-      })
-
-      const number =
-        messages1.length +
-        messages2.length +
-        nontransactionalMessages1.length +
-        nontransactionalMessages2.length
-      await waitForMessages(messagesConsumed, {
-        number,
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[0].message.value.toString()).toMatch(/value-nontransactional1-0/)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[1].message.value.toString()).toMatch(/value-txn1-0/)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[number - 1].message.value.toString()).toMatch(
-        /value-nontransactional2-0/
-      )
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[number - 2].message.value.toString()).toMatch(/value-txn2-99/)
-    })
-
-    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
-    testIfKafkaAtLeast_0_11('does not receive aborted messages', async () => {
-      cluster = createCluster()
-      producer = createProducer({
-        cluster,
-        createPartitioner: createModPartitioner,
-        logger: newLogger(),
-        transactionalId: `transactional-id-${secureRandom()}`,
-        maxInFlightRequests: 1,
-      })
-
-      consumer = createConsumer({
-        cluster,
-        groupId,
-        maxWaitTimeInMs: 100,
-        logger: newLogger(),
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-      jest.spyOn(cluster, 'refreshMetadataIfNecessary')
-
-      await consumer.connect()
-      await producer.connect()
-      await consumer.subscribe({ topic: topicName, fromBeginning: true })
-
-      const messagesConsumed: any = []
-
-      const abortedMessages1 = generateMessages({ prefix: 'aborted-txn-1' })
-      const abortedMessages2 = generateMessages({ prefix: 'aborted-txn-2' })
-      const nontransactionalMessages = generateMessages({ prefix: 'nontransactional', number: 1 })
-      const committedMessages = generateMessages({ prefix: 'committed-txn', number: 10 })
-
-      consumer.run({
-        eachMessage: async (event: any) => messagesConsumed.push(event),
-      })
-      await waitForConsumerToJoinGroup(consumer)
-
-      const abortedTxn1 = await producer.transaction()
-      await abortedTxn1.sendBatch({
-        topicMessages: [{ topic: topicName, messages: abortedMessages1 }],
-      })
-      await abortedTxn1.abort()
-
-      await producer.sendBatch({
-        topicMessages: [{ topic: topicName, messages: nontransactionalMessages }],
-      })
-
-      const abortedTxn2 = await producer.transaction()
-      await abortedTxn2.sendBatch({
-        topicMessages: [{ topic: topicName, messages: abortedMessages2 }],
-      })
-      await abortedTxn2.abort()
-
-      const committedTxn = await producer.transaction()
-      await committedTxn.sendBatch({
-        topicMessages: [{ topic: topicName, messages: committedMessages }],
-      })
-      await committedTxn.commit()
-
-      const number = nontransactionalMessages.length + committedMessages.length
-      await waitForMessages(messagesConsumed, {
-        number,
-      })
-
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed).toHaveLength(11)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[0].message.value.toString()).toMatch(/value-nontransactional-0/)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[1].message.value.toString()).toMatch(/value-committed-txn-0/)
-      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-      expect(messagesConsumed[10].message.value.toString()).toMatch(/value-committed-txn-9/)
-    })
-
     testIfKafkaAtLeast_0_11(
-      'receives aborted messages for an isolation level of READ_UNCOMMITTED',
-      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+      'accepts messages from an idempotent producer',
       async () => {
-        const isolationLevel = ISOLATION_LEVEL.READ_UNCOMMITTED
+        cluster = createCluster();
+        producer = createProducer({
+          cluster,
+          createPartitioner: createModPartitioner,
+          logger: newLogger(),
+          transactionalId: `transactional-id-${secureRandom()}`,
+          idempotent: true,
+          maxInFlightRequests: 1,
+        });
 
-        cluster = createCluster({ isolationLevel })
+        consumer = createConsumer({
+          cluster,
+          groupId,
+          maxWaitTimeInMs: 100,
+          logger: newLogger(),
+        });
+
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
+        jest.spyOn(cluster, 'refreshMetadataIfNecessary');
+
+        await consumer.connect();
+        await producer.connect();
+        await consumer.subscribe({ topic: topicName, fromBeginning: true });
+
+        const messagesConsumed: any = [];
+        const idempotentMessages = generateMessages({ prefix: 'idempotent' });
+
+        consumer.run({
+          eachMessage: async (event: any) => messagesConsumed.push(event),
+        });
+        await waitForConsumerToJoinGroup(consumer);
+
+        await producer.sendBatch({
+          topicMessages: [{ topic: topicName, messages: idempotentMessages }],
+        });
+
+        const number = idempotentMessages.length;
+        await waitForMessages(messagesConsumed, {
+          number,
+        });
+
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed).toHaveLength(idempotentMessages.length);
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[0].message.value.toString()).toMatch(
+          /value-idempotent-0/
+        );
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[99].message.value.toString()).toMatch(
+          /value-idempotent-99/
+        );
+      }
+    );
+
+    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+    testIfKafkaAtLeast_0_11(
+      'accepts messages from committed transactions',
+      async () => {
+        cluster = createCluster();
         producer = createProducer({
           cluster,
           createPartitioner: createModPartitioner,
           logger: newLogger(),
           transactionalId: `transactional-id-${secureRandom()}`,
           maxInFlightRequests: 1,
-        })
+        });
+
+        consumer = createConsumer({
+          cluster,
+          groupId,
+          maxWaitTimeInMs: 100,
+          logger: newLogger(),
+        });
+
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
+        jest.spyOn(cluster, 'refreshMetadataIfNecessary');
+
+        await consumer.connect();
+        await producer.connect();
+        await consumer.subscribe({ topic: topicName, fromBeginning: true });
+
+        const messagesConsumed: any = [];
+
+        const messages1 = generateMessages({ prefix: 'txn1' });
+        const messages2 = generateMessages({ prefix: 'txn2' });
+        const nontransactionalMessages1 = generateMessages({
+          prefix: 'nontransactional1',
+          number: 1,
+        });
+        const nontransactionalMessages2 = generateMessages({
+          prefix: 'nontransactional2',
+          number: 1,
+        });
+
+        consumer.run({
+          eachMessage: async (event: any) => messagesConsumed.push(event),
+        });
+        await waitForConsumerToJoinGroup(consumer);
+
+        // We can send non-transaction messages
+        await producer.sendBatch({
+          topicMessages: [
+            { topic: topicName, messages: nontransactionalMessages1 },
+          ],
+        });
+
+        // We can run a transaction
+        const txn1 = await producer.transaction();
+        await txn1.sendBatch({
+          topicMessages: [{ topic: topicName, messages: messages1 }],
+        });
+        await txn1.commit();
+
+        // We can immediately run another transaction
+        const txn2 = await producer.transaction();
+        await txn2.sendBatch({
+          topicMessages: [{ topic: topicName, messages: messages2 }],
+        });
+        await txn2.commit();
+
+        // We can return to sending non-transaction messages
+        await producer.sendBatch({
+          topicMessages: [
+            { topic: topicName, messages: nontransactionalMessages2 },
+          ],
+        });
+
+        const number =
+          messages1.length +
+          messages2.length +
+          nontransactionalMessages1.length +
+          nontransactionalMessages2.length;
+        await waitForMessages(messagesConsumed, {
+          number,
+        });
+
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[0].message.value.toString()).toMatch(
+          /value-nontransactional1-0/
+        );
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[1].message.value.toString()).toMatch(
+          /value-txn1-0/
+        );
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[number - 1].message.value.toString()).toMatch(
+          /value-nontransactional2-0/
+        );
+        // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+        expect(messagesConsumed[number - 2].message.value.toString()).toMatch(
+          /value-txn2-99/
+        );
+      }
+    );
+
+    // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+    testIfKafkaAtLeast_0_11('does not receive aborted messages', async () => {
+      cluster = createCluster();
+      producer = createProducer({
+        cluster,
+        createPartitioner: createModPartitioner,
+        logger: newLogger(),
+        transactionalId: `transactional-id-${secureRandom()}`,
+        maxInFlightRequests: 1,
+      });
+
+      consumer = createConsumer({
+        cluster,
+        groupId,
+        maxWaitTimeInMs: 100,
+        logger: newLogger(),
+      });
+
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
+      jest.spyOn(cluster, 'refreshMetadataIfNecessary');
+
+      await consumer.connect();
+      await producer.connect();
+      await consumer.subscribe({ topic: topicName, fromBeginning: true });
+
+      const messagesConsumed: any = [];
+
+      const abortedMessages1 = generateMessages({ prefix: 'aborted-txn-1' });
+      const abortedMessages2 = generateMessages({ prefix: 'aborted-txn-2' });
+      const nontransactionalMessages = generateMessages({
+        prefix: 'nontransactional',
+        number: 1,
+      });
+      const committedMessages = generateMessages({
+        prefix: 'committed-txn',
+        number: 10,
+      });
+
+      consumer.run({
+        eachMessage: async (event: any) => messagesConsumed.push(event),
+      });
+      await waitForConsumerToJoinGroup(consumer);
+
+      const abortedTxn1 = await producer.transaction();
+      await abortedTxn1.sendBatch({
+        topicMessages: [{ topic: topicName, messages: abortedMessages1 }],
+      });
+      await abortedTxn1.abort();
+
+      await producer.sendBatch({
+        topicMessages: [
+          { topic: topicName, messages: nontransactionalMessages },
+        ],
+      });
+
+      const abortedTxn2 = await producer.transaction();
+      await abortedTxn2.sendBatch({
+        topicMessages: [{ topic: topicName, messages: abortedMessages2 }],
+      });
+      await abortedTxn2.abort();
+
+      const committedTxn = await producer.transaction();
+      await committedTxn.sendBatch({
+        topicMessages: [{ topic: topicName, messages: committedMessages }],
+      });
+      await committedTxn.commit();
+
+      const number = nontransactionalMessages.length + committedMessages.length;
+      await waitForMessages(messagesConsumed, {
+        number,
+      });
+
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+      expect(messagesConsumed).toHaveLength(11);
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+      expect(messagesConsumed[0].message.value.toString()).toMatch(
+        /value-nontransactional-0/
+      );
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+      expect(messagesConsumed[1].message.value.toString()).toMatch(
+        /value-committed-txn-0/
+      );
+      // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
+      expect(messagesConsumed[10].message.value.toString()).toMatch(
+        /value-committed-txn-9/
+      );
+    });
+
+    testIfKafkaAtLeast_0_11(
+      'receives aborted messages for an isolation level of READ_UNCOMMITTED',
+      // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
+      async () => {
+        const isolationLevel = ISOLATION_LEVEL.READ_UNCOMMITTED;
+
+        cluster = createCluster({ isolationLevel });
+        producer = createProducer({
+          cluster,
+          createPartitioner: createModPartitioner,
+          logger: newLogger(),
+          transactionalId: `transactional-id-${secureRandom()}`,
+          maxInFlightRequests: 1,
+        });
 
         consumer = createConsumer({
           cluster,
@@ -1179,153 +1282,157 @@ describe('Consumer', () => {
           maxWaitTimeInMs: 100,
           logger: newLogger(),
           isolationLevel,
-        })
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
-        jest.spyOn(cluster, 'refreshMetadataIfNecessary')
+        jest.spyOn(cluster, 'refreshMetadataIfNecessary');
 
-        await consumer.connect()
-        await producer.connect()
-        await consumer.subscribe({ topic: topicName, fromBeginning: true })
+        await consumer.connect();
+        await producer.connect();
+        await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
-        const messagesConsumed: any = []
+        const messagesConsumed: any = [];
 
-        const abortedMessages = generateMessages({ prefix: 'aborted-txn1' })
+        const abortedMessages = generateMessages({ prefix: 'aborted-txn1' });
 
         consumer.run({
           eachMessage: async (event: any) => messagesConsumed.push(event),
-        })
-        await waitForConsumerToJoinGroup(consumer)
+        });
+        await waitForConsumerToJoinGroup(consumer);
 
-        const abortedTxn1 = await producer.transaction()
+        const abortedTxn1 = await producer.transaction();
         await abortedTxn1.sendBatch({
           topicMessages: [{ topic: topicName, messages: abortedMessages }],
-        })
-        await abortedTxn1.abort()
+        });
+        await abortedTxn1.abort();
 
-        const number = 1
+        const number = 1;
         await waitForMessages(messagesConsumed, {
           number,
-        })
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed).toHaveLength(abortedMessages.length)
+        expect(messagesConsumed).toHaveLength(abortedMessages.length);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[0].message.value.toString()).toMatch(/value-aborted-txn1-0/)
+        expect(messagesConsumed[0].message.value.toString()).toMatch(
+          /value-aborted-txn1-0/
+        );
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[messagesConsumed.length - 1].message.value.toString()).toMatch(
-          /value-aborted-txn1-99/
-        )
+        expect(
+          messagesConsumed[messagesConsumed.length - 1].message.value.toString()
+        ).toMatch(/value-aborted-txn1-99/);
       }
-    )
+    );
 
     testIfKafkaAtLeast_0_11(
       'respects offsets sent by a committed transaction ("consume-transform-produce" flow)',
       // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
       async () => {
-        cluster = createCluster()
+        cluster = createCluster();
         producer = createProducer({
           cluster,
           logger: newLogger(),
           transactionalId: `transactional-id-${secureRandom()}`,
           maxInFlightRequests: 1,
-        })
+        });
 
         consumer = createConsumer({
           cluster,
           groupId,
           maxWaitTimeInMs: 100,
           logger: newLogger(),
-        })
+        });
 
-        await consumer.connect()
-        await producer.connect()
-        await consumer.subscribe({ topic: topicName, fromBeginning: true })
+        await consumer.connect();
+        await producer.connect();
+        await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
         // 1. Run consumer with "autoCommit=false"
 
-        let messagesConsumed: any = []
-        let uncommittedOffsetsPerMessage: any = []
-        let getCurrentUncommittedOffsets
+        let messagesConsumed: any = [];
+        let uncommittedOffsetsPerMessage: any = [];
+        let getCurrentUncommittedOffsets;
 
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         const eachBatch = async ({
           batch,
           uncommittedOffsets,
           heartbeat,
-          resolveOffset
+          resolveOffset,
         }: any) => {
           for (const message of batch.messages) {
-            messagesConsumed.push(message)
-            resolveOffset(message.offset)
-            uncommittedOffsetsPerMessage.push(uncommittedOffsets())
-            getCurrentUncommittedOffsets = uncommittedOffsets
+            messagesConsumed.push(message);
+            resolveOffset(message.offset);
+            uncommittedOffsetsPerMessage.push(uncommittedOffsets());
+            getCurrentUncommittedOffsets = uncommittedOffsets;
           }
 
-          await heartbeat()
-        }
+          await heartbeat();
+        };
 
         consumer.run({
           autoCommit: false,
           eachBatch,
-        })
-        await waitForConsumerToJoinGroup(consumer)
+        });
+        await waitForConsumerToJoinGroup(consumer);
 
         // 2. Produce messages and consume
 
-        const partition = 0
+        const partition = 0;
         const messages = generateMessages().map((message: any) => ({
           ...message,
-          partition
-        }))
+          partition,
+        }));
         await producer.send({
           acks: 1,
           topic: topicName,
           messages,
-        })
+        });
 
-        const number = messages.length
+        const number = messages.length;
         await waitForMessages(messagesConsumed, {
           number,
-        })
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/)
+        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[99].value.toString()).toMatch(/value-99/)
+        expect(messagesConsumed[99].value.toString()).toMatch(/value-99/);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(uncommittedOffsetsPerMessage).toHaveLength(messagesConsumed.length)
+        expect(uncommittedOffsetsPerMessage).toHaveLength(
+          messagesConsumed.length
+        );
 
         // 3. Send offsets in a transaction and commit
-        const txnToCommit = await producer.transaction()
+        const txnToCommit = await producer.transaction();
         await txnToCommit.sendOffsets({
           consumerGroupId: groupId,
           topics: uncommittedOffsetsPerMessage[97].topics,
-        })
-        await txnToCommit.commit()
+        });
+        await txnToCommit.commit();
 
         // Restart consumer
-        await consumer.stop()
-        messagesConsumed = []
-        uncommittedOffsetsPerMessage = []
+        await consumer.stop();
+        messagesConsumed = [];
+        uncommittedOffsetsPerMessage = [];
 
-        consumer.run({ eachBatch, autoCommit: false })
+        consumer.run({ eachBatch, autoCommit: false });
 
         // Assert we only consume the messages that were after the sent offset
         await waitForMessages(messagesConsumed, {
           number: 2,
-        })
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed).toHaveLength(2)
+        expect(messagesConsumed).toHaveLength(2);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[0].value.toString()).toMatch(/value-98/)
+        expect(messagesConsumed[0].value.toString()).toMatch(/value-98/);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[1].value.toString()).toMatch(/value-99/)
+        expect(messagesConsumed[1].value.toString()).toMatch(/value-99/);
 
-        const lastUncommittedOffsets = uncommittedOffsetsPerMessage.pop()
+        const lastUncommittedOffsets = uncommittedOffsetsPerMessage.pop();
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(getCurrentUncommittedOffsets()).toEqual(lastUncommittedOffsets)
+        expect(getCurrentUncommittedOffsets()).toEqual(lastUncommittedOffsets);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
         expect(getCurrentUncommittedOffsets()).toEqual({
           topics: [
@@ -1334,21 +1441,21 @@ describe('Consumer', () => {
               partitions: [{ partition: partition.toString(), offset: '100' }],
             },
           ],
-        })
+        });
 
-        const txn2ToCommit = await producer.transaction()
+        const txn2ToCommit = await producer.transaction();
         await txn2ToCommit.sendOffsets({
           consumerGroupId: groupId,
           topics: lastUncommittedOffsets.topics,
-        })
-        await txn2ToCommit.commit()
+        });
+        await txn2ToCommit.commit();
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
         expect(getCurrentUncommittedOffsets()).toEqual({
           topics: [],
-        })
+        });
       }
-    )
+    );
 
     testIfKafkaAtLeast_0_11(
       'does not respect offsets sent by an aborted transaction ("consume-transform-produce" flow)',
@@ -1356,13 +1463,13 @@ describe('Consumer', () => {
       async () => {
         cluster = createCluster({
           isolationLevel: ISOLATION_LEVEL.READ_COMMITTED,
-        })
+        });
         producer = createProducer({
           cluster,
           logger: newLogger(),
           transactionalId: `transactional-id-${secureRandom()}`,
           maxInFlightRequests: 1,
-        })
+        });
 
         consumer = createConsumer({
           cluster,
@@ -1370,110 +1477,119 @@ describe('Consumer', () => {
           maxWaitTimeInMs: 100,
           logger: newLogger(),
           isolationLevel: ISOLATION_LEVEL.READ_COMMITTED,
-        })
+        });
 
-        await consumer.connect()
-        await producer.connect()
-        await consumer.subscribe({ topic: topicName, fromBeginning: true })
+        await consumer.connect();
+        await producer.connect();
+        await consumer.subscribe({ topic: topicName, fromBeginning: true });
 
         // 1. Run consumer with "autoCommit=false"
 
-        let messagesConsumed: any = []
-        let uncommittedOffsetsPerMessage: any = []
-        let getCurrentUncommittedOffsets
+        let messagesConsumed: any = [];
+        let uncommittedOffsetsPerMessage: any = [];
+        let getCurrentUncommittedOffsets;
 
         // @ts-expect-error ts-migrate(2705) FIXME: An async function or method in ES5/ES3 requires th... Remove this comment to see the full error message
         const eachBatch = async ({
           batch,
           uncommittedOffsets,
           heartbeat,
-          resolveOffset
+          resolveOffset,
         }: any) => {
           for (const message of batch.messages) {
-            messagesConsumed.push(message)
-            resolveOffset(message.offset)
-            uncommittedOffsetsPerMessage.push(uncommittedOffsets())
-            getCurrentUncommittedOffsets = uncommittedOffsets
+            messagesConsumed.push(message);
+            resolveOffset(message.offset);
+            uncommittedOffsetsPerMessage.push(uncommittedOffsets());
+            getCurrentUncommittedOffsets = uncommittedOffsets;
           }
 
-          await heartbeat()
-        }
+          await heartbeat();
+        };
 
         consumer.run({
           autoCommit: false,
           eachBatch,
-        })
-        await waitForConsumerToJoinGroup(consumer)
+        });
+        await waitForConsumerToJoinGroup(consumer);
 
         // 2. Produce messages and consume
 
-        const partition = 0
+        const partition = 0;
         const messages = generateMessages().map((message: any) => ({
           ...message,
-          partition
-        }))
+          partition,
+        }));
         await producer.send({
           acks: 1,
           topic: topicName,
           messages,
-        })
+        });
 
         await waitFor(() => messagesConsumed.length >= messages.length, {
           ignoreTimeout: false,
           timeoutMessage: `Failed to consume all produced messages`,
-        })
-        await consumer.stop()
+        });
+        await consumer.stop();
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/)
+        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[99].value.toString()).toMatch(/value-99/)
+        expect(messagesConsumed[99].value.toString()).toMatch(/value-99/);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(uncommittedOffsetsPerMessage).toHaveLength(messagesConsumed.length)
+        expect(uncommittedOffsetsPerMessage).toHaveLength(
+          messagesConsumed.length
+        );
 
         // 3. Send offsets in a transaction and abort
-        const txnToAbort = await producer.transaction()
+        const txnToAbort = await producer.transaction();
         await txnToAbort.sendOffsets({
           consumerGroupId: groupId,
           topics: uncommittedOffsetsPerMessage[98].topics,
-        })
-        await txnToAbort.abort()
+        });
+        await txnToAbort.abort();
 
         // Restart consumer
-        messagesConsumed = []
-        uncommittedOffsetsPerMessage = []
+        messagesConsumed = [];
+        uncommittedOffsetsPerMessage = [];
 
         consumer.run({
           autoCommit: false,
           eachBatch,
-        })
+        });
 
         await waitFor(() => messagesConsumed.length >= 1, {
           ignoreTimeout: false,
-          timeoutMessage: 'Failed to consume any messages after transaction was aborted',
-        })
+          timeoutMessage:
+            'Failed to consume any messages after transaction was aborted',
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/)
+        expect(messagesConsumed[0].value.toString()).toMatch(/value-0/);
 
         await waitFor(() => messagesConsumed.length >= messages.length, {
           ignoreTimeout: false,
-          timeoutMessage: 'Failed to consume all messages after transaction was aborted',
-        })
+          timeoutMessage:
+            'Failed to consume all messages after transaction was aborted',
+        });
 
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(messagesConsumed[messagesConsumed.length - 1].value.toString()).toMatch(/value-99/)
+        expect(
+          messagesConsumed[messagesConsumed.length - 1].value.toString()
+        ).toMatch(/value-99/);
 
-        const lastUncommittedOffsets = uncommittedOffsetsPerMessage.pop()
+        const lastUncommittedOffsets = uncommittedOffsetsPerMessage.pop();
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
-        expect(getCurrentUncommittedOffsets()).toEqual(lastUncommittedOffsets)
+        expect(getCurrentUncommittedOffsets()).toEqual(lastUncommittedOffsets);
         // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'expect'.
         expect(getCurrentUncommittedOffsets()).toEqual({
           topics: [
-            { topic: topicName, partitions: [{ partition: partition.toString(), offset: '100' }] },
+            {
+              topic: topicName,
+              partitions: [{ partition: partition.toString(), offset: '100' }],
+            },
           ],
-        })
+        });
       }
-    )
-  })
-})
+    );
+  });
+});

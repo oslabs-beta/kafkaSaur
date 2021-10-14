@@ -1,3 +1,5 @@
+/** @format */
+
 // // @ts-expect-error ts-migrate(2304) FIXME: Cannot find name 'jest'.
 // jest.setTimeout(90000)
 
