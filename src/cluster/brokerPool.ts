@@ -1,3 +1,4 @@
+//deno-lint-ignore-file no-empty no-explicit-any no-unused-vars
 /** @format */
 
 import { Broker } from '../broker/index.ts';
@@ -6,6 +7,8 @@ import shuffle from '../utils/shuffle.ts';
 import arrayDiff from '../utils/arrayDiff.ts';
 import { KafkaJSBrokerNotFound, KafkaJSProtocolError } from '../errors.ts';
 
+import { BrokerMetadata, Logger, ApiVersions, BrokerOptions, RetryOptions } from '../../index.d.ts'
+
 const { keys, assign, values } = Object;
 const hasBrokerBeenReplaced = (broker: any, { host, port, rack }: any) =>
   broker.connection.host !== host ||
@@ -13,18 +16,18 @@ const hasBrokerBeenReplaced = (broker: any, { host, port, rack }: any) =>
   broker.connection.rack !== rack;
 
 export default class BrokerPool {
-  brokers: any;
+  brokers: Record<any, any>;
   connectionBuilder: any;
-  createBroker: any;
-  logger: any;
-  metadata: any;
-  metadataExpireAt: any;
-  metadataMaxAge: any;
+  createBroker: (options: any) => Broker;
+  logger: Logger;
+  metadata: BrokerMetadata | null;
+  metadataExpireAt: number | null;
+  metadataMaxAge: number | null;
   retrier: any;
-  rootLogger: any;
-  seedBroker: any;
-  supportAuthenticationProtocol: any;
-  versions: any;
+  rootLogger: Logger;
+  seedBroker: Broker | undefined;
+  supportAuthenticationProtocol: boolean | null;
+  versions: ApiVersions | null;
   /**
    * @param {object} options
    * @param {import("./connectionBuilder").ConnectionBuilder} options.connectionBuilder
@@ -43,7 +46,16 @@ export default class BrokerPool {
     authenticationTimeout,
     reauthenticationThreshold,
     metadataMaxAge,
-  }: any) {
+  }: 
+  {
+    connectionBuilder: any,
+    logger: Logger,
+    retry: RetryOptions,
+    allowAutoTopicCreation: boolean,
+    authenticationTimeout: number,
+    reauthenticationThreshold: number,
+    metadataMaxAge: number,
+  }) {
     this.rootLogger = logger;
     this.connectionBuilder = connectionBuilder;
     this.metadataMaxAge = metadataMaxAge || 0;
@@ -104,11 +116,13 @@ export default class BrokerPool {
       await this.createSeedBroker();
     }
 
-    return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
+    return this.retrier(async (bail: any, retryCount: number, retryTime: number) => {
       try {
+        //@ts-ignore - if undefined we'll error out
         await this.seedBroker.connect();
+        //@ts-ignore - if undefined we'll error out
         this.versions = this.seedBroker.versions;
-      } catch (e: any) {
+      } catch (e) {
         if (
           e.name === 'KafkaJSConnectionError' ||
           e.type === 'ILLEGAL_SASL_STATE'
@@ -152,7 +166,7 @@ export default class BrokerPool {
    * @param {string} destination.host
    * @param {number} destination.port
    */
-  removeBroker({ host, port }: any) {
+  removeBroker({ host, port }: {host: string, port: number}) {
     const removedBroker: any = values(this.brokers).find(
       (broker: any) =>
         broker.connection.host === host && broker.connection.port === port
@@ -161,7 +175,7 @@ export default class BrokerPool {
     if (removedBroker) {
       delete this.brokers[removedBroker.nodeId];
       this.metadataExpireAt = null;
-
+      //@ts-ignore - undefined ok
       if (this.seedBroker.nodeId === removedBroker.nodeId) {
         this.seedBroker = shuffle(values(this.brokers))[0];
       }
@@ -173,19 +187,22 @@ export default class BrokerPool {
    * @param {Array<String>} topics
    * @returns {Promise<null>}
    */
-  async refreshMetadata(topics: any) {
+  async refreshMetadata(topics: string[]) {
     const broker = await this.findConnectedBroker();
+    //@ts-ignore - undefined ok, this will only run if seedbroker is defined
     const { host: seedHost, port: seedPort } = this.seedBroker.connection;
-
     return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
       try {
         this.metadata = await broker.metadata(topics);
+        //@ts-ignore - undefined ok, this will only run if metadataMaxAge is defined
         this.metadataExpireAt = Date.now() + this.metadataMaxAge;
 
-        const replacedBrokers: any = [];
+        const replacedBrokers: any[] = [];
 
+        //@ts-ignore - undefined ok
         this.brokers = await this.metadata.brokers.reduce(
-          async (resultPromise: any, { nodeId, host, port, rack }: any) => {
+          async (resultPromise: any, 
+            { nodeId, host, port, rack }: any) => {
             const result = await resultPromise;
 
             if (result[nodeId]) {
@@ -199,7 +216,9 @@ export default class BrokerPool {
             }
 
             if (host === seedHost && port === seedPort) {
+              //@ts-ignore - undefined ok
               this.seedBroker.nodeId = nodeId;
+              //@ts-ignore - undefined ok
               this.seedBroker.connection.rack = rack;
               return assign(result, {
                 [nodeId]: this.seedBroker,
@@ -223,7 +242,7 @@ export default class BrokerPool {
           },
           this.brokers
         );
-
+        //@ts-ignore - undefined ok
         const freshBrokerIds = this.metadata.brokers
           .map(({ nodeId }: any) => `${nodeId}`)
           .sort();
@@ -244,7 +263,7 @@ export default class BrokerPool {
           ...brokerDisconnects,
           ...replacedBrokersDisconnects,
         ]);
-      } catch (e: any) {
+      } catch (e) {
         if (e.type === 'LEADER_NOT_AVAILABLE') {
           throw e;
         }
@@ -261,12 +280,15 @@ export default class BrokerPool {
    * @param {Array<String>} topics
    * @returns {Promise<null>}
    */
-  async refreshMetadataIfNecessary(topics: any) {
+
+  //deno-lint-ignore require-await
+  async refreshMetadataIfNecessary(topics: string[]) {
     const shouldRefresh =
       this.metadata == null ||
       this.metadataExpireAt == null ||
       Date.now() > this.metadataExpireAt ||
-      !topics.every((topic: any) =>
+      !topics.every((topic: string) =>
+        //@ts-ignore undefined ok
         this.metadata.topicMetadata.some(
           (topicMetadata: any) => topicMetadata.topic === topic
         )
@@ -349,15 +371,17 @@ export default class BrokerPool {
    * @param {Broker} broker
    * @returns {Promise<null>}
    */
+
+  //deno-lint-ignore require-await
   async connectBroker(broker: any) {
     if (broker.isConnected()) {
       return;
     }
 
-    return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
+    return this.retrier(async (bail: any, retryCount: number, retryTime: number) => {
       try {
         await broker.connect();
-      } catch (e: any) {
+      } catch (e) {
         if (
           e.name === 'KafkaJSConnectionError' ||
           e.type === 'ILLEGAL_SASL_STATE'

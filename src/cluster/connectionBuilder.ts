@@ -1,5 +1,8 @@
+//deno-lint-ignore-file no-explicit-any
 import Connection from '../network/connection.ts'
 import {KafkaJSConnectionError, KafkaJSNonRetriableError} from '../errors.ts'
+import { ISocketFactory, Logger } from '../../index.d.ts'
+import { InstrumentationEventEmitter } from '../instrumentation/emitter.ts'
 
 /**
  * @typedef {Object} ConnectionBuilder
@@ -36,7 +39,19 @@ export default({
   maxInFlightRequests,
   logger,
   instrumentationEmitter = null
-}: any) => {
+}: {
+  socketFactory: ISocketFactory
+  brokers: string[] | (()=>string[])
+  ssl: any
+  sasl: any
+  clientId: string
+  requestTimeout: number
+  enforceRequestTimeout: boolean
+  connectionTimeout: number
+  maxInFlightRequests: number
+  logger: Logger
+  instrumentationEmitter: InstrumentationEventEmitter | null
+}) => {
   let index = 0
 
   const getBrokers = async () => {
@@ -56,7 +71,7 @@ export default({
     let list
     try {
       list = await brokers()
-    } catch (e:any) {
+    } catch (e) {
       const wrappedError = new KafkaJSConnectionError(
         `Failed to connect: "config.brokers" threw: ${e.message}`
       )

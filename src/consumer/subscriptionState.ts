@@ -20,7 +20,7 @@ export class SubscriptionState {
    *
    * @param {Array<TopicPartitions>} topicPartitions Example: [{ topic: 'topic-name', partitions: [1, 2] }]
    */
-  assign(topicPartitions = []) {
+  assign(topicPartitions:any[] = []) {
     this.assignedPartitionsByTopic = topicPartitions.reduce(
       (assigned, { topic, partitions = [] }) => {
         return { ...assigned, [topic]: { topic, partitions } };
