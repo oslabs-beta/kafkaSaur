@@ -26,9 +26,11 @@ Getting Started
 https://deno.land/x/
 ```
 ### Prerequisites
- >deno - https://deno.land/manual/getting_started/installation
+ >Deno - https://deno.land/manual/getting_started/installation
  >
- >docker -https://www.docker.com/
+ >Apache Kafka - https://kafka.apache.org/
+ >
+ >Docker (for examples) -https://www.docker.com/
  
 
 
