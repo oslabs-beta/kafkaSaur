@@ -1,5 +1,9 @@
 
 [![deno version](https://img.shields.io/badge/version-v0.01-green)](https://deno.land/x)  
+[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/oslabs-beta/kafkaSaur)
+<a href="https://github.com/oslabs-beta/kafkaSaur/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/oslabs-beta/kafkaSaur"></a>
+<a href="https://github.com/oslabs-beta/kafkaSaur/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/oslabs-beta/kafkaSaur"></a>
+<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/oslabs-beta/kafkaSaur">
 <p align="center">
    <img src="https://github.com/oslabs-beta/kafkaSaur/blob/b8fdcfff957dd1bf9ca13973029e1f7d70165775/static_images/003365-vgrad.png" alt="Logo" >
     <p align="center">
@@ -74,7 +78,7 @@ const kafkasaur = new Kafkasaur({
 
 
 ## <a name="license"></a> License
-[![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/oslabs-beta/kafkaSaur)
+
 
 This product is licensed under the MIT License - see the LICENSE.md file for details.
 
