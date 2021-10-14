@@ -22,5 +22,7 @@ export default () =>
         return console.warn(message);
       case logLevel.DEBUG:
         return console.log(message);
+      case logLevel.DEMO:
+        return console.info(message)
     }
   };

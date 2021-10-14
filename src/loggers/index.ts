@@ -12,6 +12,7 @@ type LEVELS = {
   WARN: number;
   INFO: number;
   DEBUG: number;
+  DEMO: number
 };
 
 const LEVELS = {
@@ -19,7 +20,8 @@ const LEVELS = {
   ERROR: 1,
   WARN: 2,
   INFO: 4,
-  DEBUG: 5,
+  DEMO: 5,
+  DEBUG: 6
 };
 
 const createLevel =
@@ -39,7 +41,6 @@ const createLevel =
       log: assign(
         {
           timestamp: new Date().toISOString(),
-          logger: 'kafkajs',
           message,
         },
         extra
@@ -91,6 +92,13 @@ const createLogger = ({ level = LEVELS.INFO, logCreator }: any = {}) => {
       debug: createLevel(
         'DEBUG',
         LEVELS.DEBUG,
+        currentLogLevel,
+        namespace,
+        logFunction
+      ),
+      demo: createLevel(
+        'DEMO',
+        LEVELS.DEMO,
         currentLogLevel,
         namespace,
         logFunction

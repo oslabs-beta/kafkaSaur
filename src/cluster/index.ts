@@ -1,5 +1,5 @@
 /** @format */
-// deno-lint-ignore-file no-explicit-any
+// deno-lint-ignore-file no-explicit-any require-await
 
 import BrokerPool from './brokerPool.ts';
 import Lock from '../utils/lock.ts';
@@ -15,6 +15,7 @@ import {
   KafkaJSGroupCoordinatorNotFound,
 } from '../errors.ts';
 import COORDINATOR_TYPES from '../protocol/coordinatorTypes.ts';
+import {Logger, ISocketFactory, RetryOptions} from '../../index.d.ts'
 
 const { EARLIEST_OFFSET, LATEST_OFFSET } = Constants;
 const { keys } = Object;
@@ -28,12 +29,12 @@ export class Cluster {
   brokerPool: any;
   committedOffsetsByGroup: any;
   connectionBuilder: any;
-  isolationLevel: any;
-  logger: any;
+  isolationLevel: number;
+  logger: Logger;
   mutatingTargetTopics: any;
   retrier: any;
-  rootLogger: any;
-  targetTopics: any;
+  rootLogger: Logger;
+  targetTopics: Set<string>;
   /**
    * @param {Object} options
    * @param {Array<string>} options.brokers example: ['127.0.0.1:9092', '127.0.0.1:9094']
@@ -162,8 +163,9 @@ export class Cluster {
    * @public
    * @returns {Promise<import("../../types").BrokerMetadata>}
    */
+
   async metadata({ topics = [] } = {}) {
-    return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
+    return this.retrier(async (bail: any, retryCount: number, retryTime: number) => {
       try {
         await this.brokerPool.refreshMetadataIfNecessary(topics);
         return this.brokerPool.withBroker(async ({ broker }: any) =>
