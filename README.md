@@ -45,13 +45,17 @@ const kafkasaur = new Kafkasaur({
 })
 ```
 ## Features
-<br>
+
 - 🛠 Built with [TypeScript][Deno]
-<br>
+
 - 🎬 Producer
+
 -🍴 Consumer
+
 -🤝 interactive producer with consumer
+
 -💂 deno's built in security; No file, network, or environment access, unless explicitly enabled
+  
   
 ## Developers
 
