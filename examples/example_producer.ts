@@ -32,7 +32,6 @@ const createMessage = (num: number, dino: string) => ({
 })
 
 //counters for logging purposes
-let msgNumber = 0
 let requestNumber = 0
 
 //function for sending messages
@@ -58,7 +57,7 @@ const sendMessage = () => {
     )
 }
 
-//main function to be run
+//main function to be run in setinterval
 const run = async () => {
   await producer.connect()
   setInterval(sendMessage, 5000)
