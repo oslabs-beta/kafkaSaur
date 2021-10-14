@@ -14,7 +14,7 @@ const kafka = new Kafka({
 
 //declare topic name
 const topic = 'topic-test'
-//initialize producer and group ID
+//initialize consumer and group ID
 const consumer = kafka.consumer({ groupId: 'test-group' })
 
 //main function to be run
@@ -23,18 +23,8 @@ const run = async () => {
   await consumer.connect()
   //subscribe to topic
   await consumer.subscribe({ topic, fromBeginning: true })
-  //run a console.log on eachMessage
-  // await consumer.run({
-  //   //deno-lint-ignore require-await
-  //   eachMessage: async ({ message }: any) => {
-  //     console.log(message.key.toString(), message.value.toString())
-  //   },
-  // })
+  //run eachMessage function
   await consumer.run({
-    // eachBatch: async ({ batch }) => {
-    //   console.log(batch)
-    // },
-    //deno-lint-ignore require-await
     eachMessage: async ({ topic, partition, message }: any) => {
       //msgNumber++
       kafka.logger().info('Message processed', {
