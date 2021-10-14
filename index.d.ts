@@ -969,6 +969,20 @@ export type ConsumerRunConfig = {
   eachMessage?: null | ((payload: EachMessagePayload) => Promise<void>);
 };
 
+export interface RunnerOptions {
+  logger: Logger
+  consumerGroup: any
+  instrumentationEmitter: any
+  eachBatchAutoResolve: boolean
+  partitionsConsumedConcurrently: number
+  eachBatch: null | ((payload: EachBatchPayload) => Promise<void>);
+  eachMessage: null | ((payload: EachMessagePayload) => Promise<void>);
+  heartbeatInterval: number
+  onCrash: null | ((reason: Error) => void);
+  retry: any
+  autoCommit: boolean
+}
+
 export type ConsumerSubscribeTopic = {
   topic: string | RegExp;
   fromBeginning?: boolean;
@@ -995,6 +1009,29 @@ export type Consumer = {
   logger(): Logger;
   readonly events: ConsumerEvents;
 };
+
+export interface ConsumerGroupOptions {
+  retry: any;
+  cluster: Cluster;
+  groupId: string;
+  topics: string[];
+  topicConfigurations: {[topic: string]: { fromBeginning: boolean }};
+  logger: Logger;
+  instrumentationEmitter: any;
+  assigners: Assigner[]
+  sessionTimeout: number;
+  rebalanceTimeout: number;
+  maxBytesPerPartition: number;
+  minBytes: number;
+  maxBytes: number;
+  maxWaitTimeInMs: any;
+  autoCommit: boolean;
+  autoCommitInterval: number | null;
+  autoCommitThreshold: number | null;
+  isolationLevel: number;
+  rackId: string;
+  metadataMaxAge: number;
+}
 
 export interface produceRequest {
   request: {

@@ -1,3 +1,4 @@
+//deno-lint-ignore-file no-explicit-any require-await
 /** @format */
 
 import flatten from '../utils/flatten.ts';
@@ -15,6 +16,12 @@ import { SubscriptionState } from './subscriptionState.ts';
 import { events } from './instrumentationEvents.ts';
 
 import { MemberAssignment } from './assignerProtocol.ts';
+
+import { Logger, Assigner, GroupMember, ConsumerGroupOptions } from '../../index.d.ts'
+
+import { Broker } from '../broker/index.ts'
+import { Cluster } from '../cluster/index.ts'
+
 
 import {
   KafkaJSError,
@@ -35,7 +42,7 @@ const STALE_METADATA_ERRORS = [
   'UNKNOWN_TOPIC_OR_PARTITION',
 ];
 
-const isRebalancing = (e: any) =>
+const isRebalancing = (e: KafkaJSError) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
 const PRIVATE = {
@@ -47,40 +54,40 @@ const PRIVATE = {
 
 export class ConsumerGroup {
   [index: string]: any
-  cluster: any;
-  groupId: any;
-  topics: any;
-  topicsSubscribed: any;
-  topicConfigurations: any;
-  logger: any;
+  cluster: Cluster;
+  groupId: string;
+  topics: string[]
+  topicsSubscribed: string[]
+  topicConfigurations: {[topic: string]: { fromBeginning: boolean }};
+  logger: Logger
   instrumentationEmitter: any;
   retrier: any;
-  assigners: any;
-  sessionTimeout: any;
-  rebalanceTimeout: any;
-  maxBytesPerPartition: any;
-  minBytes: any;
-  maxBytes: any;
+  assigners: Assigner[];
+  sessionTimeout: number;
+  rebalanceTimeout: number;
+  maxBytesPerPartition: number;
+  minBytes: number;
+  maxBytes: number;
   maxWaitTimeInMs: any;
-  autoCommit: any;
-  autoCommitInterval: any;
-  autoCommitThreshold: any;
-  isolationLevel: any;
-  rackId: any;
-  metadataMaxAge: any;
-  maxWaitTime: any;
-  seekOffset: any;
-  coordinator: any;
-  generationId: any;
-  leaderId: any;
-  memberId: any;
-  members: any;
-  groupProtocol: any;
-  partitionsPerSubscribedTopic: any;
-  offsetManager: any;
-  subscriptionState: any;
+  autoCommit: boolean;
+  autoCommitInterval: number | null;
+  autoCommitThreshold: number | null;
+  isolationLevel: number;
+  rackId: string;
+  metadataMaxAge: number;
+  maxWaitTime: number;
+  seekOffset: SeekOffsets;
+  coordinator: Broker | null;
+  generationId: number | null;
+  leaderId: string | null;
+  memberId: string | null;
+  members: GroupMember[] | null;
+  groupProtocol: string | null;
+  partitionsPerSubscribedTopic: Map<any, any> | null;
+  offsetManager: OffsetManager | null;
+  subscriptionState: SubscriptionState | null;
   preferredReadReplicasPerTopicPartition: any;
-  lastRequest: any;
+  lastRequest: number;
 
   constructor({
     retry,
@@ -103,9 +110,9 @@ export class ConsumerGroup {
     isolationLevel,
     rackId,
     metadataMaxAge,
-  }: any) {
+  }: ConsumerGroupOptions) {
     /** @type {import("../../types").Cluster} */
-    this.cluster = cluster;
+    this.cluster = cluster as Cluster;
     this.groupId = groupId;
     this.topics = topics;
     this.topicsSubscribed = topics;
@@ -160,7 +167,7 @@ export class ConsumerGroup {
             memberId,
             groupGenerationId: generationId,
           };
-
+          //@ts-ignore undefined ok
           await this.coordinator.heartbeat(payload);
           this.instrumentationEmitter.emit(HEARTBEAT, payload);
           this.lastRequest = Date.now();
@@ -181,10 +188,10 @@ export class ConsumerGroup {
 
   async [PRIVATE.JOIN]() {
     const { groupId, sessionTimeout, rebalanceTimeout } = this;
-
+    //@ts-ignore this will return broker
     this.coordinator = await this.cluster.findGroupCoordinator({ groupId });
-
-    const groupData = await this.coordinator.joinGroup({
+    //@ts-ignore - protocoltype will be provided by default
+    const groupData = await this.coordinator.joinGroup({ 
       groupId,
       sessionTimeout,
       rebalanceTimeout,
@@ -206,13 +213,13 @@ export class ConsumerGroup {
   async leave() {
     const { groupId, memberId } = this;
     if (memberId) {
-      await this.coordinator.leaveGroup({ groupId, memberId });
+      await this.coordinator!.leaveGroup({ groupId, memberId });
       this.memberId = null;
     }
   }
 
   async [PRIVATE.SYNC]() {
-    let assignment = [];
+    let assignment:any[] = [];
     const {
       groupId,
       generationId,
@@ -242,6 +249,7 @@ export class ConsumerGroup {
       }
 
       await this.cluster.refreshMetadata();
+      //@ts-ignore null ok for members
       assignment = await assigner.assign({ members, topics: topicsSubscribed });
 
       this.logger.debug('Group assignment', {
@@ -256,9 +264,12 @@ export class ConsumerGroup {
     // Keep track of the partitions for the subscribed topics
     this.partitionsPerSubscribedTopic =
       this.generatePartitionsPerSubscribedTopic();
-    const { memberAssignment } = await this.coordinator.syncGroup({
+    
+    const { memberAssignment } = await this.coordinator!.syncGroup({
       groupId,
+      //@ts-ignore null ok for params
       generationId,
+      //@ts-ignore null ok for params
       memberId,
       groupAssignment: assignment,
     });
@@ -336,7 +347,7 @@ export class ConsumerGroup {
     }
 
     this.topics = currentMemberAssignment.map(({ topic }: any) => topic);
-    this.subscriptionState.assign(currentMemberAssignment);
+    this.subscriptionState!.assign(currentMemberAssignment);
     this.offsetManager = new OffsetManager({
       cluster: this.cluster,
       topicConfigurations: this.topicConfigurations,
@@ -385,7 +396,7 @@ export class ConsumerGroup {
 
         this.instrumentationEmitter.emit(GROUP_JOIN, payload);
         this.logger.info('Consumer has joined the group', payload);
-      } catch (e: any) {
+      } catch (e) {
         if (isRebalancing(e)) {
           // Rebalance in progress isn't a retriable protocol error since the consumer
           // has to go through find coordinator and join again before it can
@@ -403,14 +414,14 @@ export class ConsumerGroup {
    * @param {import("../../types").TopicPartition} topicPartition
    */
   resetOffset({ topic, partition }: any) {
-    this.offsetManager.resetOffset({ topic, partition });
+    this.offsetManager!.resetOffset({ topic, partition });
   }
 
   /**
    * @param {import("../../types").TopicPartitionOffset} topicPartitionOffset
    */
   resolveOffset({ topic, partition, offset }: any) {
-    this.offsetManager.resolveOffset({ topic, partition, offset });
+    this.offsetManager!.resolveOffset({ topic, partition, offset });
   }
 
   /**
@@ -428,7 +439,7 @@ export class ConsumerGroup {
     this.logger.info(`Pausing fetching from ${topicPartitions.length} topics`, {
       topicPartitions,
     });
-    this.subscriptionState.pause(topicPartitions);
+    this.subscriptionState!.pause(topicPartitions);
   }
 
   resume(topicPartitions: any) {
@@ -438,27 +449,27 @@ export class ConsumerGroup {
         topicPartitions,
       }
     );
-    this.subscriptionState.resume(topicPartitions);
+    this.subscriptionState!.resume(topicPartitions);
   }
 
   assigned() {
-    return this.subscriptionState.assigned();
+    return this.subscriptionState!.assigned();
   }
 
   paused() {
-    return this.subscriptionState.paused();
+    return this.subscriptionState!.paused();
   }
 
   async commitOffsetsIfNecessary() {
-    await this.offsetManager.commitOffsetsIfNecessary();
+    await this.offsetManager!.commitOffsetsIfNecessary();
   }
 
   async commitOffsets(offsets: any) {
-    await this.offsetManager.commitOffsets(offsets);
+    await this.offsetManager!.commitOffsets(offsets);
   }
 
   uncommittedOffsets() {
-    return this.offsetManager.uncommittedOffsets();
+    return this.offsetManager!.uncommittedOffsets();
   }
 
   async heartbeat({ interval }: any) {
@@ -482,11 +493,11 @@ export class ConsumerGroup {
           memberId: this.memberId,
           seek: seekEntry,
         });
-        await this.offsetManager.seek(seekEntry);
+        await this.offsetManager!.seek(seekEntry);
       }
 
-      const pausedTopicPartitions = this.subscriptionState.paused();
-      const activeTopicPartitions = this.subscriptionState.active();
+      const pausedTopicPartitions = this.subscriptionState!.paused();
+      const activeTopicPartitions = this.subscriptionState!.active();
 
       const activePartitions = flatten(
         activeTopicPartitions.map(({ partitions }: any) => partitions)
@@ -509,7 +520,7 @@ export class ConsumerGroup {
         return BufferedAsyncIterator([]);
       }
 
-      await this.offsetManager.resolveOffsets();
+      await this.offsetManager!.resolveOffsets();
 
       this.logger.debug(
         `Fetching from ${activePartitions.length} partitions for ${activeTopics.length} out of ${topics.length} topics`,
@@ -527,7 +538,7 @@ export class ConsumerGroup {
         );
 
         const nodeIds = keys(partitionsPerNode);
-        const committedOffsets = this.offsetManager.committedOffsets();
+        const committedOffsets = this.offsetManager!.committedOffsets();
 
         for (const nodeId of nodeIds) {
           const partitions = partitionsPerNode[nodeId]
@@ -550,7 +561,7 @@ export class ConsumerGroup {
             })
             .map((partition: any) => ({
               partition,
-              fetchOffset: this.offsetManager
+              fetchOffset: this.offsetManager!
                 .nextOffset(topicPartition.topic, partition)
                 .toString(),
               maxBytes: maxBytesPerPartition,
@@ -591,7 +602,7 @@ export class ConsumerGroup {
               .filter(
                 (partitionData: any) =>
                   !this.seekOffset.has(topicName, partitionData.partition) &&
-                  !this.subscriptionState.isPaused(
+                  !this.subscriptionState!.isPaused(
                     topicName,
                     partitionData.partition
                   )
@@ -745,7 +756,7 @@ export class ConsumerGroup {
         memberId: this.memberId,
       });
 
-      await this.offsetManager.setDefaultOffset({
+      await this.offsetManager!.setDefaultOffset({
         topic: e.topic,
         partition: e.partition,
       });

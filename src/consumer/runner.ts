@@ -1,6 +1,6 @@
-/** @format */
+//deno-lint-ignore-file no-explicit-any require-await
 
-//import { EventEmitter } from 'events'
+/** @format */
 import { EventEmitter } from 'https://deno.land/std@0.110.0/node/events.ts';
 import Long from '../utils/long.ts';
 import createRetry from '../retry/index.ts';
@@ -8,6 +8,8 @@ import limitConcurrency from '../utils/concurrency.ts';
 import { KafkaJSError } from '../errors.ts';
 import barrier from './barrier.ts';
 import { events } from './instrumentationEvents.ts';
+import { EachBatchPayload, EachMessagePayload, Logger, RunnerOptions } from '../../index.d.ts'
+
 const {
   FETCH,
   FETCH_START,
@@ -16,29 +18,29 @@ const {
   REBALANCING,
 } = events;
 
-const isRebalancing = (e: any) =>
+const isRebalancing = (e: KafkaJSError) =>
   e.type === 'REBALANCE_IN_PROGRESS' || e.type === 'NOT_COORDINATOR_FOR_GROUP';
 
 const isKafkaJSError = (e: any) => e instanceof KafkaJSError;
-const isSameOffset = (offsetA: any, offsetB: any) =>
+const isSameOffset = (offsetA: Long, offsetB: Long) =>
   Long.fromValue(offsetA).equals(Long.fromValue(offsetB));
 const CONSUMING_START = 'consuming-start';
 const CONSUMING_STOP = 'consuming-stop';
 
 export class Runner extends EventEmitter {
   _consuming: any;
-  autoCommit: any;
+  autoCommit: boolean;
   consumerGroup: any;
-  eachBatch: any;
-  eachBatchAutoResolve: any;
-  eachMessage: any;
+  eachBatch: null | ((payload: EachBatchPayload) => Promise<void>);
+  eachBatchAutoResolve: boolean;
+  eachMessage: null | ((payload: EachMessagePayload) => Promise<void>);
   //emit: any;
-  heartbeatInterval: any;
+  heartbeatInterval: number;
   instrumentationEmitter: any;
-  logger: any;
-  onCrash: any;
+  logger: Logger;
+  onCrash: null | ((reason: Error) => void);
   once: any;
-  partitionsConsumedConcurrently: any;
+  partitionsConsumedConcurrently: number;
   retrier: any;
   running: any;
   /**
@@ -67,7 +69,7 @@ export class Runner extends EventEmitter {
     onCrash,
     retry,
     autoCommit = true,
-  }: any) {
+  }: RunnerOptions) {
     super();
     this.logger = logger.namespace('Runner');
     this.consumerGroup = consumerGroup;
@@ -125,7 +127,7 @@ export class Runner extends EventEmitter {
       this.running = true;
       this.scheduleFetch();
     } catch (e) {
-      this.onCrash(e);
+      this.onCrash!(e);
     }
   }
 
@@ -174,7 +176,7 @@ export class Runner extends EventEmitter {
       }
 
       try {
-        await this.eachMessage({ topic, partition, message });
+        await this.eachMessage!({ topic, partition, message });
       } catch (e: any) {
         if (!isKafkaJSError(e)) {
           this.logger.error(`Error when calling eachMessage`, {
@@ -206,7 +208,7 @@ export class Runner extends EventEmitter {
     const lastFilteredMessage = batch.messages[batch.messages.length - 1];
 
     try {
-      await this.eachBatch({
+      await this.eachBatch!({
         batch,
         resolveOffset: (offset: any) => {
           /**
@@ -347,7 +349,7 @@ export class Runner extends EventEmitter {
     const enqueuedTasks = [];
 
     while (true) {
-      const result = iterator.next();
+      const result = iterator!.next();
 
       if (result.done) {
         break;
@@ -531,10 +533,10 @@ export class Runner extends EventEmitter {
       return;
     }
 
-    return this.retrier(async (bail: any, retryCount: any, retryTime: any) => {
+    return this.retrier(async (bail: any, retryCount: number, retryTime: number) => {
       try {
         await this.consumerGroup.commitOffsets(offsets);
-      } catch (e: any) {
+      } catch (e) {
         if (!this.running) {
           this.logger.debug('consumer not running, exiting', {
             error: e.message,
