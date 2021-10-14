@@ -1,10 +1,10 @@
 
 type defaultObj = {
-  maxRetryTime: Number;
-  initialRetryTime: Number;
-  factor: Number; // randomization factor
-  multiplier: Number; // exponential factor
-  retries: Number;
+  maxRetryTime: number;
+  initialRetryTime: number;
+  factor: number; // randomization factor
+  multiplier: number; // exponential factor
+  retries: number;
 }
 
 const defaultObj = {

@@ -1,3 +1,4 @@
+//deno-lint-ignore-file no-explicit-any no-unused-vars
 /** @format */
 
 import { KafkaJSNumberOfRetriesExceeded } from '../errors.ts';

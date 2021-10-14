@@ -85,17 +85,17 @@ export default ({
 }: 
 {
   cluster: any;
-  groupId: string;
+  groupId: string | undefined;
   retry: any;
   logger: Logger;
-  partitionAssigners: PartitionAssigner[];
-  sessionTimeout: number;
-  rebalanceTimeout: number;
-  heartbeatInterval: number;
-  maxBytesPerPartition: number;
-  minBytes: number;
-  maxBytes: number;
-  maxWaitTimeInMs: number;
+  partitionAssigners: PartitionAssigner[] | undefined;
+  sessionTimeout: number | undefined;
+  rebalanceTimeout: number | undefined;
+  heartbeatInterval: number | undefined;
+  maxBytesPerPartition: number | undefined;
+  minBytes: number | undefined;
+  maxBytes: number | undefined;
+  maxWaitTimeInMs: number | undefined;
   isolationLevel: any
   rackId: string
   instrumentationEmitter: any
