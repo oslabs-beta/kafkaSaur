@@ -50,11 +50,11 @@ const kafkasaur = new Kafkasaur({
 
 - 🎬 Producer
 
--🍴 Consumer
+- 🍴 Consumer
 
--🤝 interactive producer with consumer
+- 🤝 interactive producer with consumer
 
--💂 deno's built in security; No file, network, or environment access, unless explicitly enabled
+- 💂 deno's built in security; No file, network, or environment access, unless explicitly enabled
   
   
 ## Developers
