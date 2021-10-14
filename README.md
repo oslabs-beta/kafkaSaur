@@ -26,10 +26,9 @@
  - [Features](#features)
  - [Getting Started](#getting-started)
     - [Usage](#usage)
-- [Developers](#Developers)  
-  
-- [License](#license)
+- [Developers](#developers)  
 - [Acknowledgements](#acknowledgements)
+- [License](#license)
 
 ## <a name="about"></a> About the Project
  KafkaSaur an Apache Kafka client for deno 
@@ -78,7 +77,7 @@ const kafkasaur = new Kafkasaur({
 If you'd like to contribute and help grow the Deno community, just reach out to one of us via LinkedIn or write some code, and make a PR here! We're super excited about getting the conversation started, and working to bring Kafka to Deno!
 
 
-## Developers
+## <a name="developers"></a> Developers
 
 <table align="center">
   <tr>
@@ -91,6 +90,12 @@ If you'd like to contribute and help grow the Deno community, just reach out to 
 
 
 
+### <a name="acknowledgements"></a> Acknowledgements
+
+- [Tommy Brunn](https://github.com/Nevon) - for his guidance and for trailblazing with KafkaJS
+- [Ryan Dahl](https://github.com/ry) - for building an awesome community with Node.js and then leveling it up even further with Deno
+- [Franz Kafka](https://en.wikipedia.org/wiki/Franz_Kafka) - for making us all remember, we could just be cockroaches. 
+
 
 ## <a name="license"></a> License
 
@@ -101,9 +106,7 @@ This is an open source product.
 
 This product is accelerated by [OS Labs](https://opensourcelabs.io/).
 
-### <a name="acknowledgements"></a> Acknowledgements
+Apache Kafka and Kafka are either registered trademarks or trademarks of The Apache Software Foundation in the United States and other countries. KafkaJS has no affiliation with the Apache Software Foundation.
 
-## Feedback
 
-If you have any feedback, please reach out to us
 
