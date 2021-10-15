@@ -51,12 +51,67 @@ https://deno.land/x/
 docker-compose up
 ```
 ```typescript
+//producer example
 import {Kafkasaur} from "https://deno.land/x/kafkasaur/index.ts"
 
-const kafkasaur = new Kafkasaur({
-  clientId: 'my-app',
-  brokers: ['kafka1:9092']
+const kafka = new Kafkasaur({
+  clientId: 'example-producer',
+  brokers: ['localhost:9092']
 })
+
+const topic = 'topic-test';
+
+const producer = kafka.producer();
+
+const testmessage = {
+  key: 'key',
+  value: 'hello there',
+  headers: {'correlation-id': `${Date.now()}`}
+}
+
+const messages: object[] = [];
+messages.push(testmessage)
+
+const sendMessage = () => {
+  producer.send({
+    topic,
+    messages
+  })
+}
+
+const run = async() => {
+  await producer.connect();
+  sendMessage();
+}
+
+run()
+```
+```
+```typescript
+//consumer example
+import {Kafkasaur} from "https://deno.land/x/kafkasaur/index.ts"
+
+const kafka = new Kafkasaur({
+  clientId: 'example-consumer',
+  brokers: ['localhost:9092']
+})
+
+const topic = 'topic-test';
+
+const consumer = kafka.consumer({ groupId: 'test-group' })
+
+const run = async () => {
+  await consumer.connect()
+  await consumer.subscribe({ topic, fromBeginning: true })
+  
+  await consumer.run({
+    eachMessage: async (message: any) => {
+      console.log(message.value.toString())
+    },
+  })
+}
+
+run()
 ```
 ## Features
 
