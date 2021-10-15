@@ -9,7 +9,7 @@
 
 <div align="center">
    
-[![deno version](https://img.shields.io/badge/version-v0.01-green)](https://deno.land/x)  
+[![deno version](https://img.shields.io/badge/version-v0.01-green)](https://deno.land/x/kafkasaur@v0.0.2)  
 [![license](https://img.shields.io/badge/license-MIT-blue)](https://github.com/oslabs-beta/kafkaSaur)
 <a href="https://github.com/oslabs-beta/kafkaSaur/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/oslabs-beta/kafkaSaur"></a>
 <a href="https://github.com/oslabs-beta/kafkaSaur/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/oslabs-beta/kafkaSaur"></a>
