@@ -35,7 +35,7 @@
 ### <a name="getting-started"></a>
 Getting Started
 ```sh
-https://deno.land/x/
+https://deno.land/x/kafkasaur@v0.0.2
 ```
 ### Prerequisites
  >Deno - https://deno.land/manual/getting_started/installation
