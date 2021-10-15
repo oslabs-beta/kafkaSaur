@@ -86,7 +86,7 @@ const run = async() => {
 
 run()
 ```
-```
+
 ```typescript
 //consumer example
 import {Kafkasaur} from "https://deno.land/x/kafkasaur/index.ts"
