@@ -1,18 +1,19 @@
-import {KafkaJSNotImplemented} from '../errors.ts'
+import { KafkaJSNotImplemented } from '../errors.ts'
 import { EventEmitter } from "https://deno.land/std@0.110.0/node/events.ts";
-import {Buffer} from "https://deno.land/std@0.110.0/node/buffer.ts";
-import {iter} from 'https://deno.land/std@0.110.0/io/util.ts'
+import { Buffer } from "https://deno.land/std@0.110.0/node/buffer.ts";
+import { iter } from 'https://deno.land/std@0.110.0/io/util.ts'
 
-export class Client extends EventEmitter{
+export class CustomSocket extends EventEmitter {
   conn?: Deno.Conn;
-  isOpen: boolean = false;
+  isOpen = false;
+  //TODO - options should be typed as Deno.ConnectOptions, but need to refactor ssl
+  //deno-lint-ignore no-explicit-any
   options: any
-  ssl: any
 
   constructor(options?: any) {
     super();
     this.options = {
-      hostName: options?.hostName || 'localhost',
+      hostname: options?.hostname || 'localhost',
       port: options?.port || 9899,
       transport: options?.transport || "tcp",
       ssl: options?.ssl || null
@@ -22,7 +23,7 @@ export class Client extends EventEmitter{
   
   async connect() {
     if (this.options.ssl) {
-      //Note: SSL functionality is currently not implemented correctly!
+      //Note: SSL functionality is currently not implemented correctly! Uncomment below to attempt.
       throw new KafkaJSNotImplemented('SSL functionality is currently not implemented');
       // const newOptions = {hostname: this.options.hostName, port: this.options.port, certFile: this.options.ssl.certFile}
       // const conn = await Deno.connectTls(newOptions)
@@ -48,18 +49,14 @@ export class Client extends EventEmitter{
         this.emit('data', buffer)
       }
       this.close();
-    } catch (e: any) {
-      if (e instanceof Deno.errors.BadResource) {
-        this.close();
-      } else {
-        this.emit('error', this, e);
-        this.close();
-      }
+    } catch (e) {
+      this.emit('error', this, e);
+      this.close();
     }
   }
 
   async write(data: Buffer): Promise<number> {
-    let write = await this.conn?.write(data);
+    const write = await this.conn?.write(data);
    
 	  return Promise.resolve(<number>write)
   }
