@@ -9,7 +9,7 @@
 
 <div align="center">
    
-[![deno version](https://img.shields.io/badge/version-v0.01-green)](https://deno.land/x/kafkasaur@v0.0.2)  
+<a href=‘https://deno.land/x/kafkasaur@v0.0.3’><img src=‘https://img.shields.io/badge/version-v0.01-green’ /></a> 
 <a href="https://github.com/oslabs-beta/kafkaSaur"><img src="https://img.shields.io/badge/license-MIT-blue"/></a>
 <a href="https://github.com/oslabs-beta/kafkaSaur/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/oslabs-beta/kafkaSaur"></a>
 <a href="https://github.com/oslabs-beta/kafkaSaur/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/oslabs-beta/kafkaSaur"></a>
@@ -48,9 +48,19 @@ https://deno.land/x/kafkasaur@v0.0.3
 
 
 #### <a name="usage"></a> Usage
+To run examples initiate Docker containers included in yaml file:
 ```sh
 docker-compose up
 ```
+Then run example producer/consumer files, in seperate terminals, with the following commands:
+```sh
+deno run --allow-all --unstable examples/example_producer.ts
+deno run --allow-all --unstable examples/example_consumer.ts
+
+```
+Your two terminals (one Consuming, and one Producing) will now interact with the Broker and begin consuming and producing respectively.
+
+With the Client imported into your application, you can write the producer/consumer logic like this:
 ```typescript
 //producer example
 import {Kafkasaur} from "https://deno.land/x/kafkasaur/index.ts"
@@ -114,6 +124,16 @@ const run = async () => {
 
 run()
 ```
+
+To run the instances of your Consumer/Producer be sure to pass the flags 
+```sh
+--allow-all
+```
+and
+```sh
+--unstable
+```
+when issuing your deno run command. This ensures that Deno as the proper configuration to communicate with the Broker, and to log any errors.
 ## Features
 
 - 🛠 Built with [TypeScript][Deno]
