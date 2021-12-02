@@ -10,7 +10,7 @@ const kafka = new Kafka({
   clientId: 'example_producer',
 })
 
-const topic = 'adam-test-1'
+const topic = 'adam-test-3'
 //intialize producer
 const producer = kafka.producer()
 
@@ -50,7 +50,7 @@ const sendMessage = () => {
 
 const run = async () => {
   await producer.connect()
-  setInterval(sendMessage, 1)
+  setInterval(sendMessage, 5000)
 }
 
 run().catch((e)=>console.log(e))

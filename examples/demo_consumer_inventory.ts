@@ -9,11 +9,11 @@ const kafka = new Kafka({
   logLevel: logLevel.DEMO,
   logCreator: prettyConsolelogger2,
   brokers: [`${host}:9092`],
-  clientId: 'example-consumer',
+  clientId: 'example-consumer1',
 })
 
 //declare topic name
-const topic = 'adam-test-1'
+const topic = 'adam-test-3'
 //initialize consumer and group ID
 const consumer = kafka.consumer({ groupId: 'test-group-inventory' })
 
@@ -26,6 +26,7 @@ const run = async () => {
   await consumer.subscribe({ topic, fromBeginning: true })
   //run eachMessage function
   await consumer.run({
+    //deno-lint-ignore require-await
     eachMessage: async ({ topic, partition, message }: any) => {
       
       
